@@ -24,7 +24,7 @@
 
 ### 1. 点击下方按钮一键部署
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjoeseesun%2Fqiaomu_website&project-name=qiaomu-blog&repository-name=qiaomu-blog&demo-title=%E5%90%91%E9%98%B3%E4%B9%94%E6%9C%A8%E5%8D%9A%E5%AE%A2&demo-description=%E4%B8%80%E4%B8%AA%E7%AE%80%E6%B4%81%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%B3%BB%E7%BB%9F)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjoeseesun%2Fqiaomu-blog3&project-name=qiaomu-blog&repository-name=qiaomu-blog&demo-title=%E5%90%91%E9%98%B3%E4%B9%94%E6%9C%A8%E5%8D%9A%E5%AE%A2&demo-description=%E4%B8%80%E4%B8%AA%E7%AE%80%E6%B4%81%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%B3%BB%E7%BB%9F)
 
 ### 2. 部署后配置环境变量
 
@@ -44,7 +44,7 @@
 
 我们提供了一个包含示例内容的演示数据库，可以让您快速开始使用博客系统而无需从头创建内容。
 
-1. 下载演示数据库：[demo.db](https://github.com/joeseesun/qiaomu_website/raw/main/demo.db)
+1. 下载演示数据库：[demo.db](https://github.com/joeseesun/qiaomu-blog3/raw/main/demo.db)
 2. 在Vercel项目中上传数据库：
    - 进入您的Vercel项目仪表板
    - 点击“存储”标签
@@ -82,8 +82,8 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/joeseesun/qiaomu_website.git
-cd qiaomu_website
+git clone https://github.com/joeseesun/qiaomu-blog3.git
+cd qiaomu-blog3
 
 # 安装依赖
 npm install
@@ -108,8 +108,8 @@ npm start
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/joeseesun/qiaomu_website.git
-cd qiaomu_website
+git clone https://github.com/joeseesun/qiaomu-blog3.git
+cd qiaomu-blog3
 ```
 
 ### 2. 安装依赖
