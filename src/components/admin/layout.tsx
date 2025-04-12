@@ -1,17 +1,18 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Toaster } from '@/components/ui/toaster';
 import { Link } from '@/components/ui/link';
+import { Button } from '@/components/ui/button';
 import { 
   HomeIcon, 
   DocumentTextIcon, 
   TagIcon, 
-  Bars3Icon, 
   Cog6ToothIcon, 
   ArrowTopRightOnSquareIcon,
   ArrowRightOnRectangleIcon,
-  FolderIcon
+  FolderIcon,
+  Bars3Icon
 } from '@/components/ui/icons';
 
 interface AdminLayoutProps {
@@ -20,6 +21,7 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
+  const router = useRouter();
   
   // 获取当前页面标题
   const getPageTitle = () => {
@@ -36,6 +38,23 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     };
     
     return pageTitles[path[1]] || '仪表盘';
+  };
+  
+  // 处理登出
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/logout');
+      const data = await response.json();
+      if (data.success) {
+        router.push('/login');
+      } else {
+        // 如果登出失败，也重定向到登录页
+        router.push('/login');
+      }
+    } catch (error) {
+      // 静默处理错误，直接重定向到登录页
+      router.push('/login');
+    }
   };
   
   return (
@@ -129,13 +148,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               </Link>
             </li>
             <li>
-              <Link
-                href="/api/logout"
+              <Button
                 className="flex items-center px-4 py-2 text-sm rounded-md text-gray-300 hover:bg-gray-700"
+                onClick={handleLogout}
               >
                 <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5" />
                 退出登录
-              </Link>
+              </Button>
             </li>
           </ul>
         </div>

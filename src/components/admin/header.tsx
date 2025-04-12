@@ -1,11 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   
   // Get the current page title based on the pathname
   const getPageTitle = () => {
@@ -24,6 +25,20 @@ export function Header() {
     return pageTitles[path[1]] || '仪表盘';
   };
 
+  // 处理登出
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/logout');
+      const data = await response.json();
+      if (data.success) {
+        router.push('/login');
+      }
+    } catch (error) {
+      // 静默处理错误，避免在Edge Runtime中使用console
+      router.push('/login');
+    }
+  };
+
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
       <div className="flex flex-1 items-center gap-4">
@@ -35,12 +50,16 @@ export function Header() {
             查看网站
           </Button>
         </Link>
-        <Link href="/api/logout">
-          <Button variant="ghost" size="icon" className="rounded-full" title="退出登录">
-            <LogOut className="h-5 w-5" />
-            <span className="sr-only">退出登录</span>
-          </Button>
-        </Link>
+        <Button 
+          onClick={handleLogout} 
+          variant="ghost" 
+          size="icon" 
+          className="rounded-full" 
+          title="退出登录"
+        >
+          <LogOut className="h-5 w-5" />
+          <span className="sr-only">退出登录</span>
+        </Button>
       </div>
     </header>
   );
