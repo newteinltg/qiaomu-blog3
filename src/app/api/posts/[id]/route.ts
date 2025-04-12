@@ -6,12 +6,11 @@ import { eq, and, ne } from 'drizzle-orm';
 // GET handler to fetch a single post by ID
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    // 确保 params 已解析
-    const { id: idParam } = await params;
-    const id = parseInt(idParam);
+    // 获取ID参数
+    const id = parseInt(context.params.id);
 
     if (isNaN(id)) {
       return NextResponse.json(
@@ -44,12 +43,11 @@ export async function GET(
 // PATCH handler to update a post
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    // 确保 params 已解析
-    const { id: idParam } = await params;
-    const id = parseInt(idParam);
+    // 获取ID参数
+    const id = parseInt(context.params.id);
 
     if (isNaN(id)) {
       return NextResponse.json(
@@ -149,12 +147,11 @@ export async function PATCH(
 // PUT handler to update a post (identical to PATCH for compatibility)
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    // 确保 params 已解析
-    const { id: idParam } = await params;
-    const id = parseInt(idParam);
+    // 获取ID参数
+    const id = parseInt(context.params.id);
 
     if (isNaN(id)) {
       return NextResponse.json(
@@ -253,12 +250,11 @@ export async function PUT(
 // DELETE handler to delete a post
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    // 确保 params 已解析
-    const { id: idParam } = await params;
-    const id = parseInt(idParam);
+    // 获取ID参数
+    const id = parseInt(context.params.id);
 
     if (isNaN(id)) {
       return NextResponse.json(

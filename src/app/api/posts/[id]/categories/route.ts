@@ -6,10 +6,10 @@ import { eq, inArray } from 'drizzle-orm';
 // GET 获取文章的所有分类
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = context.params;
     const postId = parseInt(id);
 
     if (isNaN(postId)) {
@@ -31,38 +31,16 @@ export async function GET(
       );
     }
 
-    // 获取文章的所有分类
-    const postCategoriesRelations = await db
-      .select()
-      .from(schema.postCategories)
-      .where(eq(schema.postCategories.postId, postId));
-
-    if (!postCategoriesRelations.length) {
-      // 如果没有在关联表中找到，但文章有主分类，则返回主分类
-      if (post.categoryId) {
-        const mainCategory = await db
-          .select()
-          .from(schema.categories)
-          .where(eq(schema.categories.id, post.categoryId))
-          .limit(1);
-
-        if (mainCategory.length > 0) {
-          return NextResponse.json([mainCategory[0]]);
-        }
+    // 获取文章的分类关联
+    const postCategories = await db.query.postCategories.findMany({
+      where: eq(schema.postCategories.postId, postId),
+      with: {
+        category: true
       }
-      return NextResponse.json([]);
-    }
+    });
 
-    // 获取分类详情
-    const categoryIds = postCategoriesRelations.map(relation => relation.categoryId);
-    const categories = await db
-      .select()
-      .from(schema.categories)
-      .where(
-        categoryIds.length === 1
-          ? eq(schema.categories.id, categoryIds[0])
-          : inArray(schema.categories.id, categoryIds)
-      );
+    // 提取分类信息
+    const categories = postCategories.map(pc => pc.category);
 
     return NextResponse.json(categories);
   } catch (error) {
@@ -77,15 +55,23 @@ export async function GET(
 // POST 创建文章的分类关联
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = context.params;
     const postId = parseInt(id);
+    const { categoryIds } = await request.json();
 
     if (isNaN(postId)) {
       return NextResponse.json(
         { error: 'Invalid post ID' },
+        { status: 400 }
+      );
+    }
+
+    if (!Array.isArray(categoryIds) || categoryIds.length === 0) {
+      return NextResponse.json(
+        { error: 'Category IDs are required' },
         { status: 400 }
       );
     }
@@ -102,52 +88,37 @@ export async function POST(
       );
     }
 
-    const { categoryIds } = await request.json();
+    // 检查分类是否存在
+    const categories = await db.query.categories.findMany({
+      where: inArray(schema.categories.id, categoryIds)
+    });
 
-    if (!Array.isArray(categoryIds)) {
+    if (categories.length !== categoryIds.length) {
       return NextResponse.json(
-        { error: 'categoryIds must be an array' },
-        { status: 400 }
+        { error: 'One or more categories not found' },
+        { status: 404 }
       );
     }
 
-    // 使用事务创建文章分类关联
-    await db.transaction(async (tx) => {
-      // 1. 删除原有的文章-分类关联
-      await tx
-        .delete(schema.postCategories)
-        .where(eq(schema.postCategories.postId, postId));
+    // 创建文章与分类的关联
+    const postCategoryValues = categoryIds.map(categoryId => ({
+      postId,
+      categoryId
+    }));
 
-      // 2. 创建新的文章-分类关联
-      if (categoryIds.length > 0) {
-        const postCategoriesData = categoryIds.map(categoryId => ({
-          postId,
-          categoryId: Number(categoryId)
-        }));
+    await db.insert(schema.postCategories).values(postCategoryValues);
 
-        await tx.insert(schema.postCategories).values(postCategoriesData);
-
-        // 3. 更新文章的主分类（使用第一个分类作为主分类）
-        await tx
-          .update(schema.posts)
-          .set({
-            categoryId: Number(categoryIds[0]),
-            updatedAt: new Date().toISOString()
-          })
-          .where(eq(schema.posts.id, postId));
-      } else {
-        // 如果没有分类，将主分类设为null
-        await tx
-          .update(schema.posts)
-          .set({
-            categoryId: null,
-            updatedAt: new Date().toISOString()
-          })
-          .where(eq(schema.posts.id, postId));
+    // 获取更新后的分类列表
+    const updatedPostCategories = await db.query.postCategories.findMany({
+      where: eq(schema.postCategories.postId, postId),
+      with: {
+        category: true
       }
     });
 
-    return NextResponse.json({ success: true });
+    const updatedCategories = updatedPostCategories.map(pc => pc.category);
+
+    return NextResponse.json(updatedCategories);
   } catch (error) {
     console.error('Error creating post categories:', error);
     return NextResponse.json(
@@ -160,15 +131,23 @@ export async function POST(
 // PUT 更新文章的分类
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = context.params;
     const postId = parseInt(id);
+    const { categoryIds } = await request.json();
 
     if (isNaN(postId)) {
       return NextResponse.json(
         { error: 'Invalid post ID' },
+        { status: 400 }
+      );
+    }
+
+    if (!Array.isArray(categoryIds)) {
+      return NextResponse.json(
+        { error: 'Category IDs must be an array' },
         { status: 400 }
       );
     }
@@ -185,52 +164,46 @@ export async function PUT(
       );
     }
 
-    const { categoryIds } = await request.json();
+    // 如果有分类ID，检查分类是否存在
+    if (categoryIds.length > 0) {
+      const categories = await db.query.categories.findMany({
+        where: inArray(schema.categories.id, categoryIds)
+      });
 
-    if (!Array.isArray(categoryIds)) {
-      return NextResponse.json(
-        { error: 'categoryIds must be an array' },
-        { status: 400 }
-      );
+      if (categories.length !== categoryIds.length) {
+        return NextResponse.json(
+          { error: 'One or more categories not found' },
+          { status: 404 }
+        );
+      }
     }
 
-    // 使用事务更新文章分类
-    await db.transaction(async (tx) => {
-      // 1. 删除原有的文章-分类关联
-      await tx
-        .delete(schema.postCategories)
-        .where(eq(schema.postCategories.postId, postId));
+    // 删除现有的分类关联
+    await db
+      .delete(schema.postCategories)
+      .where(eq(schema.postCategories.postId, postId));
 
-      // 2. 创建新的文章-分类关联
-      if (categoryIds.length > 0) {
-        const postCategoriesData = categoryIds.map(categoryId => ({
-          postId,
-          categoryId: Number(categoryId)
-        }));
+    // 如果有新的分类ID，创建新的关联
+    if (categoryIds.length > 0) {
+      const postCategoryValues = categoryIds.map(categoryId => ({
+        postId,
+        categoryId
+      }));
 
-        await tx.insert(schema.postCategories).values(postCategoriesData);
+      await db.insert(schema.postCategories).values(postCategoryValues);
+    }
 
-        // 3. 更新文章的主分类（使用第一个分类作为主分类）
-        await tx
-          .update(schema.posts)
-          .set({
-            categoryId: Number(categoryIds[0]),
-            updatedAt: new Date().toISOString()
-          })
-          .where(eq(schema.posts.id, postId));
-      } else {
-        // 如果没有分类，将主分类设为null
-        await tx
-          .update(schema.posts)
-          .set({
-            categoryId: null,
-            updatedAt: new Date().toISOString()
-          })
-          .where(eq(schema.posts.id, postId));
+    // 获取更新后的分类列表
+    const updatedPostCategories = await db.query.postCategories.findMany({
+      where: eq(schema.postCategories.postId, postId),
+      with: {
+        category: true
       }
     });
 
-    return NextResponse.json({ success: true });
+    const updatedCategories = updatedPostCategories.map(pc => pc.category);
+
+    return NextResponse.json(updatedCategories);
   } catch (error) {
     console.error('Error updating post categories:', error);
     return NextResponse.json(

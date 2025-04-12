@@ -7,10 +7,10 @@ import { generateSlug } from '@/lib/utils';
 // GET 获取单个标签
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  context: { params: { slug: string } }
 ) {
   try {
-    const { slug } = await params;
+    const { slug } = context.params;
     // 检查是否是数字 ID
     const isId = /^\d+$/.test(slug);
 
@@ -29,16 +29,16 @@ export async function GET(
 
     if (!tag) {
       return NextResponse.json(
-        { error: 'Tag not found' },
+        { error: '标签不存在' },
         { status: 404 }
       );
     }
 
     return NextResponse.json(tag);
   } catch (error) {
-    console.error('Error fetching tag:', error);
+    console.error('获取标签失败:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch tag' },
+      { error: '获取标签失败' },
       { status: 500 }
     );
   }
@@ -47,82 +47,83 @@ export async function GET(
 // PATCH 更新标签
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  context: { params: { slug: string } }
 ) {
   try {
-    const { slug: paramSlug } = await params;
-    const { name, slug, description } = await request.json();
-
-    if (!name) {
+    const { slug } = context.params;
+    const body = await request.json();
+    
+    // 验证请求体
+    if (!body.name) {
       return NextResponse.json(
-        { error: 'Tag name is required' },
+        { error: '标签名称不能为空' },
         { status: 400 }
       );
     }
-
+    
+    // 生成 slug（如果没有提供）
+    if (!body.slug) {
+      body.slug = generateSlug(body.name);
+    }
+    
+    // 查找要更新的标签
+    let tag;
     // 检查是否是数字 ID
-    const isId = /^\d+$/.test(paramSlug);
-
-    // 检查标签是否存在
-    let existingTag;
+    const isId = /^\d+$/.test(slug);
+    
     if (isId) {
       // 如果是数字 ID，按 ID 查询
-      existingTag = await db.query.tags.findFirst({
-        where: eq(schema.tags.id, parseInt(paramSlug))
+      tag = await db.query.tags.findFirst({
+        where: eq(schema.tags.id, parseInt(slug))
       });
     } else {
       // 否则按 slug 查询
-      existingTag = await db.query.tags.findFirst({
-        where: eq(schema.tags.slug, paramSlug)
+      tag = await db.query.tags.findFirst({
+        where: eq(schema.tags.slug, slug)
       });
     }
-
-    if (!existingTag) {
+    
+    if (!tag) {
       return NextResponse.json(
-        { error: 'Tag not found' },
+        { error: '标签不存在' },
         { status: 404 }
       );
     }
-
-    // 生成 slug（如果未提供）
-    const tagSlug = slug?.trim() || generateSlug(name.trim());
-
-    // 检查 slug 是否已存在（排除当前标签）
-    const slugExists = await db.query.tags.findFirst({
-      where: and(
-        eq(schema.tags.slug, tagSlug),
-        or(
-          isId
-            ? eq(schema.tags.id, parseInt(paramSlug))
-            : eq(schema.tags.slug, paramSlug)
-        )
-      )
-    });
-
-    if (slugExists && slugExists.id !== existingTag.id) {
-      return NextResponse.json(
-        { error: 'Slug already exists' },
-        { status: 400 }
-      );
+    
+    // 检查新的 slug 是否已被使用
+    if (body.slug !== tag.slug) {
+      const existingTag = await db.query.tags.findFirst({
+        where: eq(schema.tags.slug, body.slug)
+      });
+      
+      if (existingTag) {
+        return NextResponse.json(
+          { error: '标签别名已被使用' },
+          { status: 400 }
+        );
+      }
     }
-
+    
     // 更新标签
-    const updatedTag = await db
+    await db
       .update(schema.tags)
       .set({
-        name: name.trim(),
-        slug: tagSlug,
-        description: description?.trim() || null
+        name: body.name,
+        slug: body.slug,
+        description: body.description || null
       })
-      .where(eq(schema.tags.id, existingTag.id))
-      .returning()
-      .get();
-
+      .where(eq(schema.tags.id, tag.id));
+    
+    // 获取更新后的标签
+    const updatedTag = await db.query.tags.findFirst({
+      where: eq(schema.tags.id, tag.id)
+    });
+    
     return NextResponse.json(updatedTag);
   } catch (error) {
-    console.error('Error updating tag:', error);
+    console.error('更新标签失败:', error);
     return NextResponse.json(
-      { error: 'Failed to update tag' },
+      { error: '更新标签失败' },
       { status: 500 }
     );
   }
@@ -131,51 +132,50 @@ export async function PATCH(
 // DELETE 删除标签
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  context: { params: { slug: string } }
 ) {
   try {
-    const { slug: paramSlug } = await params;
+    const { slug } = context.params;
+    
+    // 查找要删除的标签
+    let tag;
     // 检查是否是数字 ID
-    const isId = /^\d+$/.test(paramSlug);
-
-    // 检查标签是否存在
-    let existingTag;
+    const isId = /^\d+$/.test(slug);
+    
     if (isId) {
       // 如果是数字 ID，按 ID 查询
-      existingTag = await db.query.tags.findFirst({
-        where: eq(schema.tags.id, parseInt(paramSlug))
+      tag = await db.query.tags.findFirst({
+        where: eq(schema.tags.id, parseInt(slug))
       });
     } else {
       // 否则按 slug 查询
-      existingTag = await db.query.tags.findFirst({
-        where: eq(schema.tags.slug, paramSlug)
+      tag = await db.query.tags.findFirst({
+        where: eq(schema.tags.slug, slug)
       });
     }
-
-    if (!existingTag) {
+    
+    if (!tag) {
       return NextResponse.json(
-        { error: 'Tag not found' },
+        { error: '标签不存在' },
         { status: 404 }
       );
     }
-
+    
     // 删除标签与文章的关联
     await db
       .delete(schema.postTags)
-      .where(eq(schema.postTags.tagId, existingTag.id));
-
+      .where(eq(schema.postTags.tagId, tag.id));
+    
     // 删除标签
-    const deletedTag = await db
+    await db
       .delete(schema.tags)
-      .where(eq(schema.tags.id, existingTag.id))
-      .returning()
-      .get();
-
-    return NextResponse.json(deletedTag);
+      .where(eq(schema.tags.id, tag.id));
+    
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting tag:', error);
+    console.error('删除标签失败:', error);
     return NextResponse.json(
-      { error: 'Failed to delete tag' },
+      { error: '删除标签失败' },
       { status: 500 }
     );
   }

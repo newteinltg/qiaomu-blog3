@@ -6,10 +6,10 @@ import bcrypt from 'bcryptjs';
 // 获取单个用户
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const userId = context.params.id;
+    const userId = params.id;
     
     // 使用sqlite直接查询以确保返回正确的数据格式
     const { sqlite } = await import('@/lib/db');
@@ -39,13 +39,13 @@ export async function GET(
 // 更新用户
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const userId = context.params.id;
+    const userId = params.id;
     const { email, password } = await request.json();
     
-    // 验证输入
+    // 验证请求数据
     if (!email) {
       return NextResponse.json(
         { success: false, error: '邮箱不能为空' },
@@ -53,7 +53,7 @@ export async function PUT(
       );
     }
     
-    // 使用sqlite直接查询检查用户是否存在
+    // 检查用户是否存在
     const { sqlite } = await import('@/lib/db');
     const existingUser = sqlite.prepare(`
       SELECT id FROM users WHERE id = ?
@@ -67,42 +67,47 @@ export async function PUT(
     }
     
     // 检查邮箱是否已被其他用户使用
-    const emailCheck = sqlite.prepare(`
+    const emailExists = sqlite.prepare(`
       SELECT id FROM users WHERE email = ? AND id != ?
     `).get(email, userId);
     
-    if (emailCheck) {
+    if (emailExists) {
       return NextResponse.json(
-        { success: false, error: '该邮箱已被其他用户使用' },
+        { success: false, error: '邮箱已被使用' },
         { status: 400 }
       );
     }
     
-    // 更新用户信息
+    // 准备更新数据
+    let updateQuery = 'UPDATE users SET email = ?';
+    let queryParams = [email];
+    
+    // 如果提供了新密码，则哈希处理
     if (password) {
-      // 如果提供了密码，则更新密码
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
-      
-      sqlite.prepare(`
-        UPDATE users
-        SET email = ?, password = ?
-        WHERE id = ?
-      `).run(email, hashedPassword, userId);
-    } else {
-      // 如果没有提供密码，只更新邮箱
-      sqlite.prepare(`
-        UPDATE users
-        SET email = ?
-        WHERE id = ?
-      `).run(email, userId);
+      updateQuery += ', password = ?';
+      queryParams.push(hashedPassword);
     }
     
-    return NextResponse.json({ success: true, message: '用户更新成功' });
+    updateQuery += ' WHERE id = ?';
+    queryParams.push(userId);
+    
+    // 执行更新
+    sqlite.prepare(updateQuery).run(...queryParams);
+    
+    // 获取更新后的用户信息
+    const updatedUser = sqlite.prepare(`
+      SELECT id, email, createdAt
+      FROM users
+      WHERE id = ?
+    `).get(userId);
+    
+    return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {
-    console.error('更新用户失败:', error);
+    console.error('更新用户信息失败:', error);
     return NextResponse.json(
-      { success: false, error: '更新用户失败' },
+      { success: false, error: '更新用户信息失败' },
       { status: 500 }
     );
   }
@@ -111,15 +116,15 @@ export async function PUT(
 // 删除用户
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const userId = context.params.id;
+    const userId = params.id;
     
-    // 使用sqlite直接查询检查用户是否存在
+    // 检查用户是否存在
     const { sqlite } = await import('@/lib/db');
     const existingUser = sqlite.prepare(`
-      SELECT id FROM users WHERE id = ?
+      SELECT id, email FROM users WHERE id = ?
     `).get(userId);
     
     if (!existingUser) {
@@ -129,25 +134,22 @@ export async function DELETE(
       );
     }
     
-    // 检查是否是唯一管理员
-    const userCount = sqlite.prepare(`
+    // 检查是否是最后一个管理员账户
+    const adminCount = sqlite.prepare(`
       SELECT COUNT(*) as count FROM users
     `).get() as { count: number };
     
-    if (userCount.count <= 1) {
+    if (adminCount.count <= 1) {
       return NextResponse.json(
-        { success: false, error: '系统必须保留至少一个管理员账户' },
+        { success: false, error: '无法删除最后一个管理员账户' },
         { status: 400 }
       );
     }
     
-    // 删除用户
-    sqlite.prepare(`
-      DELETE FROM users
-      WHERE id = ?
-    `).run(userId);
+    // 执行删除
+    sqlite.prepare(`DELETE FROM users WHERE id = ?`).run(userId);
     
-    return NextResponse.json({ success: true, message: '用户删除成功' });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('删除用户失败:', error);
     return NextResponse.json(

@@ -15,12 +15,11 @@ const categorySchema = z.object({
 // GET 处理程序，获取单个分类
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    // 使用 await 解包 params
-    const { id: idParam } = await params;
-    const id = parseInt(idParam);
+    // 获取ID参数
+    const id = parseInt(context.params.id);
     
     if (isNaN(id)) {
       return NextResponse.json(
@@ -30,7 +29,7 @@ export async function GET(
     }
 
     const category = await db.query.categories.findFirst({
-      where: eq(schema.categories.id, id)
+      where: eq(schema.categories.id, id),
     });
 
     if (!category) {
@@ -53,12 +52,11 @@ export async function GET(
 // PUT 处理程序，更新分类
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    // 获取分类ID
-    const { id: idParam } = await params;
-    const id = parseInt(idParam);
+    // 获取ID参数
+    const id = parseInt(context.params.id);
     
     if (isNaN(id)) {
       return NextResponse.json(
@@ -68,11 +66,9 @@ export async function PUT(
     }
 
     // 检查分类是否存在
-    const existingCategory = await db.select()
-      .from(schema.categories)
-      .where(eq(schema.categories.id, id))
-      .limit(1)
-      .then(results => results[0] || null);
+    const existingCategory = await db.query.categories.findFirst({
+      where: eq(schema.categories.id, id),
+    });
 
     if (!existingCategory) {
       return NextResponse.json(
@@ -81,115 +77,108 @@ export async function PUT(
       );
     }
 
+    // 解析请求体
     const body = await request.json();
     
     // 验证数据
-    const validatedData = categorySchema.parse(body);
-    
-    // 如果名称已更改，检查是否与其他分类冲突
-    if (validatedData.name !== existingCategory.name) {
-      const categoryWithSameName = await db.select()
-        .from(schema.categories)
-        .where(eq(schema.categories.name, validatedData.name))
-        .limit(1)
-        .then(results => results[0] || null);
-      
-      if (categoryWithSameName && categoryWithSameName.id !== id) {
-        return NextResponse.json(
-          { error: '分类名称已存在' },
-          { status: 400 }
-        );
-      }
-    }
-    
-    // 如果别名已更改，检查是否与其他分类冲突
-    if (validatedData.slug !== existingCategory.slug) {
-      const categoryWithSameSlug = await db.select()
-        .from(schema.categories)
-        .where(eq(schema.categories.slug, validatedData.slug))
-        .limit(1)
-        .then(results => results[0] || null);
-      
-      if (categoryWithSameSlug && categoryWithSameSlug.id !== id) {
-        return NextResponse.json(
-          { error: '分类别名已存在' },
-          { status: 400 }
-        );
-      }
-    }
-    
-    // 检查父级分类设置是否会导致循环引用
-    if (validatedData.parentId !== null && validatedData.parentId !== undefined) {
-      // 不能将自己设为父级
-      if (validatedData.parentId === id) {
-        return NextResponse.json(
-          { error: '分类不能将自己设为父级' },
-          { status: 400 }
-        );
-      }
-      
-      // 检查父级分类是否存在
-      const parentCategory = await db.select()
-        .from(schema.categories)
-        .where(eq(schema.categories.id, validatedData.parentId))
-        .limit(1)
-        .then(results => results[0] || null);
-      
-      if (!parentCategory) {
-        return NextResponse.json(
-          { error: '父级分类不存在' },
-          { status: 400 }
-        );
-      }
-      
-      // 检查是否会形成循环引用
-      let currentParentId = parentCategory.parentId;
-      while (currentParentId !== null) {
-        if (currentParentId === id) {
-          return NextResponse.json(
-            { error: '不能将分类设为其子分类的子分类，这会造成循环引用' },
-            { status: 400 }
-          );
-        }
-        
-        const currentParent = await db.select()
-          .from(schema.categories)
-          .where(eq(schema.categories.id, currentParentId))
-          .limit(1)
-          .then(results => results[0] || null);
-        
-        if (!currentParent) break;
-        currentParentId = currentParent.parentId;
-      }
-    }
-    
-    // 更新分类
-    const updatedCategory = await db
-      .update(schema.categories)
-      .set({
-        name: validatedData.name,
-        slug: validatedData.slug,
-        description: validatedData.description || null,
-        parentId: validatedData.parentId,
-        updatedAt: new Date().toISOString()
-      })
-      .where(eq(schema.categories.id, id))
-      .returning();
-    
-    return NextResponse.json(updatedCategory[0] || { 
-      success: true, 
-      message: '分类更新成功' 
-    });
-  } catch (error) {
-    console.error('更新分类失败:', error);
-    
-    if (error instanceof z.ZodError) {
+    const validationResult = categorySchema.safeParse(body);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: '数据验证失败', details: error.errors },
+        { error: '无效的分类数据', details: validationResult.error.format() },
         { status: 400 }
       );
     }
-    
+
+    const { name, slug, description, parentId } = validationResult.data;
+
+    // 检查slug是否已被其他分类使用
+    const categoryWithSameSlug = await db.query.categories.findFirst({
+      where: (categories) => {
+        return eq(categories.slug, slug);
+      },
+    });
+
+    if (categoryWithSameSlug && categoryWithSameSlug.id !== id) {
+      return NextResponse.json(
+        { error: '分类别名已被使用' },
+        { status: 400 }
+      );
+    }
+
+    // 检查父分类是否存在（如果指定了父分类）
+    if (parentId !== null && parentId !== undefined) {
+      const parentCategory = await db.query.categories.findFirst({
+        where: eq(schema.categories.id, parentId),
+      });
+
+      if (!parentCategory) {
+        return NextResponse.json(
+          { error: '父分类不存在' },
+          { status: 400 }
+        );
+      }
+
+      // 检查是否形成循环引用
+      if (parentId === id) {
+        return NextResponse.json(
+          { error: '分类不能将自己设为父分类' },
+          { status: 400 }
+        );
+      }
+
+      // 检查多级父子关系是否形成循环
+      let currentParentId: number | null = parentId;
+      const visitedParentIds = new Set<number>();
+
+      while (currentParentId !== null) {
+        if (visitedParentIds.has(currentParentId)) {
+          return NextResponse.json(
+            { error: '检测到循环的父子关系' },
+            { status: 400 }
+          );
+        }
+
+        visitedParentIds.add(currentParentId);
+
+        // 明确定义类型
+        const parentCat: { id: number; parentId: number | null } | undefined = await db.query.categories.findFirst({
+          where: eq(schema.categories.id, currentParentId),
+        });
+
+        if (!parentCat) {
+          break;
+        }
+
+        if (parentCat.id === id) {
+          return NextResponse.json(
+            { error: '检测到循环的父子关系' },
+            { status: 400 }
+          );
+        }
+
+        currentParentId = parentCat.parentId;
+      }
+    }
+
+    // 更新分类
+    await db
+      .update(schema.categories)
+      .set({
+        name,
+        slug,
+        description,
+        parentId,
+      })
+      .where(eq(schema.categories.id, id));
+
+    // 获取更新后的分类
+    const updatedCategory = await db.query.categories.findFirst({
+      where: eq(schema.categories.id, id),
+    });
+
+    return NextResponse.json(updatedCategory);
+  } catch (error) {
+    console.error('更新分类失败:', error);
     return NextResponse.json(
       { error: '更新分类失败' },
       { status: 500 }
@@ -200,12 +189,11 @@ export async function PUT(
 // DELETE 处理程序，删除分类
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    // 获取分类ID
-    const { id: idParam } = await params;
-    const id = parseInt(idParam);
+    // 获取ID参数
+    const id = parseInt(context.params.id);
     
     if (isNaN(id)) {
       return NextResponse.json(
@@ -213,13 +201,11 @@ export async function DELETE(
         { status: 400 }
       );
     }
-    
+
     // 检查分类是否存在
-    const existingCategory = await db.select()
-      .from(schema.categories)
-      .where(eq(schema.categories.id, id))
-      .limit(1)
-      .then(results => results[0] || null);
+    const existingCategory = await db.query.categories.findFirst({
+      where: eq(schema.categories.id, id),
+    });
 
     if (!existingCategory) {
       return NextResponse.json(
@@ -227,57 +213,41 @@ export async function DELETE(
         { status: 404 }
       );
     }
-    
-    // 检查是否为"未分类"分类（通常是 slug 为 'uncategorized' 的分类）
-    if (existingCategory.slug === 'uncategorized') {
+
+    // 检查是否有子分类
+    const childCategories = await db.query.categories.findMany({
+      where: eq(schema.categories.parentId, id),
+    });
+
+    if (childCategories.length > 0) {
       return NextResponse.json(
-        { error: '无法删除"未分类"分类，这是系统默认分类' },
+        { error: '无法删除有子分类的分类，请先删除或移动子分类' },
         { status: 400 }
       );
     }
-    
-    // 开始数据库事务
-    return await db.transaction(async (tx) => {
-      // 查找未分类的分类ID
-      const uncategorizedCategory = await tx.select()
-        .from(schema.categories)
-        .where(eq(schema.categories.slug, 'uncategorized'))
-        .limit(1)
-        .then(results => results[0] || null);
-      
-      if (!uncategorizedCategory) {
-        return NextResponse.json(
-          { error: '系统错误：未找到"未分类"分类' },
-          { status: 500 }
-        );
-      }
-      
-      // 处理该分类下的文章，将它们移到"未分类"
-      await tx
-        .update(schema.posts)
-        .set({ categoryId: uncategorizedCategory.id })
-        .where(eq(schema.posts.categoryId, id));
-      
-      // 处理子分类，将它们变为顶级分类
-      await tx
-        .update(schema.categories)
-        .set({ parentId: null })
-        .where(eq(schema.categories.parentId, id));
-      
-      // 删除分类
-      await tx
-        .delete(schema.categories)
-        .where(eq(schema.categories.id, id));
-      
-      return NextResponse.json({ 
-        success: true, 
-        message: '分类删除成功' 
-      });
+
+    // 检查是否有文章使用此分类
+    const postCategories = await db.query.postCategories.findMany({
+      where: eq(schema.postCategories.categoryId, id),
     });
+
+    if (postCategories.length > 0) {
+      return NextResponse.json(
+        { error: '无法删除被文章使用的分类，请先移除相关文章的分类' },
+        { status: 400 }
+      );
+    }
+
+    // 删除分类
+    await db
+      .delete(schema.categories)
+      .where(eq(schema.categories.id, id));
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('删除分类失败:', error);
     return NextResponse.json(
-      { error: '删除分类失败', details: error instanceof Error ? error.message : String(error) },
+      { error: '删除分类失败' },
       { status: 500 }
     );
   }
