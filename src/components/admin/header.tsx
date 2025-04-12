@@ -54,7 +54,7 @@ export function Header() {
           onClick={handleLogout} 
           variant="ghost" 
           size="icon" 
-          className="rounded-full" 
+          className="rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100" 
           title="退出登录"
         >
           <LogOut className="h-5 w-5" />

@@ -148,13 +148,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               </Link>
             </li>
             <li>
-              <Button
-                className="flex items-center px-4 py-2 text-sm rounded-md text-gray-300 hover:bg-gray-700"
+              <button
                 onClick={handleLogout}
+                className="flex items-center px-4 py-2 text-sm rounded-md text-gray-300 hover:bg-gray-700 w-full text-left"
               >
                 <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5" />
                 退出登录
-              </Button>
+              </button>
             </li>
           </ul>
         </div>
