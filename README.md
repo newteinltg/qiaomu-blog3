@@ -27,7 +27,7 @@
 #### 文章详情页
 
 - **Markdown 渲染**: 支持 Markdown 格式的文章内容
-- **HTML 全页面**: 支持完整的 HTML 页面，不使用网站模板
+- **HTML 全页面**: 支持创建完整的 HTML 页面，不使用网站模板
 - **浮动信息栏**: 在 HTML 全页面模式下提供导航功能
 - **相关文章推荐**: 展示相关文章
 - **文章元信息**: 展示发布时间、分类、标签等信息
@@ -159,7 +159,7 @@
 
 点击下方按钮一键部署到Vercel：
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjoeseesun%2Fqiaomu_website&project-name=qiaomu-blog&repository-name=qiaomu-blog&demo-title=%E5%90%91%E9%98%B3%E4%B9%94%E6%9C%A8%E5%8D%9A%E5%AE%A2&demo-description=%E4%B8%80%E4%B8%AA%E7%AE%80%E6%B4%81%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%B3%BB%E7%BB%9F)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjoeseesun%2Fqiaomu-blog3&project-name=qiaomu-blog3&repository-name=qiaomu-blog3&demo-title=%E5%90%91%E9%98%B3%E4%B9%94%E6%9C%A8%E5%8D%9A%E5%AE%A2&demo-description=%E4%B8%80%E4%B8%AA%E7%AE%80%E6%B4%81%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%B3%BB%E7%BB%9F)
 
 #### 使用演示数据库（推荐）
 
@@ -295,7 +295,7 @@ npm run dev
 #### 文章详情页功能
 
 - **Markdown 渲染**: 支持 Markdown 格式的文章内容渲染
-- **HTML 全页面模式**: 支持创建完整的 HTML 页面，不使用网站模板
+- **HTML 全页面**: 支持创建完整的 HTML 页面，不使用网站模板
 - **浮动信息栏**: 在 HTML 全页面模式下显示可隐藏的导航信息栏
 - **相关文章**: 在文章底部显示相关文章推荐
 - **文章元信息**: 显示文章的发布时间、分类、标签等信息
