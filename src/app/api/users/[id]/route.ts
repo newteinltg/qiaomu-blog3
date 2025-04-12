@@ -6,10 +6,10 @@ import bcrypt from 'bcryptjs';
 // 获取单个用户
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const userId = params.id;
+    const userId = context.params.id;
     
     // 使用sqlite直接查询以确保返回正确的数据格式
     const { sqlite } = await import('@/lib/db');
@@ -39,10 +39,10 @@ export async function GET(
 // 更新用户
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const userId = params.id;
+    const userId = context.params.id;
     const { email, password } = await request.json();
     
     // 验证请求数据
@@ -78,23 +78,25 @@ export async function PUT(
       );
     }
     
-    // 准备更新数据
-    let updateQuery = 'UPDATE users SET email = ?';
-    let queryParams = [email];
-    
-    // 如果提供了新密码，则哈希处理
+    // 更新用户信息
     if (password) {
+      // 如果提供了新密码，则更新密码
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
-      updateQuery += ', password = ?';
-      queryParams.push(hashedPassword);
+      
+      sqlite.prepare(`
+        UPDATE users
+        SET email = ?, password = ?
+        WHERE id = ?
+      `).run(email, hashedPassword, userId);
+    } else {
+      // 否则只更新邮箱
+      sqlite.prepare(`
+        UPDATE users
+        SET email = ?
+        WHERE id = ?
+      `).run(email, userId);
     }
-    
-    updateQuery += ' WHERE id = ?';
-    queryParams.push(userId);
-    
-    // 执行更新
-    sqlite.prepare(updateQuery).run(...queryParams);
     
     // 获取更新后的用户信息
     const updatedUser = sqlite.prepare(`
@@ -116,15 +118,15 @@ export async function PUT(
 // 删除用户
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const userId = params.id;
+    const userId = context.params.id;
     
     // 检查用户是否存在
     const { sqlite } = await import('@/lib/db');
     const existingUser = sqlite.prepare(`
-      SELECT id, email FROM users WHERE id = ?
+      SELECT id FROM users WHERE id = ?
     `).get(userId);
     
     if (!existingUser) {
@@ -134,20 +136,23 @@ export async function DELETE(
       );
     }
     
-    // 检查是否是最后一个管理员账户
+    // 获取系统中的所有管理员用户数量
     const adminCount = sqlite.prepare(`
       SELECT COUNT(*) as count FROM users
     `).get() as { count: number };
     
+    // 如果只有一个管理员，不允许删除
     if (adminCount.count <= 1) {
       return NextResponse.json(
-        { success: false, error: '无法删除最后一个管理员账户' },
+        { success: false, error: '系统中至少需要保留一个管理员账户' },
         { status: 400 }
       );
     }
     
-    // 执行删除
-    sqlite.prepare(`DELETE FROM users WHERE id = ?`).run(userId);
+    // 删除用户
+    sqlite.prepare(`
+      DELETE FROM users WHERE id = ?
+    `).run(userId);
     
     return NextResponse.json({ success: true });
   } catch (error) {
