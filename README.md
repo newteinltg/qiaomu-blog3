@@ -161,12 +161,29 @@
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjoeseesun%2Fqiaomu_website&project-name=qiaomu-blog&repository-name=qiaomu-blog&demo-title=%E5%90%91%E9%98%B3%E4%B9%94%E6%9C%A8%E5%8D%9A%E5%AE%A2&demo-description=%E4%B8%80%E4%B8%AA%E7%AE%80%E6%B4%81%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%B3%BB%E7%BB%9F)
 
-我们提供了一个包含示例内容的演示数据库，可以让您快速开始使用博客系统：
+#### 使用演示数据库（推荐）
 
-- 演示管理员账户：`demo@example.com` / `demo123456`
-- 演示数据库下载：[demo.db](https://github.com/joeseesun/qiaomu_website/raw/main/demo.db)
+我们提供了一个包含示例内容的演示数据库，可以让您快速开始使用博客系统而无需从头创建内容：
 
-详细部署步骤请参考 [DEPLOY.md](DEPLOY.md) 文件。
+1. 下载演示数据库：[demo.db](https://github.com/joeseesun/qiaomu_website/raw/main/demo.db)
+2. 在Vercel项目中上传数据库：
+   - 进入您的Vercel项目仪表板
+   - 点击"存储"标签
+   - 上传下载的`demo.db`文件，并将其重命名为`blog.db`
+
+演示数据库中包含示例文章、分类和标签，以及一个演示管理员账户：
+- 邮箱：`demo@example.com`
+- 密码：`demo123456`
+
+注意：出于安全考虑，请在部署后立即登录并修改管理员密码。
+
+#### 环境配置
+
+在Vercel项目设置中，您需要配置以下环境变量：
+- `NEXTAUTH_SECRET`: 用于NextAuth.js的密钥
+- `JWT_SECRET`: 用于JWT认证的密钥
+
+为了安全起见，请在生产环境中使用强密钥。
 
 ### 本地快速部署
 
