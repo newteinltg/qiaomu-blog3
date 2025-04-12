@@ -198,6 +198,8 @@ cd qiaomu_website
 # Linux/macOS
 bash setup.sh
 
+2. 点击"设置"
+
 2. 点击"设置""
 ```
 

@@ -5,11 +5,12 @@ import { eq, desc, sql, and } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
 ) {
   try {
-    // 从 URL 路径中提取分类ID
-    const id = parseInt(params.id);
+    // 从 URL 获取分类ID
+    const pathParts = request.nextUrl.pathname.split('/');
+    const idParam = pathParts[pathParts.indexOf('categories') + 1];
+    const id = parseInt(idParam);
 
     if (isNaN(id)) {
       return NextResponse.json(
@@ -18,7 +19,7 @@ export async function GET(
       );
     }
 
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
     const pageSize = parseInt(searchParams.get('pageSize') || '10');
     const offset = (page - 1) * pageSize;
@@ -141,8 +142,6 @@ export async function GET(
     }
 
     // 构建响应数据
-
-    // 确保返回的数据是有效的
     const response = {
       category: {
         id: category.id,
