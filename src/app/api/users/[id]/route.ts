@@ -6,10 +6,10 @@ import bcrypt from 'bcryptjs';
 // 获取单个用户
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const userId = params.id;
+    const userId = context.params.id;
     
     // 使用sqlite直接查询以确保返回正确的数据格式
     const { sqlite } = await import('@/lib/db');
@@ -39,10 +39,10 @@ export async function GET(
 // 更新用户
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const userId = params.id;
+    const userId = context.params.id;
     const { email, password } = await request.json();
     
     // 验证输入
@@ -111,10 +111,10 @@ export async function PUT(
 // 删除用户
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const userId = params.id;
+    const userId = context.params.id;
     
     // 使用sqlite直接查询检查用户是否存在
     const { sqlite } = await import('@/lib/db');
