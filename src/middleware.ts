@@ -18,16 +18,13 @@ export async function middleware(request: NextRequest) {
     
     // If no session exists, redirect to login
     if (!session) {
-      console.log('No session found, redirecting to login');
       return NextResponse.redirect(new URL('/login', request.url));
     }
-    
-    console.log('User authenticated, proceeding to admin');
   }
   
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*']
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$).*)'],
 };

@@ -6,10 +6,13 @@
  * 此脚本用于重置博客系统管理员的密码
  */
 
-const { db } = require('../dist/lib/db');
-const { sql } = require('drizzle-orm');
+const Database = require('better-sqlite3');
 const readline = require('readline');
 const bcrypt = require('bcryptjs');
+const path = require('path');
+
+// 连接到数据库
+const db = new Database('./demo.db');
 
 // 创建命令行交互界面
 const rl = readline.createInterface({
@@ -32,7 +35,7 @@ async function main() {
 
   try {
     // 获取所有用户
-    const users = await db.select({ id: sql`id`, email: sql`email` }).from(sql`users`);
+    const users = db.prepare('SELECT id, email FROM users').all();
 
     if (users.length === 0) {
       console.log('系统中没有用户，请先创建管理员账户');
@@ -78,11 +81,7 @@ async function main() {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // 更新密码
-    await db.execute(sql`
-      UPDATE users
-      SET password = ${hashedPassword}
-      WHERE id = ${selectedUser.id};
-    `);
+    db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashedPassword, selectedUser.id);
 
     console.log('✓ 密码重置成功！');
     console.log(`用户: ${selectedUser.email}`);
