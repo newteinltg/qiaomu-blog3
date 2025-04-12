@@ -7,10 +7,10 @@ import { generateSlug } from '@/lib/utils';
 // GET 获取文章的所有标签
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
 
     // 检查文章是否存在
     const post = await db.query.posts.findFirst({
@@ -57,9 +57,12 @@ export async function GET(
 }
 
 // 处理标签数据的通用函数
-async function handleTagsUpdate(request: Request, context: { params: { id: string } }) {
+async function handleTagsUpdate(
+  request: Request, 
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
 
     const requestData = await request.json();
     // 支持两种格式：{ tags: [...] } 或直接传递标签数组
@@ -166,15 +169,15 @@ async function handleTagsUpdate(request: Request, context: { params: { id: strin
 // POST 更新文章的标签
 export async function POST(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  return handleTagsUpdate(request, context);
+  return handleTagsUpdate(request, { params });
 }
 
 // PUT 更新文章的标签 (与 POST 功能相同，为了兼容性)
 export async function PUT(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  return handleTagsUpdate(request, context);
+  return handleTagsUpdate(request, { params });
 }

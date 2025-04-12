@@ -5,13 +5,15 @@ import { eq, and, ne } from 'drizzle-orm';
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     // 获取文章基本信息
     const post = await db.query.posts.findFirst({
       where: and(
-        eq(schema.posts.slug, params.slug),
+        eq(schema.posts.slug, slug),
         eq(schema.posts.published, 1)
       ),
       with: {

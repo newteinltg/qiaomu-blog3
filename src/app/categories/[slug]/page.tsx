@@ -3,11 +3,23 @@ import SimpleNavigation from '@/components/SimpleNavigation';
 import SimpleFooter from '@/components/SimpleFooter';
 import CategoryPostsClient from './page.client';
 import Sidebar from '@/components/Sidebar';
+import { adaptMenus } from '@/lib/utils/menu-adapters';
+
+// 定义MenuItem类型，与SimpleNavigation组件期望的类型一致
+type MenuItem = {
+  id: number;
+  name: string;
+  url: string; // 非空字符串
+  isExternal: number;
+  parentId: number | null;
+  order: number;
+  isActive: number;
+};
 
 export default async function CategoryPage() {
   // 获取菜单、网站设置、分类和标签
   const [menus, settings, categories, tags] = await Promise.all([
-    getMenus(),
+    getMenus(null),
     getSiteSettings(),
     getCategories(),
     getTags()
@@ -18,7 +30,7 @@ export default async function CategoryPage() {
 
   return (
     <div>
-      <SimpleNavigation siteTitle={siteTitle} menus={menus} />
+      <SimpleNavigation siteTitle={siteTitle} menus={adaptMenus(menus)} />
 
       <main className="container pt-4 pb-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
@@ -33,7 +45,6 @@ export default async function CategoryPage() {
               <Sidebar
                 categories={categories}
                 tags={tags}
-                showAuthor={true}
                 showCategories={true}
                 showPopularTags={true}
                 showRecentPosts={true}

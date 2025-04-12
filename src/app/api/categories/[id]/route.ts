@@ -15,11 +15,11 @@ const categorySchema = z.object({
 // GET 处理程序，获取单个分类
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 使用 await 解包 params
-    const { id: idParam } = await context.params;
+    const { id: idParam } = await params;
     const id = parseInt(idParam);
     
     if (isNaN(id)) {
@@ -53,11 +53,11 @@ export async function GET(
 // PUT 处理程序，更新分类
 export async function PUT(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 获取分类ID
-    const { id: idParam } = context.params;
+    const { id: idParam } = await params;
     const id = parseInt(idParam);
     
     if (isNaN(id)) {
@@ -200,11 +200,11 @@ export async function PUT(
 // DELETE 处理程序，删除分类
 export async function DELETE(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 获取分类ID
-    const { id: idParam } = context.params;
+    const { id: idParam } = await params;
     const id = parseInt(idParam);
     
     if (isNaN(id)) {

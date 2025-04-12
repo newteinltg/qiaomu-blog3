@@ -1,16 +1,18 @@
 import { db } from '@/lib/db';
 import * as schema from '@/lib/schema';
-import { eq, desc, sql } from 'drizzle-orm';
+import { eq, desc, sql, and } from 'drizzle-orm';
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatDate } from '@/lib/utils';
 import { Metadata } from 'next';
-import Sidebar from '@/components/Sidebar';
-import FeaturedSlider from '@/components/FeaturedSlider';
 import SimpleNavigation from '@/components/SimpleNavigation';
 import SimpleFooter from '@/components/SimpleFooter';
+import FeaturedSlider from '@/components/FeaturedSlider';
 import LatestArticles from '@/components/LatestArticles';
+import Sidebar from '@/components/Sidebar';
 import { getCategories, getTags, getMenus, getAllSettings } from '@/lib/services/settings';
+import { Post } from '@/types';
+import { adaptMenus } from '@/lib/utils/menu-adapters';
 
 export const metadata: Metadata = {
   title: '向阳乔木的个人博客',
@@ -27,13 +29,13 @@ export default async function Home() {
   ]);
 
   // 获取网站设置
-  const siteSettings = settings.reduce((acc, setting) => {
+  const siteSettings = settings.reduce((acc: Record<string, string | null>, setting: { key: string, value: string | null }) => {
     acc[setting.key] = setting.value;
     return acc;
   }, {} as Record<string, string | null>);
 
   // 获取置顶文章
-  const pinnedPosts = await db
+  const pinnedPostsData = await db
     .select({
       id: schema.posts.id,
       title: schema.posts.title,
@@ -53,15 +55,32 @@ export default async function Home() {
       },
     })
     .from(schema.posts)
-    .where(eq(schema.posts.published, 1))
-    .where(eq(schema.posts.pinned, 1))
+    .where(and(
+      eq(schema.posts.published, 1),
+      eq(schema.posts.pinned, 1)
+    ))
     .leftJoin(schema.users, eq(schema.posts.authorId, schema.users.id))
     .leftJoin(schema.categories, eq(schema.posts.categoryId, schema.categories.id))
     .orderBy(desc(schema.posts.createdAt))
     .limit(5); // 最多显示5篇置顶文章
 
+  // 转换类型以匹配组件期望的类型
+  const pinnedPosts: Post[] = pinnedPostsData.map(post => ({
+    ...post,
+    pinned: post.pinned === null ? undefined : Boolean(post.pinned),
+    author: post.author === null ? undefined : {
+      ...post.author,
+      email: post.author.email || null
+    },
+    category: post.category === null ? undefined : {
+      ...post.category,
+      name: post.category.name || null,
+      slug: post.category.slug || null
+    }
+  }));
+
   // 获取最新文章
-  const latestPosts = await db
+  const latestPostsData = await db
     .select({
       id: schema.posts.id,
       title: schema.posts.title,
@@ -87,8 +106,8 @@ export default async function Home() {
     .orderBy(desc(schema.posts.createdAt))
     .limit(10);
 
-  // 为每篇文章获取标签
-  const postsWithTags = await Promise.all(latestPosts.map(async (post) => {
+  // 为每篇文章获取标签并转换类型
+  const postsWithTags: Post[] = await Promise.all(latestPostsData.map(async (post) => {
     // 获取文章的标签
     const postTags = await db
       .select({
@@ -102,14 +121,28 @@ export default async function Home() {
 
     return {
       ...post,
-      tags: postTags
+      pinned: post.pinned === null ? undefined : Boolean(post.pinned),
+      author: post.author === null ? undefined : {
+        ...post.author,
+        email: post.author.email || null
+      },
+      category: post.category === null ? undefined : {
+        ...post.category,
+        name: post.category.name || null,
+        slug: post.category.slug || null
+      },
+      tags: postTags.map(tag => ({
+        id: tag.id || 0, // 确保id不为null或undefined
+        name: tag.name || '',
+        slug: tag.slug || ''
+      }))
     };
   }));
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* 导航栏 */}
-      <SimpleNavigation siteTitle={siteSettings.site_name || '向阳乔木的个人博客'} menus={menus} />
+      <SimpleNavigation siteTitle={siteSettings.site_name || '向阳乔木的个人博客'} menus={adaptMenus(menus)} />
 
       {/* Hero区域 */}
       <section className="hero">

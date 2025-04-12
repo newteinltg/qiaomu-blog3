@@ -5,7 +5,7 @@ import { sql } from 'drizzle-orm';
 export async function GET() {
   try {
     // 创建用户表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT UNIQUE NOT NULL,
@@ -15,7 +15,7 @@ export async function GET() {
     `);
 
     // 创建分类表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE NOT NULL,
@@ -29,7 +29,7 @@ export async function GET() {
     `);
 
     // 创建文章表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS posts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
@@ -48,7 +48,7 @@ export async function GET() {
     `);
 
     // 创建标签表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS tags (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -59,7 +59,7 @@ export async function GET() {
     `);
 
     // 创建文章标签关联表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS post_tags (
         post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
         tag_id INTEGER REFERENCES tags(id) ON DELETE CASCADE,
@@ -68,7 +68,7 @@ export async function GET() {
     `);
 
     // 创建文章分类关联表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS post_categories (
         postId INTEGER REFERENCES posts(id) ON DELETE CASCADE,
         categoryId INTEGER REFERENCES categories(id) ON DELETE CASCADE,
@@ -77,7 +77,7 @@ export async function GET() {
     `);
 
     // 创建菜单表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS menus (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -93,7 +93,7 @@ export async function GET() {
     `);
 
     // 创建媒体表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS media (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         url TEXT NOT NULL,
@@ -105,7 +105,7 @@ export async function GET() {
     `);
 
     // 创建站点设置表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS site_settings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         site_name TEXT NOT NULL,
@@ -120,7 +120,7 @@ export async function GET() {
     `);
 
     // 创建社交链接表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS social_links (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         platform TEXT NOT NULL,
@@ -135,7 +135,7 @@ export async function GET() {
     `);
 
     // 创建联系信息表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS contact_info (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         type TEXT NOT NULL,
@@ -148,7 +148,7 @@ export async function GET() {
     `);
 
     // 创建打赏信息表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS donation_info (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         type TEXT NOT NULL,
@@ -162,7 +162,7 @@ export async function GET() {
     `);
 
     // 创建头部脚本表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS head_scripts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -179,7 +179,7 @@ export async function GET() {
     `);
 
     // 创建英雄区设置表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS hero_settings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
@@ -194,7 +194,7 @@ export async function GET() {
     // 添加默认分类
     const categoriesCount = await db.select({ count: sql`count(*)` }).from(sql`categories`);
     if (categoriesCount[0].count === 0) {
-      await db.execute(sql`
+      await db.run(sql`
         INSERT INTO categories (name, slug, description, order)
         VALUES ('未分类', 'uncategorized', '默认分类', 0);
       `);
@@ -203,7 +203,7 @@ export async function GET() {
     // 添加默认站点设置
     const settingsCount = await db.select({ count: sql`count(*)` }).from(sql`site_settings`);
     if (settingsCount[0].count === 0) {
-      await db.execute(sql`
+      await db.run(sql`
         INSERT INTO site_settings (site_name, site_description)
         VALUES ('向阳乔木的个人博客', '分享技术、生活和思考');
       `);
@@ -212,7 +212,7 @@ export async function GET() {
     // 添加默认英雄区设置
     const heroCount = await db.select({ count: sql`count(*)` }).from(sql`hero_settings`);
     if (heroCount[0].count === 0) {
-      await db.execute(sql`
+      await db.run(sql`
         INSERT INTO hero_settings (title, subtitle)
         VALUES ('向阳而生，静待花开', '分享技术、生活和思考');
       `);

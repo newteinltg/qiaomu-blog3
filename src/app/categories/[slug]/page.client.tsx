@@ -98,21 +98,21 @@ export default function CategoryPostsClient() {
                           categoriesData.categories : [];
 
         // 尝试精确匹配
-        let category = categories.find((cat: any) => cat.slug === slug);
+        let category = categories.find((cat: Category) => cat.slug === slug);
         console.log('Exact match category:', category);
 
         // 如果没有精确匹配，尝试模糊匹配
         if (!category) {
           console.log('No exact match, trying fuzzy match');
           // 尝试查找包含关键字的分类
-          const matchingCategories = categories.filter((cat: any) =>
+          const matchingCategories = categories.filter((cat: Category) =>
             cat.slug.includes(slug) || slug.includes(cat.slug)
           );
           console.log('Matching categories:', matchingCategories);
 
           if (matchingCategories.length > 0) {
             // 如果有多个匹配，选择最短的一个（最可能是精确匹配）
-            category = matchingCategories.sort((a, b) => a.slug.length - b.slug.length)[0];
+            category = matchingCategories.sort((a: Category, b: Category) => a.slug.length - b.slug.length)[0];
             console.log('Selected fuzzy match category:', category);
           }
         }

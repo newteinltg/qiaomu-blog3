@@ -6,7 +6,7 @@ async function main() {
 
   try {
     // 创建菜单表
-    await db.execute(sql`
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS menus (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,

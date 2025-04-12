@@ -139,7 +139,7 @@ export default function SearchClient({
         <h1 className="text-2xl font-bold mb-2">搜索结果</h1>
         <p className="text-gray-600 dark:text-gray-400">
           {query ? `搜索 "${query}" ` : ''}
-          {loading ? '正在搜索...' : data?.pagination.totalPosts > 0
+          {loading ? '正在搜索...' : data?.pagination?.totalPosts && data.pagination.totalPosts > 0
             ? `找到 ${data.pagination.totalPosts} 个结果`
             : '未找到匹配的结果'}
         </p>

@@ -2,9 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import Avatar from './Avatar';
 
-type Category = {
+interface Category {
   id: number;
   name: string;
   slug: string;
@@ -12,74 +11,67 @@ type Category = {
   parentId: number | null;
   order: number;
   postCount?: number;
-};
+}
 
-type Tag = {
+interface Tag {
   id: number;
   name: string;
   slug: string;
   description: string | null;
   createdAt: string;
-};
+}
 
-type Post = {
+interface Post {
   id: number;
   title: string;
   slug: string;
   excerpt: string | null;
   coverImage: string | null;
   createdAt: string;
-};
+}
 
-type ContactInfo = {
+interface ContactInfo {
   id: number;
   type: string;
   name: string;
   qrCodeUrl: string;
-};
+}
 
-type ClientSidebarProps = {
+interface ClientSidebarProps {
   categories: Category[];
   tags: Tag[];
   recentPosts: Post[];
   contactInfo: ContactInfo | null;
-  showAuthor?: boolean;
   showCategories?: boolean;
   showRecentPosts?: boolean;
   showPopularTags?: boolean;
-};
+}
 
 export default function ClientSidebar({
   categories,
   tags,
   recentPosts,
   contactInfo,
-  showAuthor = true,
   showCategories = true,
   showRecentPosts = true,
   showPopularTags = true,
 }: ClientSidebarProps) {
+  // 对分类按照文章数量排序
+  const sortedCategories = [...categories].sort((a, b) => {
+    return (b.postCount || 0) - (a.postCount || 0);
+  });
+
+  // 对标签按照字母顺序排序
+  const sortedTags = [...tags].sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <div className="space-y-6">
-      {/* 作者信息 */}
-      {showAuthor && (
-        <div className="sidebar-section bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-          <div className="flex flex-col items-center">
-            <Avatar size="large" />
-            <h3 className="mt-4 text-xl font-bold">向阳乔木</h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
-              专注于AI工具、前端开发和产品设计
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* 分类列表 */}
       {showCategories && categories.length > 0 && (
         <div className="sidebar-section bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
           <h3 className="sidebar-title text-lg font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">分类</h3>
           <ul className="space-y-2">
-            {categories.map((category) => (
+            {sortedCategories.map((category) => (
               <li key={category.id}>
                 <Link
                   href={`/categories/${category.slug}`}
@@ -143,7 +135,7 @@ export default function ClientSidebar({
         <div className="sidebar-section bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
           <h3 className="sidebar-title text-lg font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">热门标签</h3>
           <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
+            {sortedTags.map((tag) => (
               <Link
                 key={tag.id}
                 href={`/tags/${tag.slug}`}

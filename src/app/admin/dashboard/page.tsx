@@ -7,8 +7,25 @@ import { FileText, Tag, Eye, TrendingUp, Clock, FolderOpen, Menu, Settings } fro
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
+// 定义文章类型接口
+interface Post {
+  id: number;
+  title: string;
+  publishDate: string;
+  views?: number;
+}
+
+// 定义统计数据类型接口
+interface Stats {
+  posts: number;
+  categories: number;
+  tags: number;
+  views: number;
+  recentPosts: Post[];
+}
+
 export default function DashboardPage() {
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<Stats>({
     posts: 0,
     categories: 0,
     tags: 0,

@@ -1,9 +1,11 @@
 import { Metadata } from 'next';
-import SearchClient from './page.client';
-import { getMenus, getCategories, getTags, getSiteSettings } from '@/lib/services/settings';
+import { getMenus, getSiteSettings, getCategories, getTags } from '@/lib/services/settings';
+import { db } from '@/lib/db';
 import SimpleNavigation from '@/components/SimpleNavigation';
 import SimpleFooter from '@/components/SimpleFooter';
+import SearchClient from './page.client';
 import Sidebar from '@/components/Sidebar';
+import { adaptMenus } from '@/lib/utils/menu-adapters';
 
 export const metadata: Metadata = {
   title: '搜索结果 - 向阳乔木的个人博客',
@@ -13,13 +15,14 @@ export const metadata: Metadata = {
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: { q?: string; category?: string; tag?: string; page?: string };
+  searchParams: Promise<{ q?: string; category?: string; tag?: string; page?: string }>;
 }) {
   // 在 Next.js 中，searchParams 是一个只读对象，需要先解构出来
-  const query = searchParams.q || '';
-  const categoryId = searchParams.category || '';
-  const tagId = searchParams.tag || '';
-  const page = parseInt(searchParams.page || '1', 10);
+  const params = await searchParams;
+  const query = params.q || '';
+  const categoryId = params.category || '';
+  const tagId = params.tag || '';
+  const page = parseInt(params.page || '1', 10);
 
   // 获取菜单、网站设置、分类和标签
   const [menus, settings, categories, tags] = await Promise.all([
@@ -34,7 +37,7 @@ export default async function SearchPage({
 
   return (
     <div>
-      <SimpleNavigation siteTitle={siteTitle} menus={menus} />
+      <SimpleNavigation siteTitle={siteTitle} menus={adaptMenus(menus)} />
 
       <main className="container pt-4 pb-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">

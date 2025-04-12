@@ -63,7 +63,7 @@ export default async function HomePage() {
     .from(schema.posts)
     .leftJoin(schema.users, eq(schema.posts.authorId, schema.users.id))
     .leftJoin(schema.categories, eq(schema.posts.categoryId, schema.categories.id))
-    .where(eq(schema.posts.featured, 1))
+    .where(eq(schema.posts.pinned, 1))
     .orderBy(desc(schema.posts.createdAt))
     .limit(5);
 

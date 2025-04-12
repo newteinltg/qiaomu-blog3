@@ -5,15 +5,13 @@ import { eq, desc, sql } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    // 从 URL 路径中提取标签名
-    const url = new URL(request.url);
-    const pathParts = url.pathname.split('/');
-    const slug = pathParts[pathParts.length - 2]; // 假设路径是 /api/tags/[slug]/posts
+    // 从params中获取slug
+    const { slug } = await params;
 
-    const { searchParams } = url;
+    const { searchParams } = request.nextUrl;
     const page = parseInt(searchParams.get('page') || '1');
     const pageSize = parseInt(searchParams.get('pageSize') || '10');
     const offset = (page - 1) * pageSize;

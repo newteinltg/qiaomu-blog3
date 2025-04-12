@@ -3,26 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { Post } from '@/types';
 
 type FeaturedSliderProps = {
-  posts: {
-    id: number;
-    title: string;
-    slug: string;
-    excerpt: string | null;
-    coverImage: string | null;
-    createdAt: string;
-    pinned?: number | boolean;
-    author?: {
-      id: number;
-      email: string | null;
-    };
-    category?: {
-      id: number;
-      name: string | null;
-      slug: string | null;
-    };
-  }[];
+  posts: Post[];
 };
 
 const FeaturedSlider = ({ posts }: FeaturedSliderProps) => {

@@ -81,15 +81,20 @@ export async function GET(request: Request) {
     }
 
     // 构建基本查询
-    let query = db
+    const baseQuery = db
       .select()
-      .from(schema.posts)
-      .leftJoin(schema.categories, eq(schema.posts.categoryId, schema.categories.id));
-
+      .from(schema.posts);
+      
     // 应用 where 条件
+    let query;
     if (conditions.length > 0) {
-      query = query.where(conditions.length === 1 ? conditions[0] : and(...conditions));
+      query = baseQuery.where(conditions.length === 1 ? conditions[0] : and(...conditions));
+    } else {
+      query = baseQuery;
     }
+    
+    // 添加连接
+    const joinedQuery = query.leftJoin(schema.categories, eq(schema.posts.categoryId, schema.categories.id));
 
     // 应用排序
     const orderClauses = [];
@@ -110,7 +115,7 @@ export async function GET(request: Request) {
     }
 
     // 应用排序和分页
-    const finalQuery = query
+    const finalQuery = joinedQuery
       .orderBy(...orderClauses)
       .limit(pageSize)
       .offset(offset);

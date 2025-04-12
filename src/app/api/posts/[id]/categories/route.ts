@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import * as schema from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 
 // GET 获取文章的所有分类
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
     const postId = parseInt(id);
 
     if (isNaN(postId)) {
@@ -61,7 +61,7 @@ export async function GET(
       .where(
         categoryIds.length === 1
           ? eq(schema.categories.id, categoryIds[0])
-          : schema.categories.id.in(categoryIds)
+          : inArray(schema.categories.id, categoryIds)
       );
 
     return NextResponse.json(categories);
@@ -77,10 +77,10 @@ export async function GET(
 // POST 创建文章的分类关联
 export async function POST(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
     const postId = parseInt(id);
 
     if (isNaN(postId)) {
@@ -160,10 +160,10 @@ export async function POST(
 // PUT 更新文章的分类
 export async function PUT(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
     const postId = parseInt(id);
 
     if (isNaN(postId)) {

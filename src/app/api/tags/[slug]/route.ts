@@ -7,11 +7,10 @@ import { generateSlug } from '@/lib/utils';
 // GET 获取单个标签
 export async function GET(
   request: Request,
-  props: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { params } = props;
-    const slug = params.slug;
+    const { slug } = await params;
     // 检查是否是数字 ID
     const isId = /^\d+$/.test(slug);
 
@@ -48,11 +47,10 @@ export async function GET(
 // PATCH 更新标签
 export async function PATCH(
   request: Request,
-  props: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { params } = props;
-    const paramSlug = params.slug;
+    const { slug: paramSlug } = await params;
     const { name, slug, description } = await request.json();
 
     if (!name) {
@@ -133,11 +131,10 @@ export async function PATCH(
 // DELETE 删除标签
 export async function DELETE(
   request: Request,
-  props: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { params } = props;
-    const paramSlug = params.slug;
+    const { slug: paramSlug } = await params;
     // 检查是否是数字 ID
     const isId = /^\d+$/.test(paramSlug);
 

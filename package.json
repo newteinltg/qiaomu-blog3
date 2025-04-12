@@ -75,6 +75,7 @@
     "@types/pinyin": "^2.10.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "autoprefixer": "^10.4.21",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",

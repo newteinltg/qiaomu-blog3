@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
+import { users } from '@/lib/schema';
 
 export async function GET(request: Request) {
   try {
@@ -37,7 +38,10 @@ export async function GET(request: Request) {
       .from(sql`users`)
       .where(sql`email = ${email}`);
 
-    if (existingUser[0].count > 0) {
+    // 确保类型安全
+    const userCount = existingUser[0] ? Number(existingUser[0].count) : 0;
+    
+    if (userCount > 0) {
       return NextResponse.json({ 
         success: false, 
         error: '该邮箱已被注册' 
@@ -49,10 +53,11 @@ export async function GET(request: Request) {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // 创建管理员账户
-    await db.execute(sql`
-      INSERT INTO users (email, password)
-      VALUES (${email}, ${hashedPassword});
-    `);
+    await db.insert(users).values({
+      email,
+      password: hashedPassword,
+      createdAt: new Date().toISOString()
+    });
 
     return NextResponse.json({ 
       success: true, 

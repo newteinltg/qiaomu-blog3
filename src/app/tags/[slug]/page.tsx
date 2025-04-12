@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import SimpleNavigation from '@/components/SimpleNavigation';
 import SimpleFooter from '@/components/SimpleFooter';
 import { getMenus, getSiteSettings, getCategories, getTags } from '@/lib/services/settings';
+import { adaptMenus } from '@/lib/utils/menu-adapters';
 import TagPostsClient from './page.client';
 import Sidebar from '@/components/Sidebar';
 
@@ -27,7 +28,7 @@ export default async function TagPage() {
 
   return (
     <div>
-      <SimpleNavigation siteTitle={siteTitle} menus={menus} />
+      <SimpleNavigation siteTitle={siteTitle} menus={adaptMenus(menus)} />
 
       <main className="container pt-4 pb-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
@@ -42,7 +43,6 @@ export default async function TagPage() {
               <Sidebar
                 categories={categories}
                 tags={tags}
-                showAuthor={true}
                 showCategories={true}
                 showPopularTags={true}
                 showRecentPosts={true}

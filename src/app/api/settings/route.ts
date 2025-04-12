@@ -13,10 +13,12 @@ export async function GET(request: Request) {
       .all();
 
     // 将设置转换为键值对对象
-    const settingsMap = {};
+    const settingsMap: Record<string, string> = {};
     if (siteSettings && siteSettings.length > 0) {
       for (const setting of siteSettings) {
-        settingsMap[setting.key] = setting.value;
+        if (setting.key && setting.value) {
+          settingsMap[setting.key] = setting.value;
+        }
       }
     }
 

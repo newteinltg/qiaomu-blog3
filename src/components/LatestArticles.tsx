@@ -3,26 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatDate } from '@/lib/utils';
-
-type Post = {
-  id: number;
-  title: string;
-  slug: string;
-  excerpt?: string | null;
-  coverImage?: string | null;
-  createdAt?: string | null;
-  category?: {
-    id?: number;
-    name?: string;
-    slug?: string;
-  } | null;
-  authorEmail?: string | null;
-  tags?: {
-    id?: number;
-    name?: string;
-    slug?: string;
-  }[] | null;
-};
+import { Post } from '@/types';
 
 type LatestArticlesProps = {
   posts: Post[];

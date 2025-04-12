@@ -11,7 +11,7 @@ console.log('数据库模块初始化开始');
 // 检查数据库文件是否存在
 // 在Vercel环境中，使用demo.db作为默认数据库
 const isVercel = process.env.VERCEL === '1';
-const dbPath = path.resolve(process.cwd(), isVercel ? './demo.db' : './blog.db');
+const dbPath = path.resolve(process.cwd(), './demo.db');
 const dbExists = fs.existsSync(dbPath);
 console.log('数据库文件路径:', dbPath);
 console.log('数据库文件是否存在:', dbExists);
@@ -137,7 +137,7 @@ const createTables = () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         key TEXT UNIQUE NOT NULL,
         value TEXT,
-        group TEXT NOT NULL DEFAULT 'general',
+        setting_group TEXT NOT NULL DEFAULT 'general',
         created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
         updated_at TEXT
       );

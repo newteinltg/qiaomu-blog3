@@ -42,13 +42,13 @@ export default function SettingsPage() {
         setContactInfo(data);
 
         // 设置微信和公众号二维码
-        const wechatInfo = data.find(item => item.type === 'wechat');
+        const wechatInfo = data.find((item: ContactInfo) => item.type === 'wechat');
         if (wechatInfo) {
           setWechatQRCode(wechatInfo.qrCodeUrl || '');
           setWechatQRCodePreview(wechatInfo.qrCodeUrl || '');
         }
 
-        const publicInfo = data.find(item => item.type === 'public');
+        const publicInfo = data.find((item: ContactInfo) => item.type === 'public');
         if (publicInfo) {
           setPublicQRCode(publicInfo.qrCodeUrl || '');
           setPublicQRCodePreview(publicInfo.qrCodeUrl || '');
@@ -91,6 +91,10 @@ export default function SettingsPage() {
 
   // 处理文件上传预览
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setFile: React.Dispatch<React.SetStateAction<File | null>>, setPreview: React.Dispatch<React.SetStateAction<string>>) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
+    
     const file = e.target.files[0];
     if (file) {
       setFile(file);
@@ -147,7 +151,7 @@ export default function SettingsPage() {
       }
 
       // 保存微信联系方式
-      const wechatInfo = contactInfo.find(item => item.type === 'wechat');
+      const wechatInfo = contactInfo.find((item: ContactInfo) => item.type === 'wechat');
       if (wechatInfo) {
         await fetch(`/api/settings/contact/${wechatInfo.id}`, {
           method: 'PUT',
@@ -176,7 +180,7 @@ export default function SettingsPage() {
       }
 
       // 保存公众号联系方式
-      const publicInfo = contactInfo.find(item => item.type === 'public');
+      const publicInfo = contactInfo.find((item: ContactInfo) => item.type === 'public');
       if (publicInfo) {
         await fetch(`/api/settings/contact/${publicInfo.id}`, {
           method: 'PUT',

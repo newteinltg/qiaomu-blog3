@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import * as schema from '@/lib/schema';
-import { eq, isNull, asc, count } from 'drizzle-orm';
+import { eq, isNull, asc, count, and } from 'drizzle-orm';
 
 // 获取网站基本设置
 export async function getSiteSettings() {
@@ -56,50 +56,72 @@ export async function getHeroSettings() {
 
 // 获取菜单
 export async function getMenus(parentId?: number | null) {
-  if (parentId === undefined) {
-    // 获取所有菜单
-    return db
-      .select()
-      .from(schema.menus)
-      .where(eq(schema.menus.isActive, 1))
-      .orderBy(asc(schema.menus.parentId), asc(schema.menus.order))
-      .all();
-  } else if (parentId === null) {
-    // 获取顶级菜单
-    return db
-      .select()
-      .from(schema.menus)
-      .where(eq(schema.menus.isActive, 1))
-      .where(isNull(schema.menus.parentId))
-      .orderBy(asc(schema.menus.order))
-      .all();
-  } else {
-    // 获取特定父级下的子菜单
-    return db
-      .select()
-      .from(schema.menus)
-      .where(eq(schema.menus.isActive, 1))
-      .where(eq(schema.menus.parentId, parentId))
-      .orderBy(asc(schema.menus.order))
-      .all();
+  try {
+    if (parentId === undefined) {
+      // 获取所有菜单
+      return db
+        .select()
+        .from(schema.menus)
+        .where(eq(schema.menus.isActive, 1))
+        .orderBy(asc(schema.menus.parentId), asc(schema.menus.order))
+        .all();
+    } else if (parentId === null) {
+      // 获取顶级菜单
+      return db
+        .select()
+        .from(schema.menus)
+        .where(and(
+          eq(schema.menus.isActive, 1),
+          isNull(schema.menus.parentId)
+        ))
+        .orderBy(asc(schema.menus.order))
+        .all();
+    } else {
+      // 获取特定父级下的子菜单
+      return db
+        .select()
+        .from(schema.menus)
+        .where(and(
+          eq(schema.menus.isActive, 1),
+          eq(schema.menus.parentId, parentId)
+        ))
+        .orderBy(asc(schema.menus.order))
+        .all();
+    }
+  } catch (error) {
+    console.error('获取菜单失败:', error);
+    return [];
   }
 }
 
 // 获取分类
 export async function getCategories() {
-  // 先获取所有分类
-  const allCategories = await db
-    .select({
-      id: schema.categories.id,
-      name: schema.categories.name,
-      slug: schema.categories.slug,
-      description: schema.categories.description,
-      parentId: schema.categories.parentId,
-      order: schema.categories.order,
-    })
-    .from(schema.categories)
-    .orderBy(asc(schema.categories.order))
-    .all();
+  try {
+    // 先获取所有分类
+    const allCategories = await db
+      .select({
+        id: schema.categories.id,
+        name: schema.categories.name,
+        slug: schema.categories.slug,
+        description: schema.categories.description,
+        parentId: schema.categories.parentId,
+        order: schema.categories.order,
+      })
+      .from(schema.categories)
+      .orderBy(asc(schema.categories.order))
+      .all();
+
+    if (!allCategories || !Array.isArray(allCategories)) {
+      return [];
+    }
+
+    if (!allCategories || !Array.isArray(allCategories) || allCategories.length === 0) {
+      return [];
+    }
+
+  if (!allCategories || allCategories.length === 0) {
+    return [];
+  }
 
   // 获取每个分类的已发布文章数量
   const categoryCounts = await db
@@ -113,11 +135,22 @@ export async function getCategories() {
     .groupBy(schema.postCategories.categoryId)
     .all();
 
+  if (!categoryCounts || !Array.isArray(categoryCounts)) {
+    return allCategories.map(category => ({
+      ...category,
+      postCount: 0
+    }));
+  }
+
   // 创建分类ID到文章数量的映射
   const countMap = new Map();
-  categoryCounts.forEach(item => {
-    countMap.set(item.categoryId, item.postCount);
-  });
+  if (categoryCounts && Array.isArray(categoryCounts)) {
+    categoryCounts.forEach(item => {
+      if (item && item.categoryId && item.postCount !== undefined) {
+        countMap.set(item.categoryId, item.postCount);
+      }
+    });
+  }
 
   // 为每个分类添加文章数量
   const categoriesWithCounts = allCategories.map(category => ({
@@ -126,7 +159,15 @@ export async function getCategories() {
   }));
 
   // 过滤出有已发布文章的分类
-  return categoriesWithCounts.filter(category => category.postCount > 0);
+  return categoriesWithCounts?.filter(category => 
+    category && 
+    typeof category.postCount === 'number' && 
+    category.postCount > 0
+  ) || [];
+  } catch (error) {
+    console.error('获取分类时出错:', error);
+    return [];
+  }
 }
 
 // 获取标签

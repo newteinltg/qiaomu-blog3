@@ -5,11 +5,13 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
 import { Metadata } from 'next';
-import Sidebar from '@/components/Sidebar';
+import { Suspense } from 'react';
 import SimpleNavigation from '@/components/SimpleNavigation';
 import SimpleFooter from '@/components/SimpleFooter';
 import HtmlPageLayout from '@/components/HtmlPageLayout';
 import { getCategories, getTags, getMenus, getAllSettings } from '@/lib/services/settings';
+import { adaptMenus } from '@/lib/utils/menu-adapters';
+import Sidebar from '@/components/Sidebar';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -19,7 +21,7 @@ import { tomorrow } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import EditPostLink from '@/components/EditPostLink';
 
 // 动态生成元数据
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
 
   const posts = await db
@@ -47,9 +49,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-
-
-export default async function PostPage({ params }: { params: { slug: string } }) {
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
   // 获取分类、标签、菜单和网站设置
@@ -61,7 +61,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
   ]);
 
   // 获取网站设置
-  const siteSettings = settings.reduce((acc, setting) => {
+  const siteSettings = settings.reduce((acc: Record<string, string | null>, setting: { key: string, value: string | null }) => {
     acc[setting.key] = setting.value;
     return acc;
   }, {} as Record<string, string | null>);
@@ -89,16 +89,18 @@ export default async function PostPage({ params }: { params: { slug: string } })
     const authors = await db
       .select({
         id: schema.users.id,
-        email: schema.users.email,
-        name: schema.users.name,
-        avatar: schema.users.avatar
+        email: schema.users.email
       })
       .from(schema.users)
       .where(eq(schema.users.id, post.authorId))
       .limit(1);
 
     if (authors.length) {
-      author = authors[0];
+      // 使用类型断言扩展author对象
+      author = authors[0] as typeof authors[0] & { name: string; avatar: string };
+      // 添加默认的name和avatar属性
+      author.name = author.email.split('@')[0]; // 使用邮箱用户名作为默认名称
+      author.avatar = '/images/default-avatar.png'; // 使用默认头像
     }
   }
 
@@ -121,50 +123,57 @@ export default async function PostPage({ params }: { params: { slug: string } })
   }
 
   // 获取文章的所有分类
-  let postCategories = [];
+  let postCategories: { id: number; name: string; slug: string }[] = [];
   try {
-    postCategories = await db
+    const categoriesResult = await db
       .select({
         id: schema.categories.id,
         name: schema.categories.name,
         slug: schema.categories.slug,
       })
       .from(schema.postCategories)
-      .where(eq(schema.postCategories.postId, post.id))
-      .leftJoin(schema.categories, eq(schema.postCategories.categoryId, schema.categories.id));
-
-    // 如果没有在关联表中找到分类，但文章有主分类，则使用主分类
-    if (postCategories.length === 0 && category) {
-      postCategories = [category];
-    }
+      .leftJoin(schema.categories, eq(schema.postCategories.categoryId, schema.categories.id))
+      .where(eq(schema.postCategories.postId, post.id));
+    
+    // 过滤掉null值并转换类型
+    postCategories = categoriesResult
+      .filter(cat => cat.id !== null && cat.name !== null && cat.slug !== null)
+      .map(cat => ({
+        id: cat.id as number,
+        name: cat.name as string,
+        slug: cat.slug as string
+      }));
   } catch (error) {
-    console.error('Error fetching post categories:', error);
-    // 如果出错，但文章有主分类，则使用主分类
-    if (category) {
-      postCategories = [category];
-    }
+    console.error('获取文章分类失败:', error);
   }
 
   // 获取文章的所有标签
-  let postTags = [];
+  let postTags: { id: number; name: string; slug: string }[] = [];
   try {
-    postTags = await db
+    const tagsResult = await db
       .select({
         id: schema.tags.id,
         name: schema.tags.name,
         slug: schema.tags.slug,
       })
       .from(schema.postTags)
-      .where(eq(schema.postTags.postId, post.id))
-      .leftJoin(schema.tags, eq(schema.postTags.tagId, schema.tags.id));
+      .leftJoin(schema.tags, eq(schema.postTags.tagId, schema.tags.id))
+      .where(eq(schema.postTags.postId, post.id));
+    
+    // 过滤掉null值并转换类型
+    postTags = tagsResult
+      .filter(tag => tag.id !== null && tag.name !== null && tag.slug !== null)
+      .map(tag => ({
+        id: tag.id as number,
+        name: tag.name as string,
+        slug: tag.slug as string
+      }));
   } catch (error) {
-    console.error('Error fetching post tags:', error);
-    // 如果出错，使用空数组
-    postTags = [];
+    console.error('获取文章标签失败:', error);
   }
 
   // 获取推荐文章（最新置顶的6篇文章）
-  let recommendedPosts = [];
+  let recommendedPosts: { id: number; title: string; slug: string; coverImage: string | null; createdAt: string }[] = [];
   try {
     // 使用 Drizzle ORM 查询置顶文章
     const pinnedPosts = await db
@@ -190,7 +199,15 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
     // 如果有置顶文章，使用置顶文章
     if (pinnedPosts && pinnedPosts.length > 0) {
-      recommendedPosts = pinnedPosts;
+      recommendedPosts = pinnedPosts
+        .filter(post => post.id !== null && post.title !== null && post.slug !== null && post.createdAt !== null)
+        .map(post => ({
+          id: post.id as number,
+          title: post.title as string,
+          slug: post.slug as string,
+          coverImage: post.coverImage as string | null,
+          createdAt: post.createdAt as string // 保持createdAt为字符串类型
+        }));
       console.log('使用置顶文章作为推荐文章:', recommendedPosts.map(p => ({ id: p.id, title: p.title })));
     } else {
       // 如果没有置顶文章，使用空数组
@@ -218,8 +235,10 @@ export default async function PostPage({ params }: { params: { slug: string } })
         slug: schema.posts.slug,
       })
       .from(schema.posts)
-      .where(lt(schema.posts.id, post.id))
-      .where(eq(schema.posts.published, 1)) // 只获取已发布的文章
+      .where(and(
+        lt(schema.posts.id, post.id),
+        eq(schema.posts.published, 1) // 只获取已发布的文章
+      ))
       .orderBy(desc(schema.posts.id))
       .limit(1);
 
@@ -231,8 +250,10 @@ export default async function PostPage({ params }: { params: { slug: string } })
         slug: schema.posts.slug,
       })
       .from(schema.posts)
-      .where(gt(schema.posts.id, post.id))
-      .where(eq(schema.posts.published, 1)) // 只获取已发布的文章
+      .where(and(
+        gt(schema.posts.id, post.id),
+        eq(schema.posts.published, 1) // 只获取已发布的文章
+      ))
       .orderBy(asc(schema.posts.id))
       .limit(1);
 
@@ -243,15 +264,22 @@ export default async function PostPage({ params }: { params: { slug: string } })
     console.error('Error fetching prev/next posts:', error);
   }
 
+  // 在渲染前准备文章数据，添加categories和tags属性
+  const postWithRelations = {
+    ...post,
+    categories: postCategories,
+    tags: postTags
+  };
+
   // 如果是HTML全页面类型，使用不同的布局
-  if (post.pageType === 'html') {
+  if (postWithRelations.pageType === 'html') {
     return (
       <HtmlPageLayout
-        title={post.title}
-        content={post.content}
+        title={postWithRelations.title}
+        content={postWithRelations.content}
         returnUrl={category ? `/categories/${category.slug}` : '/'}
-        categories={post.categories || []}
-        tags={post.tags || []}
+        categories={postWithRelations.categories || []}
+        tags={postWithRelations.tags || []}
       />
     );
   }
@@ -259,7 +287,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
   // 正常的Markdown文章布局
   return (
     <>
-      <SimpleNavigation siteTitle={siteSettings.site_name || '向阳乔木的个人博客'} menus={menus} />
+      <SimpleNavigation siteTitle={siteSettings.site_name || '向阳乔木的个人博客'} menus={adaptMenus(menus)} />
 
       <main className="container pt-4 pb-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
@@ -269,10 +297,10 @@ export default async function PostPage({ params }: { params: { slug: string } })
               <article className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden mt-0">
                 {/* 文章封面图 */}
                 <div className="relative w-full h-80">
-                  {post.coverImage && post.coverImage.trim() ? (
+                  {postWithRelations.coverImage && postWithRelations.coverImage.trim() ? (
                     <img
-                      src={post.coverImage}
-                      alt={post.title}
+                      src={postWithRelations.coverImage}
+                      alt={postWithRelations.title}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -288,7 +316,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
                 <div className="p-6 md:p-8">
                   {/* 文章分类 */}
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {postCategories.map(category => (
+                    {postWithRelations.categories.map(category => (
                       <Link
                         key={category.id}
                         href={`/categories/${category.slug}`}
@@ -301,22 +329,22 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
                   {/* 文章标题 */}
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 leading-relaxed">
-                    {post.title}
+                    {postWithRelations.title}
                   </h1>
 
                   {/* 文章元信息 */}
                   <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-8">
                     <span className="mr-4">
-                      发布于 {formatDate(post.createdAt)}
+                      发布于 {formatDate(postWithRelations.createdAt)}
                     </span>
-                    {post.updatedAt && post.updatedAt !== post.createdAt && (
+                    {postWithRelations.updatedAt && postWithRelations.updatedAt !== postWithRelations.createdAt && (
                       <span className="flex items-center">
-                        更新于 {formatDate(post.updatedAt)}
-                        <EditPostLink postId={post.id} />
+                        更新于 {formatDate(postWithRelations.updatedAt)}
+                        <EditPostLink postId={postWithRelations.id} />
                       </span>
                     )}
-                    {(!post.updatedAt || post.updatedAt === post.createdAt) && (
-                      <EditPostLink postId={post.id} />
+                    {(!postWithRelations.updatedAt || postWithRelations.updatedAt === postWithRelations.createdAt) && (
+                      <EditPostLink postId={postWithRelations.id} />
                     )}
                   </div>
 
@@ -326,11 +354,12 @@ export default async function PostPage({ params }: { params: { slug: string } })
                       remarkPlugins={[remarkGfm]}
                       rehypePlugins={[rehypeRaw, rehypeSanitize]}
                       components={{
-                        code({node, inline, className, children, ...props}) {
+                        // 使用类型断言解决TypeScript类型错误
+                        code({node, inline, className, children, ...props}: any) {
                           const match = /language-(\w+)/.exec(className || '');
                           return !inline && match ? (
                             <SyntaxHighlighter
-                              style={tomorrow}
+                              style={tomorrow as any}
                               language={match[1]}
                               PreTag="div"
                               {...props}
@@ -345,18 +374,16 @@ export default async function PostPage({ params }: { params: { slug: string } })
                         }
                       }}
                     >
-                      {post.content || ''}
+                      {postWithRelations.content || ''}
                     </Markdown>
                   </div>
 
-
-
                   {/* 文章标签 */}
-                  {postTags.length > 0 && (
+                  {postWithRelations.tags.length > 0 && (
                     <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                       <h3 className="text-lg font-semibold mb-3">标签</h3>
                       <div className="flex flex-wrap gap-2">
-                        {postTags.map(tag => (
+                        {postWithRelations.tags.map(tag => (
                           <Link
                             key={tag.id}
                             href={`/tags/${tag.slug}`}
@@ -373,8 +400,6 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
               {/* 上一篇和下一篇文章导航 */}
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden mt-4 p-4">
-
-
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   {prevPost ? (
                     <Link
@@ -445,7 +470,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
                             {post.title}
                           </h3>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {formatDate(post.createdAt)}
+                            {post.createdAt}
                           </div>
                         </div>
                       </Link>

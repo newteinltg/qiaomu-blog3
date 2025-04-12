@@ -135,7 +135,7 @@ export default function AllPostsClient({
       <div className="p-6 mb-4 border-b border-gray-100 dark:border-gray-700">
         <h1 className="text-2xl font-bold mb-2">所有文章</h1>
         <p className="text-gray-600 dark:text-gray-400">
-          {loading ? '正在加载...' : data?.pagination.totalPosts > 0
+          {loading ? '正在加载...' : data?.pagination?.totalPosts && data.pagination.totalPosts > 0
             ? `共 ${data.pagination.totalPosts} 篇文章`
             : '暂无文章'}
         </p>

@@ -65,7 +65,7 @@ export default function ScriptLoader({ position }: ScriptLoaderProps) {
             if (data.data.scripts && data.data.scripts.length > 0) {
               console.log(`ScriptLoader(${position}): 有 ${data.data.scripts.length} 个脚本可用`);
               // 检查当前位置的脚本
-              const positionScripts = data.data.scripts.filter(s => s.position === position);
+              const positionScripts = data.data.scripts.filter((s: Script) => s.position === position);
               console.log(`ScriptLoader(${position}): 当前位置的脚本数量: ${positionScripts.length}`);
               if (positionScripts.length > 0) {
                 console.log(`ScriptLoader(${position}): 当前位置的脚本:`, positionScripts);
@@ -107,7 +107,7 @@ export default function ScriptLoader({ position }: ScriptLoaderProps) {
   // 过滤出当前位置和活跃状态的脚本
   console.log(`ScriptLoader(${position}): 开始过滤脚本, 共 ${scripts.length} 个脚本`);
 
-  const filteredScripts = scripts.filter(script => {
+  const filteredScripts = scripts.filter((script: Script) => {
     console.log(`ScriptLoader(${position}): 处理脚本 ID ${script.id}, 名称: ${script.name}`);
 
     // 检查脚本是否活跃
@@ -143,7 +143,7 @@ export default function ScriptLoader({ position }: ScriptLoaderProps) {
           }
 
           // 检查当前路径是否匹配任何模式
-          const matches = directParse.some(pattern => {
+          const matches = directParse.some((pattern: string) => {
             if (!pattern) {
               console.log(`ScriptLoader(${position}): 模式为空，跳过`);
               return false;
@@ -206,7 +206,7 @@ export default function ScriptLoader({ position }: ScriptLoaderProps) {
             }
 
             // 检查当前路径是否匹配任何模式
-            const matches = pagePatterns.some(pattern => {
+            const matches = pagePatterns.some((pattern: string) => {
               if (!pattern) {
                 console.log(`ScriptLoader(${position}): 模式为空，跳过`);
                 return false;
@@ -248,7 +248,7 @@ export default function ScriptLoader({ position }: ScriptLoaderProps) {
   });
 
   // 按顺序排序脚本
-  const sortedScripts = [...filteredScripts].sort((a, b) => a.order - b.order);
+  const sortedScripts = [...filteredScripts].sort((a: Script, b: Script) => a.order - b.order);
 
   console.log(`ScriptLoader(${position}): 当前路径: ${pathname}`);
   console.log(`ScriptLoader(${position}): 过滤后的脚本:`, filteredScripts);
@@ -319,7 +319,7 @@ export default function ScriptLoader({ position }: ScriptLoaderProps) {
 
   return (
     <>
-      {sortedScripts.map(script => {
+      {sortedScripts.map((script: Script) => {
         console.log(`ScriptLoader(${position}): 渲染脚本:`, script.id, script.name);
 
         if (position === 'head') {

@@ -25,6 +25,9 @@ interface Post {
     name: string;
     slug: string;
   }[] | null;
+  category?: {
+    name: string;
+  };
 }
 
 interface Tag {
@@ -184,11 +187,11 @@ export default function TagPostsClient() {
                         {formatDate(post.createdAt)}
                       </span>
 
-                      {post.categoryName && (
+                      {post.category?.name && (
                         <>
                           <span className="mx-2">·</span>
                           <span className="text-gray-500 dark:text-gray-400">
-                            {post.categoryName}
+                            {post.category.name}
                           </span>
                         </>
                       )}

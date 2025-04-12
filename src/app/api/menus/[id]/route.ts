@@ -22,12 +22,13 @@ const menuSchema = z.object({
 // GET 获取单个菜单
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('获取单个菜单, ID:', params.id);
+    const { id: paramId } = await params;
+    console.log('获取单个菜单, ID:', paramId);
     
-    const id = parseInt(params.id);
+    const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json(
         { error: '无效的菜单ID' },
@@ -64,17 +65,18 @@ export async function GET(
 // PATCH 更新菜单
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: paramId } = await params;
     // 克隆请求以避免多次读取请求体
     const clonedRequest = request.clone();
     const body = await clonedRequest.json();
     const { name, description, url, isExternal, parentId, order, isActive } = body;
     
-    console.log('PATCH 更新菜单请求数据:', { id: params.id, name, description, url, isExternal, parentId, order, isActive });
+    console.log('PATCH 更新菜单请求数据:', { id: paramId, name, description, url, isExternal, parentId, order, isActive });
     
-    const id = parseInt(params.id);
+    const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json(
         { error: '无效的菜单ID' },
@@ -186,12 +188,13 @@ export async function PATCH(
 // PUT 更新菜单
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('PUT 更新菜单请求开始:', { id: params.id });
+    const { id: paramId } = await params;
+    console.log('PUT 更新菜单请求开始:', { id: paramId });
     
-    const id = parseInt(params.id);
+    const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json(
         { error: '无效的菜单ID' },
@@ -332,13 +335,14 @@ export async function PUT(
 // 更新菜单排序的辅助函数
 async function updateMenuOrder(
   request: Request,
-  params: { id: string },
+  params: Promise<{ id: string }>,
   order: number
 ) {
   try {
-    console.log('更新菜单排序:', { id: params.id, order });
+    const { id: paramId } = await params;
+    console.log('更新菜单排序:', { id: paramId, order });
     
-    const id = parseInt(params.id);
+    const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json(
         { error: '无效的菜单ID' },
@@ -386,12 +390,13 @@ async function updateMenuOrder(
 // DELETE 删除菜单
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('删除菜单, ID:', params.id);
+    const { id: paramId } = await params;
+    console.log('删除菜单, ID:', paramId);
     
-    const id = parseInt(params.id);
+    const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json(
         { error: '无效的菜单ID' },

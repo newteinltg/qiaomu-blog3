@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
       // 处理node:协议的polyfill
       config.plugins.push(new (require('webpack').NormalModuleReplacementPlugin)(
         /^node:/,
-        (resource) => {
+        (resource: { request: string }) => {
           resource.request = resource.request.replace(/^node:/, '');
         }
       ));
