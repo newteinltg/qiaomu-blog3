@@ -1,0 +1,123 @@
+/* 文章详情页字体样式 */
+
+/* 定义字体变量 */
+:root {
+  /* 中文无衬线字体 */
+  --fonts-sans-serif: "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  /* 英文无衬线字体 */
+  --fonts-sans-serif-en: "Helvetica Neue", Roboto, "Segoe UI", SegoeUI, Helvetica, Arial, sans-serif;
+
+  /* 等宽字体 */
+  --fonts-monospace: JetBrainsMono, "Source Code Pro", Monaco, Menlo, Consolas, "Courier New", Courier, monospace;
+}
+
+/* 文章内容样式 */
+.article-content {
+  font-family: var(--fonts-sans-serif);
+  line-height: 1.75;
+}
+
+/* 段落和列表样式 */
+.article-content p,
+.article-content ul,
+.article-content ol {
+  margin-bottom: 1.25em;
+  line-height: 1.75;
+}
+
+/* 英文内容样式 */
+.article-content :lang(en),
+.article-content :lang(en-US) {
+  font-family: var(--fonts-sans-serif-en);
+}
+
+/* 文章标题样式 */
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+  font-family: var(--fonts-sans-serif);
+  font-weight: 600;
+  line-height: 1.5;
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+/* 代码块样式 */
+.article-content pre,
+.article-content code {
+  font-family: var(--fonts-monospace);
+}
+
+/* 自定义Markdown渲染样式 */
+.prose-custom {
+  font-family: var(--fonts-sans-serif);
+  line-height: 1.75;
+}
+
+.prose-custom p,
+.prose-custom ul,
+.prose-custom ol {
+  margin-bottom: 1.25em;
+  line-height: 1.75;
+}
+
+.prose-custom :lang(en),
+.prose-custom :lang(en-US) {
+  font-family: var(--fonts-sans-serif-en);
+}
+
+.prose-custom h1,
+.prose-custom h2,
+.prose-custom h3,
+.prose-custom h4,
+.prose-custom h5,
+.prose-custom h6 {
+  font-family: var(--fonts-sans-serif);
+  line-height: 1.5;
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.prose-custom code,
+.prose-custom pre {
+  font-family: var(--fonts-monospace);
+}
+
+/* 应用到Markdown渲染区域 */
+.prose.prose-lg {
+  font-family: var(--fonts-sans-serif);
+  line-height: 1.75;
+}
+
+.prose.prose-lg p,
+.prose.prose-lg ul,
+.prose.prose-lg ol {
+  margin-bottom: 1.25em;
+  line-height: 1.75;
+}
+
+.prose.prose-lg :lang(en),
+.prose.prose-lg :lang(en-US) {
+  font-family: var(--fonts-sans-serif-en);
+}
+
+.prose.prose-lg h1,
+.prose.prose-lg h2,
+.prose.prose-lg h3,
+.prose.prose-lg h4,
+.prose.prose-lg h5,
+.prose.prose-lg h6 {
+  font-family: var(--fonts-sans-serif);
+  line-height: 1.5;
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.prose.prose-lg code,
+.prose.prose-lg pre {
+  font-family: var(--fonts-monospace);
+}

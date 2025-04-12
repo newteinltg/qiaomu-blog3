@@ -1,0 +1,122 @@
+/* 桌面端三级菜单样式 */
+.dropdown-submenu {
+  position: relative;
+}
+
+.dropdown-submenu-menu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  margin-top: 0;
+  margin-left: 2px;
+  width: 12rem;
+  background-color: white;
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+  z-index: 50;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-8px);
+  transition: all 0.3s ease;
+}
+
+.dark .dropdown-submenu-menu {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.dropdown-submenu:hover .dropdown-submenu-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* 移动端菜单样式 - 完全重写以避免与 globals.css 冲突 */
+
+/* 移动端菜单容器 */
+.custom-mobile-menu {
+  position: fixed;
+  top: 4rem; /* 64px */
+  left: 0;
+  width: 16rem; /* 256px */
+  height: 100vh;
+  background-color: white;
+  border-right: 1px solid #f3f4f6;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 40;
+  overflow-y: auto;
+  padding-bottom: 5rem;
+}
+
+.dark .custom-mobile-menu {
+  background-color: #1f2937;
+  border-right-color: #374151;
+}
+
+.custom-mobile-menu.active {
+  transform: translateX(0);
+}
+
+/* 移动端菜单容器 */
+.mobile-dropdown-container {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+/* 移动端菜单按钮 */
+.mobile-dropdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  color: #4b5563;
+  transition: color 0.3s ease;
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+.dark .mobile-dropdown-toggle {
+  color: #d1d5db;
+}
+
+.mobile-dropdown-toggle:hover {
+  color: #2563eb;
+}
+
+.dark .mobile-dropdown-toggle:hover {
+  color: #60a5fa;
+}
+
+/* 移动端菜单图标 */
+.mobile-dropdown-icon {
+  transition: transform 0.3s ease;
+}
+
+.mobile-dropdown-toggle.active .mobile-dropdown-icon {
+  transform: rotate(180deg);
+}
+
+/* 移动端下拉菜单 */
+.mobile-dropdown,
+.mobile-sub-dropdown {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+  padding-left: 1rem;
+  border-left: 2px solid #e5e7eb;
+  margin-left: 1rem;
+}
+
+.dark .mobile-dropdown,
+.dark .mobile-sub-dropdown {
+  border-left-color: #374151;
+}
+
+.mobile-dropdown.active,
+.mobile-sub-dropdown.active {
+  max-height: 1000px; /* 设置足够大的值以确保内容能完全展开 */
+}

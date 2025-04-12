@@ -1,0 +1,1039 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>向阳乔木 - 个人网站</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+    <style>
+        /* 基础样式设置 */
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --secondary-color: #10b981;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-tertiary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            --border-color: #e5e7eb;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition-speed: 0.3s;
+        }
+
+        /* 深色模式变量 */
+        .dark {
+            --primary-color: #60a5fa;
+            --primary-hover: #93c5fd;
+            --secondary-color: #34d399;
+            --text-primary: #f9fafb;
+            --text-secondary: #e5e7eb;
+            --text-tertiary: #d1d5db;
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: #374151;
+            --border-color: #374151;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: "Noto Sans SC", Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif;
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        /* 标题字体 */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: "Noto Serif SC", serif;
+        }
+
+        /* 导航样式 */
+        .nav-link {
+            position: relative;
+            transition: color var(--transition-speed);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--primary-color);
+            transition: width var(--transition-speed);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* 下拉菜单样式 */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            box-shadow: var(--card-shadow);
+            min-width: 10rem;
+            z-index: 20;
+            transition: opacity var(--transition-speed), transform var(--transition-speed);
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 卡片样式 */
+        .card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: var(--card-shadow);
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 文章卡片样式 */
+        .article-card {
+            cursor: pointer;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .article-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 标签样式 */
+        .tag {
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        .tag:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* 轮播图样式 */
+        .carousel {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+
+        .carousel-inner {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-item {
+            flex: 0 0 100%;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .carousel-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+        }
+
+        .carousel:hover .carousel-control {
+            opacity: 1;
+        }
+
+        .carousel-control-prev {
+            left: 10px;
+        }
+
+        .carousel-control-next {
+            right: 10px;
+        }
+
+        /* 二维码模态框 */
+        .qrcode-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .qrcode-modal-content {
+            background-color: var(--bg-primary);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 90%;
+            width: 300px;
+            text-align: center;
+            position: relative;
+        }
+
+        .qrcode-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-tertiary);
+        }
+
+        /* 二维码悬浮提示 */
+        .qrcode-tooltip {
+            position: relative;
+        }
+
+        .qrcode-tooltip .tooltip-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: var(--card-shadow);
+            width: 200px;
+            text-align: center;
+            z-index: 20;
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .qrcode-tooltip:hover .tooltip-content {
+                display: block;
+            }
+        }
+
+        /* Hero区域动画 */
+        .hero-bg {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.05) 50%, transparent 70%);
+            animation: rotate 30s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 移动端导航 */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-primary);
+            z-index: 40;
+            transform: translateX(-100%);
+            transition: transform var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        /* 文章卡片图片固定比例 */
+        .article-image {
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 比例 */
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.375rem;
+        }
+
+        .article-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-speed);
+        }
+
+        .article-card:hover .article-image img {
+            transform: scale(1.05);
+        }
+
+        /* 文章列表中没有图片的卡片样式 */
+        .no-image-card {
+            border-left: 3px solid var(--primary-color);
+        }
+    </style>
+<meta name="code-type" content="html">
+</head>
+<body>
+    <!-- 页面容器 -->
+    <div class="min-h-screen flex flex-col">
+        <!-- 头部导航 -->
+        <header class="sticky top-0 z-30 bg-opacity-95 backdrop-filter backdrop-blur-sm" style="background-color: var(--bg-primary);">
+            <div class="container mx-auto px-4 py-3">
+                <div class="flex justify-between items-center">
+                    <!-- Logo -->
+                    <a href="/" class="text-2xl font-bold" style="color: var(--primary-color);">向阳乔木</a>
+                    
+                    <!-- 桌面端导航 -->
+                    <nav class="hidden md:flex items-center space-x-6">
+                        <a href="/" class="nav-link active" style="color: var(--text-primary);">首页</a>
+                        
+                        <!-- 分类下拉菜单 -->
+                        <div class="dropdown relative">
+                            <a href="/categories" class="nav-link flex items-center" style="color: var(--text-primary);">
+                                分类
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </a>
+                            <div class="dropdown-menu">
+                                <!-- AI工具 -->
+                                <div class="py-1">
+                                    <a href="/categories/tools" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" style="color: var(--text-primary);">AI工具</a>
+                                    <a href="/categories/tools/chatgpt" class="block px-4 py-2 pl-8 text-sm hover:bg-gray-100 dark:hover:bg-gray-700" style="color: var(--text-secondary);">ChatGPT</a>
+                                    <a href="/categories/tools/midjourney" class="block px-4 py-2 pl-8 text-sm hover:bg-gray-100 dark:hover:bg-gray-700" style="color: var(--text-secondary);">Midjourney</a>
+                                    <a href="/categories/tools/claude" class="block px-4 py-2 pl-8 text-sm hover:bg-gray-100 dark:hover:bg-gray-700" style="color: var(--text-secondary);">Claude</a>
+                                </div>
+                                <!-- AI教程 -->
+                                <div class="py-1 border-t border-gray-200 dark:border-gray-600">
+                                    <a href="/categories/tutorial" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" style="color: var(--text-primary);">AI教程</a>
+                                    <a href="/categories/tutorial/beginner" class="block px-4 py-2 pl-8 text-sm hover:bg-gray-100 dark:hover:bg-gray-700" style="color: var(--text-secondary);">新手入门</a>
+                                    <a href="/categories/tutorial/advanced" class="block px-4 py-2 pl-8 text-sm hover:bg-gray-100 dark:hover:bg-gray-700" style="color: var(--text-secondary);">进阶技巧</a>
+                                </div>
+                                <!-- Prompt -->
+                                <div class="py-1 border-t border-gray-200 dark:border-gray-600">
+                                    <a href="/categories/prompt" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" style="color: var(--text-primary);">Prompt</a>
+                                    <a href="/categories/prompt/text" class="block px-4 py-2 pl-8 text-sm hover:bg-gray-100 dark:hover:bg-gray-700" style="color: var(--text-secondary);">文本提示词</a>
+                                    <a href="/categories/prompt/image" class="block px-4 py-2 pl-8 text-sm hover:bg-gray-100 dark:hover:bg-gray-700" style="color: var(--text-secondary);">图像提示词</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 微信打赏 -->
+                        <div class="qrcode-tooltip">
+                            <button class="flex items-center" aria-label="微信打赏">
+                                <i class="fas fa-gift text-lg" style="color: var(--text-primary);"></i>
+                            </button>
+                            <div class="tooltip-content">
+                                <p class="mb-2 font-medium" style="color: var(--text-primary);">支持创作</p>
+                                <img src="https://daohang.qiaomu.ai/uploads/qrcodes/donation_qrcode_1742958643677.png" alt="微信打赏二维码" class="w-full">
+                            </div>
+                        </div>
+                        
+                        <!-- 微信联系 -->
+                        <div class="qrcode-tooltip">
+                            <button class="flex items-center" aria-label="微信联系">
+                                <i class="fab fa-weixin text-lg" style="color: var(--text-primary);"></i>
+                            </button>
+                            <div class="tooltip-content">
+                                <p class="mb-2 font-medium" style="color: var(--text-primary);">联系我</p>
+                                <img src="https://daohang.qiaomu.ai/uploads/qrcodes/contact_qrcode_1742958643675.png" alt="微信联系二维码" class="w-full">
+                            </div>
+                        </div>
+                        
+                        <!-- 深色/浅色模式切换 -->
+                        <button id="theme-toggle" class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" aria-label="切换深色/浅色模式">
+                            <i class="fas fa-moon text-lg dark:hidden" style="color: var(--text-primary);"></i>
+                            <i class="fas fa-sun text-lg hidden dark:block" style="color: var(--text-primary);"></i>
+                        </button>
+                    </nav>
+                    
+                    <!-- 移动端菜单按钮 -->
+                    <button id="mobile-menu-button" class="md:hidden flex items-center" aria-label="打开菜单">
+                        <i class="fas fa-bars text-xl" style="color: var(--text-primary);"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="mobile-menu md:hidden">
+            <div class="p-4 flex justify-between items-center border-b" style="border-color: var(--border-color);">
+                <a href="/" class="text-xl font-bold" style="color: var(--primary-color);">向阳乔木</a>
+                <button id="mobile-menu-close" aria-label="关闭菜单">
+                    <i class="fas fa-times text-xl" style="color: var(--text-primary);"></i>
+                </button>
+            </div>
+            <nav class="p-4">
+                <a href="/" class="block py-3 border-b" style="color: var(--text-primary); border-color: var(--border-color);">首页</a>
+                
+                <!-- 分类 -->
+                <div class="py-3 border-b" style="border-color: var(--border-color);">
+                    <button class="mobile-dropdown-toggle flex justify-between items-center w-full" style="color: var(--text-primary);">
+                        分类
+                        <i class="fas fa-chevron-down text-sm"></i>
+                    </button>
+                    <div class="mobile-dropdown-content hidden mt-2 ml-4">
+                        <!-- AI工具 -->
+                        <div class="mb-2">
+                            <a href="/categories/tools" class="block py-2 font-medium" style="color: var(--text-primary);">AI工具</a>
+                            <a href="/categories/tools/chatgpt" class="block py-1 pl-4 text-sm" style="color: var(--text-secondary);">ChatGPT</a>
+                            <a href="/categories/tools/midjourney" class="block py-1 pl-4 text-sm" style="color: var(--text-secondary);">Midjourney</a>
+                            <a href="/categories/tools/claude" class="block py-1 pl-4 text-sm" style="color: var(--text-secondary);">Claude</a>
+                        </div>
+                        <!-- AI教程 -->
+                        <div class="mb-2">
+                            <a href="/categories/tutorial" class="block py-2 font-medium" style="color: var(--text-primary);">AI教程</a>
+                            <a href="/categories/tutorial/beginner" class="block py-1 pl-4 text-sm" style="color: var(--text-secondary);">新手入门</a>
+                            <a href="/categories/tutorial/advanced" class="block py-1 pl-4 text-sm" style="color: var(--text-secondary);">进阶技巧</a>
+                        </div>
+                        <!-- Prompt -->
+                        <div>
+                            <a href="/categories/prompt" class="block py-2 font-medium" style="color: var(--text-primary);">Prompt</a>
+                            <a href="/categories/prompt/text" class="block py-1 pl-4 text-sm" style="color: var(--text-secondary);">文本提示词</a>
+                            <a href="/categories/prompt/image" class="block py-1 pl-4 text-sm" style="color: var(--text-secondary);">图像提示词</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 微信打赏 -->
+                <button id="mobile-donation" class="block w-full text-left py-3 border-b" style="color: var(--text-primary); border-color: var(--border-color);">
+                    <i class="fas fa-gift mr-2"></i> 支持创作
+                </button>
+                
+                <!-- 微信联系 -->
+                <button id="mobile-contact" class="block w-full text-left py-3 border-b" style="color: var(--text-primary); border-color: var(--border-color);">
+                    <i class="fab fa-weixin mr-2"></i> 联系我
+                </button>
+                
+                <!-- 深色/浅色模式切换 -->
+                <button id="mobile-theme-toggle" class="block w-full text-left py-3 border-b" style="color: var(--text-primary); border-color: var(--border-color);">
+                    <i class="fas fa-moon mr-2 dark:hidden"></i>
+                    <i class="fas fa-sun mr-2 hidden dark:block"></i>
+                    <span class="dark:hidden">切换到深色模式</span>
+                    <span class="hidden dark:block">切换到浅色模式</span>
+                </button>
+            </nav>
+        </div>
+        
+        <!-- 二维码模态框 - 打赏 -->
+        <div id="donation-modal" class="qrcode-modal">
+            <div class="qrcode-modal-content">
+                <button class="qrcode-modal-close" aria-label="关闭">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">支持创作</h3>
+                <img src="https://daohang.qiaomu.ai/uploads/qrcodes/donation_qrcode_1742958643677.png" alt="微信打赏二维码" class="w-full">
+                <p class="mt-3 text-sm" style="color: var(--text-secondary);">扫码打赏，感谢支持</p>
+            </div>
+        </div>
+        
+        <!-- 二维码模态框 - 联系 -->
+        <div id="contact-modal" class="qrcode-modal">
+            <div class="qrcode-modal-content">
+                <button class="qrcode-modal-close" aria-label="关闭">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">联系我</h3>
+                <img src="https://daohang.qiaomu.ai/uploads/qrcodes/contact_qrcode_1742958643675.png" alt="微信联系二维码" class="w-full">
+                <p class="mt-3 text-sm" style="color: var(--text-secondary);">扫码添加微信</p>
+            </div>
+        </div>
+        
+        <!-- Hero区域 -->
+        <section class="hero-bg py-10 md:py-12 relative" style="background-color: var(--bg-secondary);">
+            <div class="container mx-auto px-4 relative z-10">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h1 class="text-3xl md:text-4xl font-bold mb-3" style="color: var(--text-primary);">向阳乔木个人网站</h1>
+                    <p class="text-lg md:text-xl" style="color: var(--text-secondary);">分享AI探索、实践，精选各类工具，一起学习进步。</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 主要内容区域 -->
+        <main class="flex-grow py-8">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- 主内容区 -->
+                    <div class="lg:w-2/3">
+                        <!-- 推荐文章轮播 -->
+                        <section class="mb-10">
+                            <h2 class="text-2xl font-bold mb-5" style="color: var(--text-primary);">推荐文章</h2>
+                            <div class="carousel">
+                                <div class="carousel-inner">
+                                    <!-- 轮播项1 -->
+                                    <div class="carousel-item">
+                                        <div class="relative">
+                                            <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485" alt="文章图片" class="rounded-lg">
+                                            <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
+                                                <span class="tag inline-block mb-2">AI工具</span>
+                                                <h3 class="text-xl md:text-2xl font-bold text-white mb-2">ChatGPT 4o全面评测：多模态能力大幅提升</h3>
+                                                <p class="text-gray-200 mb-3 line-clamp-2">OpenAI最新发布的ChatGPT 4o模型带来了哪些突破性的功能和性能提升？本文全面分析其优势与局限。</p>
+                                                <a href="/article/1" class="text-white font-medium hover:underline">阅读全文 <i class="fas fa-arrow-right ml-1"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 轮播项2 -->
+                                    <div class="carousel-item">
+                                        <div class="relative">
+                                            <img src="https://images.unsplash.com/photo-1655720828018-edd2daec9349" alt="文章图片" class="rounded-lg">
+                                            <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
+                                                <span class="tag inline-block mb-2">Prompt</span>
+                                                <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Midjourney V6高级提示词技巧</h3>
+                                                <p class="text-gray-200 mb-3 line-clamp-2">掌握这些Midjourney V6的高级提示词技巧，让你的AI艺术创作更上一层楼。</p>
+                                                <a href="/article/2" class="text-white font-medium hover:underline">阅读全文 <i class="fas fa-arrow-right ml-1"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 轮播项3 -->
+                                    <div class="carousel-item">
+                                        <div class="relative">
+                                            <img src="https://images.unsplash.com/photo-1655635949212-1d8f4f103ea1" alt="文章图片" class="rounded-lg">
+                                            <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
+                                                <span class="tag inline-block mb-2">AI教程</span>
+                                                <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Claude 3 Opus使用指南：从入门到精通</h3>
+                                                <p class="text-gray-200 mb-3 line-clamp-2">全面解析Anthropic的Claude 3 Opus模型，从基础功能到高级应用，帮助你充分发挥其潜力。</p>
+                                                <a href="/article/3" class="text-white font-medium hover:underline">阅读全文 <i class="fas fa-arrow-right ml-1"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 轮播控制按钮 -->
+                                <button class="carousel-control carousel-control-prev" aria-label="上一个">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="carousel-control carousel-control-next" aria-label="下一个">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </section>
+                        
+                        <!-- 文章列表 -->
+                        <section>
+                            <div class="flex justify-between items-center mb-5">
+                                <h2 class="text-2xl font-bold" style="color: var(--text-primary);">最新文章</h2>
+                                <a href="/articles" class="font-medium hover:underline flex items-center" style="color: var(--primary-color);">
+                                    查看全部 <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <!-- 文章1 (有图片) -->
+                                <a href="/article/4" class="block">
+                                    <article class="article-card p-4 rounded-lg" style="background-color: var(--bg-primary); border: 1px solid var(--border-color);">
+                                        <div class="flex flex-col md:flex-row gap-4">
+                                            <div class="md:w-1/3">
+                                                <div class="article-image">
+                                                    <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e" alt="文章图片">
+                                                </div>
+                                            </div>
+                                            <div class="md:w-2/3">
+                                                <div class="flex items-center mb-2">
+                                                    <span class="tag mr-2">AI工具</span>
+                                                    <span class="text-sm" style="color: var(--text-tertiary);">2025-04-01</span>
+                                                </div>
+                                                <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">AI视频生成工具Sora：创新与局限性分析</h3>
+                                                <p class="mb-3 line-clamp-2" style="color: var(--text-secondary);">OpenAI的Sora带来了革命性的AI视频生成能力，但也面临哪些技术挑战和伦理问题？</p>
+                                                <span class="font-medium" style="color: var(--primary-color);">阅读全文 <i class="fas fa-arrow-right ml-1"></i></span>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </a>
+                                
+                                <!-- 文章2 (无图片) -->
+                                <a href="/article/5" class="block">
+                                    <article class="article-card no-image-card p-4 rounded-lg" style="background-color: var(--bg-primary); border: 1px solid var(--border-color);">
+                                        <div class="flex items-center mb-2">
+                                            <span class="tag mr-2">AI教程</span>
+                                            <span class="text-sm" style="color: var(--text-tertiary);">2025-03-28</span>
+                                        </div>
+                                        <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">如何优化ChatGPT提示词：10个实用技巧</h3>
+                                        <p class="mb-3" style="color: var(--text-secondary);">掌握这些提示词技巧，让ChatGPT的回答更加精准、有用，提高AI助手的实用性。</p>
+                                        <span class="font-medium" style="color: var(--primary-color);">阅读全文 <i class="fas fa-arrow-right ml-1"></i></span>
+                                    </article>
+                                </a>
+                                
+                                <!-- 文章3 (有图片) -->
+                                <a href="/article/6" class="block">
+                                    <article class="article-card p-4 rounded-lg" style="background-color: var(--bg-primary); border: 1px solid var(--border-color);">
+                                        <div class="flex flex-col md:flex-row gap-4">
+                                            <div class="md:w-1/3">
+                                                <div class="article-image">
+                                                    <img src="https://images.unsplash.com/photo-1677442135068-6f2e8a18c5b4" alt="文章图片">
+                                                </div>
+                                            </div>
+                                            <div class="md:w-2/3">
+                                                <div class="flex items-center mb-2">
+                                                    <span class="tag mr-2">Prompt</span>
+                                                    <span class="text-sm" style="color: var(--text-tertiary);">2025-03-25</span>
+                                                </div>
+                                                <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">AI绘画中的构图技巧：从基础到高级</h3>
+                                                <p class="mb-3 line-clamp-2" style="color: var(--text-secondary);">探索如何通过精心设计的提示词，在Midjourney和DALL-E中创建构图精美的AI艺术作品。</p>
+                                                <span class="font-medium" style="color: var(--primary-color);">阅读全文 <i class="fas fa-arrow-right ml-1"></i></span>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </a>
+                                
+                                <!-- 文章4 (无图片) -->
+                                <a href="/article/7" class="block">
+                                    <article class="article-card no-image-card p-4 rounded-lg" style="background-color: var(--bg-primary); border: 1px solid var(--border-color);">
+                                        <div class="flex items-center mb-2">
+                                            <span class="tag mr-2">AI工具</span>
+                                            <span class="text-sm" style="color: var(--text-tertiary);">2025-03-20</span>
+                                        </div>
+                                        <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">Claude与ChatGPT对比：哪个更适合你的需求？</h3>
+                                        <p class="mb-3" style="color: var(--text-secondary);">详细对比Claude和ChatGPT在各方面的表现，帮助你根据具体需求选择最合适的AI助手。</p>
+                                        <span class="font-medium" style="color: var(--primary-color);">阅读全文 <i class="fas fa-arrow-right ml-1"></i></span>
+                                    </article>
+                                </a>
+                                
+                                <!-- 文章5 (有图片) -->
+                                <a href="/article/8" class="block">
+                                    <article class="article-card p-4 rounded-lg" style="background-color: var(--bg-primary); border: 1px solid var(--border-color);">
+                                        <div class="flex flex-col md:flex-row gap-4">
+                                            <div class="md:w-1/3">
+                                                <div class="article-image">
+                                                    <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485" alt="文章图片">
+                                                </div>
+                                            </div>
+                                            <div class="md:w-2/3">
+                                                <div class="flex items-center mb-2">
+                                                    <span class="tag mr-2">AI教程</span>
+                                                    <span class="text-sm" style="color: var(--text-tertiary);">2025-03-15</span>
+                                                </div>
+                                                <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">如何使用AI辅助内容创作：完整工作流程</h3>
+                                                <p class="mb-3 line-clamp-2" style="color: var(--text-secondary);">从构思到发布，探索如何将AI工具整合到内容创作流程中，提高效率的同时保持创意独特性。</p>
+                                                <span class="font-medium" style="color: var(--primary-color);">阅读全文 <i class="fas fa-arrow-right ml-1"></i></span>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </a>
+                            </div>
+                        </section>
+                    </div>
+                    
+                    <!-- 侧边栏 -->
+                    <div class="lg:w-1/3">
+                        <!-- 最新文章 -->
+                        <div class="card p-5 mb-6">
+                            <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">最新文章</h3>
+                            <div class="space-y-4">
+                                <a href="/article/9" class="flex items-start gap-3 group">
+                                    <div class="w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
+                                        <img src="https://images.unsplash.com/photo-1655635949212-1d8f4f103ea1" alt="文章缩略图" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium line-clamp-2 group-hover:text-blue-500 transition-colors" style="color: var(--text-primary);">AI助手个性化设置：打造专属数字助理</h4>
+                                        <p class="text-sm" style="color: var(--text-tertiary);">2025-04-03</p>
+                                    </div>
+                                </a>
+                                <a href="/article/10" class="flex items-start gap-3 group">
+                                    <div class="w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
+                                        <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e" alt="文章缩略图" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium line-clamp-2 group-hover:text-blue-500 transition-colors" style="color: var(--text-primary);">AI伦理与隐私：使用生成式AI的注意事项</h4>
+                                        <p class="text-sm" style="color: var(--text-tertiary);">2025-04-01</p>
+                                    </div>
+                                </a>
+                                <a href="/article/11" class="flex items-start gap-3 group">
+                                    <div class="w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
+                                        <img src="https://images.unsplash.com/photo-1677442135068-6f2e8a18c5b4" alt="文章缩略图" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium line-clamp-2 group-hover:text-blue-500 transition-colors" style="color: var(--text-primary);">GPT-4与GPT-3.5的区别：值得升级吗？</h4>
+                                        <p class="text-sm" style="color: var(--text-tertiary);">2025-03-29</p>
+                                    </div>
+                                </a>
+                                <a href="/article/12" class="flex items-start gap-3 group">
+                                    <div class="w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
+                                        <img src="https://images.unsplash.com/photo-1655720828018-edd2daec9349" alt="文章缩略图" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium line-clamp-2 group-hover:text-blue-500 transition-colors" style="color: var(--text-primary);">AI音乐生成：Suno与其他工具对比</h4>
+                                        <p class="text-sm" style="color: var(--text-tertiary);">2025-03-27</p>
+                                    </div>
+                                </a>
+                                <a href="/article/13" class="flex items-start gap-3 group">
+                                    <div class="w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
+                                        <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485" alt="文章缩略图" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium line-clamp-2 group-hover:text-blue-500 transition-colors" style="color: var(--text-primary);">AI编程助手对比：GitHub Copilot vs Claude Code Interpreter</h4>
+                                        <p class="text-sm" style="color: var(--text-tertiary);">2025-03-25</p>
+                                    </div>
+                                </a>
+                            </div>
+                            <a href="/articles/latest" class="inline-block mt-4 font-medium hover:underline" style="color: var(--primary-color);">
+                                查看更多 <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                        
+                        <!-- 分类 -->
+                        <div class="card p-5 mb-6">
+                            <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">分类</h3>
+                            <ul class="space-y-2">
+                                <li>
+                                    <a href="/categories/tools" class="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-md transition-colors" style="color: var(--text-primary);">
+                                        <span>AI工具</span>
+                                        <span class="px-2 py-1 text-xs rounded-full" style="background-color: var(--bg-tertiary); color: var(--text-tertiary);">24</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/categories/tutorial" class="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-md transition-colors" style="color: var(--text-primary);">
+                                        <span>AI教程</span>
+                                        <span class="px-2 py-1 text-xs rounded-full" style="background-color: var(--bg-tertiary); color: var(--text-tertiary);">18</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/categories/prompt" class="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-md transition-colors" style="color: var(--text-primary);">
+                                        <span>Prompt</span>
+                                        <span class="px-2 py-1 text-xs rounded-full" style="background-color: var(--bg-tertiary); color: var(--text-tertiary);">15</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/categories/news" class="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-md transition-colors" style="color: var(--text-primary);">
+                                        <span>AI新闻</span>
+                                        <span class="px-2 py-1 text-xs rounded-full" style="background-color: var(--bg-tertiary); color: var(--text-tertiary);">12</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/categories/research" class="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-md transition-colors" style="color: var(--text-primary);">
+                                        <span>研究动态</span>
+                                        <span class="px-2 py-1 text-xs rounded-full" style="background-color: var(--bg-tertiary); color: var(--text-tertiary);">9</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- 标签 -->
+                        <div class="card p-5">
+                            <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">标签</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="/tags/chatgpt" class="tag hover:bg-blue-500 hover:text-white transition-colors">ChatGPT</a>
+                                <a href="/tags/midjourney" class="tag hover:bg-blue-500 hover:text-white transition-colors">Midjourney</a>
+                                <a href="/tags/claude" class="tag hover:bg-blue-500 hover:text-white transition-colors">Claude</a>
+                                <a href="/tags/prompt-engineering" class="tag hover:bg-blue-500 hover:text-white transition-colors">提示词工程</a>
+                                <a href="/tags/ai-art" class="tag hover:bg-blue-500 hover:text-white transition-colors">AI艺术</a>
+                                <a href="/tags/llm" class="tag hover:bg-blue-500 hover:text-white transition-colors">大语言模型</a>
+                                <a href="/tags/ai-ethics" class="tag hover:bg-blue-500 hover:text-white transition-colors">AI伦理</a>
+                                <a href="/tags/tutorials" class="tag hover:bg-blue-500 hover:text-white transition-colors">教程</a>
+                                <a href="/tags/ai-tools" class="tag hover:bg-blue-500 hover:text-white transition-colors">AI工具</a>
+                                <a href="/tags/openai" class="tag hover:bg-blue-500 hover:text-white transition-colors">OpenAI</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 页脚 -->
+        <footer class="py-10" style="background-color: var(--bg-secondary);">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- 公众号 -->
+                    <div class="text-center md:text-left">
+                        <h4 class="text-lg font-bold mb-4" style="color: var(--text-primary);">公众号</h4>
+                        <div class="flex flex-col items-center md:items-start">
+                            <img src="http://img.t5t6.com/2025/04/488ca665f465e2ee3cf36d53f230ccc8.jpg" alt="公众号二维码" class="w-32 h-32 mb-2">
+                            <p class="text-sm" style="color: var(--text-secondary);">获取最新文章</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 相关链接 -->
+                    <div class="text-center md:text-left">
+                        <h4 class="text-lg font-bold mb-4" style="color: var(--text-primary);">相关链接</h4>
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="https://link.qiaomu.ai" class="hover:underline" style="color: var(--text-secondary);">AI&阅读社群</a>
+                            </li>
+                            <li>
+                                <a href="https://link.qiaomu.ai" class="hover:underline" style="color: var(--text-secondary);">AI网址导航</a>
+                            </li>
+                            <li>
+                                <a href="https://www.32kw.com" class="hover:underline" style="color: var(--text-secondary);">AI生成展示</a>
+                            </li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-bold mt-6 mb-4" style="color: var(--text-primary);">社交媒体</h4>
+                        <div class="flex space-x-4 justify-center md:justify-start">
+                            <a href="https://x.com/vista8" class="text-xl hover:text-blue-500 transition-colors" style="color: var(--text-secondary);" aria-label="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://github.com/joeseesun" class="text-xl hover:text-blue-500 transition-colors" style="color: var(--text-secondary);" aria-label="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- 联系&打赏 -->
+                    <div class="text-center md:text-left">
+                        <h4 class="text-lg font-bold mb-4" style="color: var(--text-primary);">联系 & 打赏</h4>
+                        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center md:justify-start">
+                            <div class="flex flex-col items-center">
+                                <img src="https://daohang.qiaomu.ai/uploads/qrcodes/contact_qrcode_1742958643675.png" alt="微信联系二维码" class="w-32 h-32 mb-2">
+                                <p class="text-sm" style="color: var(--text-secondary);">微信联系</p>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <img src="https://daohang.qiaomu.ai/uploads/qrcodes/donation_qrcode_1742958643677.png" alt="微信打赏二维码" class="w-32 h-32 mb-2">
+                                <p class="text-sm" style="color: var(--text-secondary);">微信打赏</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 版权信息 -->
+                <div class="mt-10 pt-6 border-t text-center" style="border-color: var(--border-color);">
+                    <p class="text-sm" style="color: var(--text-tertiary);">2025 © 向阳乔木</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // 深色模式切换
+        function setupThemeToggle() {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const mobileThemeToggleBtn = document.getElementById('mobile-theme-toggle');
+            
+            // 检查系统偏好
+            const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // 检查本地存储
+            const savedTheme = localStorage.getItem('theme');
+            
+            // 应用主题
+            if (savedTheme === 'dark' || (!savedTheme && prefersDarkMode)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            // 切换主题函数
+            function toggleTheme() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            }
+            
+            // 添加事件监听器
+            themeToggleBtn.addEventListener('click', toggleTheme);
+            mobileThemeToggleBtn.addEventListener('click', toggleTheme);
+        }
+        
+        // 移动端菜单
+        function setupMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-button');
+            const mobileMenuCloseBtn = document.getElementById('mobile-menu-close');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileDropdownToggles = document.querySelectorAll('.mobile-dropdown-toggle');
+            
+            // 打开菜单
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            // 关闭菜单
+            mobileMenuCloseBtn.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+            
+            // 下拉菜单切换
+            mobileDropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const content = toggle.nextElementSibling;
+                    content.classList.toggle('hidden');
+                    
+                    // 切换图标
+                    const icon = toggle.querySelector('i');
+                    if (content.classList.contains('hidden')) {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    } else {
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    }
+                });
+            });
+        }
+        
+        // 二维码模态框
+        function setupQrcodeModals() {
+            const donationBtn = document.getElementById('mobile-donation');
+            const contactBtn = document.getElementById('mobile-contact');
+            const donationModal = document.getElementById('donation-modal');
+            const contactModal = document.getElementById('contact-modal');
+            const closeButtons = document.querySelectorAll('.qrcode-modal-close');
+            
+            // 打开打赏模态框
+            donationBtn.addEventListener('click', () => {
+                donationModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            // 打开联系模态框
+            contactBtn.addEventListener('click', () => {
+                contactModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            // 关闭模态框
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    donationModal.style.display = 'none';
+                    contactModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                });
+            });
+            
+            // 点击模态框背景关闭
+            [donationModal, contactModal].forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }
+                });
+            });
+        }
+        
+        // 轮播图
+        function setupCarousel() {
+            const carousel = document.querySelector('.carousel');
+            const carouselInner = carousel.querySelector('.carousel-inner');
+            const carouselItems = carousel.querySelectorAll('.carousel-item');
+            const prevBtn = carousel.querySelector('.carousel-control-prev');
+            const nextBtn = carousel.querySelector('.carousel-control-next');
+            
+            let currentIndex = 0;
+            const itemCount = carouselItems.length;
+            
+            // 设置轮播图宽度
+            function setCarouselWidth() {
+                carouselItems.forEach(item => {
+                    item.style.width = carousel.clientWidth + 'px';
+                });
+                carouselInner.style.transform = `translateX(-${currentIndex * carousel.clientWidth}px)`;
+            }
+            
+            // 下一张
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % itemCount;
+                carouselInner.style.transform = `translateX(-${currentIndex * carousel.clientWidth}px)`;
+            }
+            
+            // 上一张
+            function prevSlide() {
+                currentIndex = (currentIndex - 1 + itemCount) % itemCount;
+                carouselInner.style.transform = `translateX(-${currentIndex * carousel.clientWidth}px)`;
+            }
+            
+            // 初始化
+            setCarouselWidth();
+            window.addEventListener('resize', setCarouselWidth);
+            
+            // 添加事件监听器
+            nextBtn.addEventListener('click', nextSlide);
+            prevBtn.addEventListener('click', prevSlide);
+            
+            // 自动轮播
+            let autoplayInterval = setInterval(nextSlide, 5000);
+            
+            // 鼠标悬停时暂停自动轮播
+            carousel.addEventListener('mouseenter', () => {
+                clearInterval(autoplayInterval);
+            });
+            
+            // 鼠标离开时恢复自动轮播
+            carousel.addEventListener('mouseleave', () => {
+                autoplayInterval = setInterval(nextSlide, 5000);
+            });
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            setupThemeToggle();
+            setupMobileMenu();
+            setupQrcodeModals();
+            setupCarousel();
+        });
+    </script>
+</body>
+</html>

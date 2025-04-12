@@ -1,0 +1,234 @@
+/* Markdown 预览样式 */
+
+.wmde-markdown {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  color: #24292e;
+  line-height: 1.5;
+  font-size: 16px;
+  word-wrap: break-word;
+}
+
+.wmde-markdown h1,
+.wmde-markdown h2,
+.wmde-markdown h3,
+.wmde-markdown h4,
+.wmde-markdown h5,
+.wmde-markdown h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.wmde-markdown h1 {
+  font-size: 2em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #eaecef;
+}
+
+.wmde-markdown h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #eaecef;
+}
+
+.wmde-markdown h3 {
+  font-size: 1.25em;
+}
+
+.wmde-markdown h4 {
+  font-size: 1em;
+}
+
+.wmde-markdown h5 {
+  font-size: 0.875em;
+}
+
+.wmde-markdown h6 {
+  font-size: 0.85em;
+  color: #6a737d;
+}
+
+.wmde-markdown p {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.wmde-markdown a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.wmde-markdown a:hover {
+  text-decoration: underline;
+}
+
+.wmde-markdown ul,
+.wmde-markdown ol {
+  padding-left: 2em;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.wmde-markdown ul ul,
+.wmde-markdown ul ol,
+.wmde-markdown ol ol,
+.wmde-markdown ol ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.wmde-markdown li {
+  word-wrap: break-all;
+}
+
+.wmde-markdown li + li {
+  margin-top: 0.25em;
+}
+
+.wmde-markdown blockquote {
+  margin: 0;
+  padding: 0 1em;
+  color: #6a737d;
+  border-left: 0.25em solid #dfe2e5;
+}
+
+.wmde-markdown blockquote > :first-child {
+  margin-top: 0;
+}
+
+.wmde-markdown blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.wmde-markdown code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(27, 31, 35, 0.05);
+  border-radius: 3px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+.wmde-markdown pre {
+  word-wrap: normal;
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f6f8fa;
+  border-radius: 3px;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.wmde-markdown pre code {
+  display: inline;
+  max-width: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
+  font-size: 100%;
+  word-break: normal;
+  white-space: pre;
+}
+
+.wmde-markdown table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.wmde-markdown table tr {
+  background-color: #fff;
+  border-top: 1px solid #c6cbd1;
+}
+
+.wmde-markdown table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+.wmde-markdown table th,
+.wmde-markdown table td {
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+}
+
+.wmde-markdown table th {
+  font-weight: 600;
+}
+
+.wmde-markdown img {
+  max-width: 100%;
+  box-sizing: content-box;
+  background-color: #fff;
+}
+
+.wmde-markdown hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: #e1e4e8;
+  border: 0;
+}
+
+/* 暗色模式 */
+.dark .wmde-markdown {
+  color: #c9d1d9;
+}
+
+.dark .wmde-markdown h1,
+.dark .wmde-markdown h2 {
+  border-bottom-color: #30363d;
+}
+
+.dark .wmde-markdown h6 {
+  color: #8b949e;
+}
+
+.dark .wmde-markdown a {
+  color: #58a6ff;
+}
+
+.dark .wmde-markdown blockquote {
+  color: #8b949e;
+  border-left-color: #30363d;
+}
+
+.dark .wmde-markdown code {
+  background-color: rgba(240, 246, 252, 0.15);
+}
+
+.dark .wmde-markdown pre {
+  background-color: #161b22;
+}
+
+.dark .wmde-markdown table tr {
+  background-color: #0d1117;
+  border-top-color: #30363d;
+}
+
+.dark .wmde-markdown table tr:nth-child(2n) {
+  background-color: #161b22;
+}
+
+.dark .wmde-markdown table th,
+.dark .wmde-markdown table td {
+  border-color: #30363d;
+}
+
+.dark .wmde-markdown img {
+  background-color: #0d1117;
+}
+
+.dark .wmde-markdown hr {
+  background-color: #30363d;
+}

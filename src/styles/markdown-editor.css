@@ -1,0 +1,240 @@
+/* 完整的 Markdown 编辑器样式 - 包含原始包的样式和自定义样式 */
+
+/* 基本样式 - 从原始包中复制 */
+.w-md-editor {
+  text-align: left;
+  border-radius: 3px;
+  padding: 0;
+  position: relative;
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.w-md-editor-toolbar {
+  padding: 0 6px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 3px 3px 0 0;
+  user-select: none;
+}
+
+.w-md-editor-toolbar ul,
+.w-md-editor-toolbar li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.w-md-editor-toolbar li {
+  display: inline-block;
+}
+
+.w-md-editor-toolbar li button {
+  display: inline-block;
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+  text-align: center;
+  line-height: 28px;
+  color: #666;
+  border-radius: 3px;
+  border: none;
+  background: none;
+}
+
+.w-md-editor-toolbar li button:hover {
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.w-md-editor-toolbar li.active button {
+  color: #0969da;
+  background-color: #f9f9f9;
+}
+
+.w-md-editor-toolbar-divider {
+  height: 16px;
+  width: 1px;
+  margin: 0 5px;
+  background-color: #ddd;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.w-md-editor-content {
+  position: relative;
+  border-radius: 0 0 3px 3px;
+}
+
+.w-md-editor-input {
+  width: 50%;
+  height: 100%;
+}
+
+.w-md-editor-text {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: auto;
+  background-color: #fff !important; /* 强制设置背景色为白色 */
+}
+
+.w-md-editor-text-pre,
+.w-md-editor-text-input,
+.w-md-editor-text > .w-md-editor-text-pre > code {
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+.w-md-editor-text-pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: transparent;
+  position: relative;
+}
+
+.w-md-editor-text-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  color: #333 !important; /* 强制设置文本颜色为深色 */
+  resize: none;
+  border: none;
+  background: none;
+  box-sizing: border-box;
+}
+
+.w-md-editor-text-input:focus {
+  outline: none;
+}
+
+.w-md-editor-preview {
+  width: 50%;
+  box-sizing: border-box;
+  box-shadow: -1px 0 0 0 #ddd;
+  position: absolute;
+  padding: 16px;
+  overflow: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0 0 3px 0;
+  background-color: #fff;
+}
+
+.w-md-editor-preview .wmde-markdown {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+/* 暗色模式 */
+.dark .w-md-editor {
+  color: #c9d1d9;
+  background-color: #0d1117;
+  border-color: #30363d;
+}
+
+.dark .w-md-editor-text {
+  background-color: #0d1117 !important; /* 强制设置暗色模式下的背景色 */
+}
+
+.dark .w-md-editor-toolbar {
+  border-bottom-color: #30363d;
+}
+
+.dark .w-md-editor-toolbar li button {
+  color: #8b949e;
+}
+
+.dark .w-md-editor-toolbar li button:hover {
+  background-color: #161b22;
+  color: #c9d1d9;
+}
+
+.dark .w-md-editor-toolbar li.active button {
+  color: #58a6ff;
+  background-color: #161b22;
+}
+
+.dark .w-md-editor-toolbar-divider {
+  background-color: #30363d;
+}
+
+.dark .w-md-editor-preview {
+  box-shadow: -1px 0 0 0 #30363d;
+  background-color: #0d1117;
+}
+
+.dark .w-md-editor-text-input {
+  color: #c9d1d9 !important; /* 强制设置暗色模式下的文本颜色 */
+}
+
+/* 自定义样式 - 解决兼容性问题 */
+.markdown-editor-container {
+  width: 100%;
+  position: relative;
+}
+
+/* 额外的样式规则，确保文本可见 */
+.w-md-editor-text-pre > code {
+  color: transparent !important;
+}
+
+.w-md-editor-text-pre {
+  background-color: #fff !important;
+}
+
+.dark .w-md-editor-text-pre {
+  background-color: #0d1117 !important;
+}
+
+/* 确保编辑器内容区域有足够的高度 */
+.w-md-editor {
+  min-height: 300px !important;
+}
+
+/* 全屏模式 */
+.w-md-editor-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100% !important;
+  z-index: 9999;
+  border-radius: 0;
+  border: none;
+}
+
+/* 确保编辑器内容区域正确显示 */
+.w-md-editor-content {
+  height: calc(100% - 40px) !important;
+}
+
+/* 修复在 React 19 中的显示问题 */
+.w-md-editor-bar {
+  width: 5px;
+  cursor: col-resize;
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  bottom: 0;
+  background-color: transparent;
+}
+
+.w-md-editor-bar:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .w-md-editor-bar:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}

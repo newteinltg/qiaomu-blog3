@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  qiaomu-blog:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./blog.db:/app/blog.db
+      - ./public/uploads:/app/public/uploads
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
