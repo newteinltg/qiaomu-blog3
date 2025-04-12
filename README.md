@@ -198,8 +198,7 @@ cd qiaomu_website
 # Linux/macOS
 bash setup.sh
 
-# Windows
-setup.bat
+2. 点击"设置""
 ```
 
 或者使用 Docker 部署：

@@ -4,13 +4,12 @@ import * as schema from '@/lib/schema';
 import { eq, desc, sql, and } from 'drizzle-orm';
 
 export async function GET(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
     // 从 URL 路径中提取分类ID
-    const { id: idParam } = await context.params;
-    const id = parseInt(idParam);
+    const id = parseInt(params.id);
 
     if (isNaN(id)) {
       return NextResponse.json(
