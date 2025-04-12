@@ -4,8 +4,8 @@ import * as schema from '@/lib/schema';
 import { eq, desc, sql, and } from 'drizzle-orm';
 
 export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } }
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
     // 从 URL 路径中提取分类ID
