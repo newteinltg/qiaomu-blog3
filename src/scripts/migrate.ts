@@ -5,7 +5,7 @@ import Database from 'better-sqlite3';
 console.log('开始执行数据库迁移...');
 
 // 初始化 SQLite 数据库连接
-const sqlite = new Database('./blog.db');
+const sqlite = new Database('./demo.db');
 
 async function migrate() {
   try {

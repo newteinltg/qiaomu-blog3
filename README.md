@@ -187,16 +187,26 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/joeseesun/qiaomu_website.git
-cd qiaomu_website
+git clone https://github.com/joeseesun/qiaomu-blog3.git
+cd qiaomu-blog3
 
 # 使用一键部署脚本
 # Linux/macOS
 bash setup.sh
+```
 
-2. 点击"设置"
+或者手动执行以下步骤：
 
-2. 点击"设置""
+```bash
+# 克隆仓库
+git clone https://github.com/joeseesun/qiaomu-blog3.git
+cd qiaomu-blog3
+
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
 ```
 
 或者使用 Docker 部署：

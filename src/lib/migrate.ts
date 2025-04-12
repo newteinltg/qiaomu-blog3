@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Initialize SQLite database
-const sqlite = new Database('./blog.db');
+const sqlite = new Database('./demo.db');
 const db = drizzle(sqlite);
 
 // Define migrations folder path

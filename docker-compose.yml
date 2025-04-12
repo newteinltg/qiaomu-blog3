@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./blog.db:/app/blog.db
+      - ./demo.db:/app/demo.db
       - ./public/uploads:/app/public/uploads
     restart: unless-stopped
     environment:

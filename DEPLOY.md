@@ -48,7 +48,7 @@
 2. 在Vercel项目中上传数据库：
    - 进入您的Vercel项目仪表板
    - 点击“存储”标签
-   - 上传下载的`demo.db`文件，并将其重命名为`blog.db`
+   - 上传下载的`demo.db`文件，并将其重命名为`demo.db`
 
 演示数据库中包含示例文章、分类和标签，以及一个演示管理员账户：
 
@@ -126,7 +126,7 @@ npm install
 npm run init-db
 ```
 
-这将创建一个名为`blog.db`的SQLite数据库文件，并设置必要的表结构。
+这将创建一个名为`demo.db`的SQLite数据库文件，并设置必要的表结构。
 
 ### 4. 创建管理员账户
 
@@ -197,7 +197,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 ### 数据库位置
 
-默认情况下，数据库文件`blog.db`位于项目根目录。如果您想更改数据库位置，请修改`src/lib/db.ts`文件中的数据库路径。
+默认情况下，数据库文件`demo.db`位于项目根目录。项目已经包含了一个演示数据库，无需额外下载或重命名。如果您想更改数据库位置，请修改`src/lib/db.ts`文件中的数据库路径。
 
 ## 使用Docker部署（可选）
 
@@ -208,18 +208,18 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 docker build -t qiaomu-blog .
 
 # 运行容器
-docker run -p 3000:3000 -v $(pwd)/blog.db:/app/blog.db -v $(pwd)/public/uploads:/app/public/uploads qiaomu-blog
+docker run -p 3000:3000 -v $(pwd)/demo.db:/app/demo.db -v $(pwd)/public/uploads:/app/public/uploads qiaomu-blog
 ```
 
 ## 常见问题
 
 ### 1. 如何备份数据？
 
-博客数据存储在SQLite数据库文件`blog.db`中，只需备份此文件即可。上传的图片存储在`public/uploads`目录，也需要一并备份。
+博客数据存储在SQLite数据库文件`demo.db`中，只需备份此文件即可。上传的图片存储在`public/uploads`目录，也需要一并备份。
 
 ```bash
 # 备份数据库和上传文件
-cp blog.db blog.db.backup
+cp demo.db demo.db.backup
 cp -r public/uploads public/uploads.backup
 ```
 
