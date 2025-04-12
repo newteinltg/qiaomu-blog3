@@ -8,7 +8,8 @@ import {
   Cog6ToothIcon as HeroCog6ToothIcon,
   ArrowTopRightOnSquareIcon as HeroArrowTopRightOnSquareIcon,
   ArrowRightOnRectangleIcon as HeroArrowRightOnRectangleIcon,
-  FolderIcon as HeroFolderIcon
+  FolderIcon as HeroFolderIcon,
+  UserIcon as HeroUserIcon
 } from '@heroicons/react/24/outline';
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -45,4 +46,8 @@ export function ArrowRightOnRectangleIcon(props: IconProps) {
 
 export function FolderIcon(props: IconProps) {
   return <HeroFolderIcon {...props} />;
+}
+
+export function UserIcon(props: IconProps) {
+  return <HeroUserIcon {...props} />;
 }

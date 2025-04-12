@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, FolderOpen, Tag, Settings, Menu, Plus, LayoutDashboard } from 'lucide-react';
+import { FileText, FolderOpen, Tag, Settings, Menu, Plus, LayoutDashboard, Users } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { data: session } = useSession();
@@ -61,6 +61,14 @@ export default function AdminDashboard() {
       href: '/admin/menus',
       color: 'bg-purple-100 text-purple-700',
       count: '自定义网站导航',
+    },
+    {
+      title: '用户管理',
+      description: '管理系统用户账户',
+      icon: Users, 
+      href: '/admin/users',
+      color: 'bg-indigo-100 text-indigo-700',
+      count: '管理管理员账户',
     },
     {
       title: '系统设置',

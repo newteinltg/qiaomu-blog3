@@ -12,7 +12,8 @@ import {
   ArrowTopRightOnSquareIcon,
   ArrowRightOnRectangleIcon,
   FolderIcon,
-  Bars3Icon
+  Bars3Icon,
+  UserIcon
 } from '@/components/ui/icons';
 
 interface AdminLayoutProps {
@@ -33,6 +34,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       'posts': '文章管理',
       'categories': '分类管理',
       'tags': '标签管理',
+      'users': '用户管理',
       'menus': '菜单管理',
       'settings': '系统设置',
     };
@@ -118,6 +120,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               >
                 <Bars3Icon className="mr-3 h-5 w-5" />
                 菜单管理
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/admin/users"
+                className={`flex items-center px-4 py-2 text-sm rounded-md ${
+                  pathname.startsWith('/admin/users') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <UserIcon className="mr-3 h-5 w-5" />
+                用户管理
               </Link>
             </li>
             <li>
