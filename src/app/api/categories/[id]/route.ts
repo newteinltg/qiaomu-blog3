@@ -15,11 +15,11 @@ const categorySchema = z.object({
 // GET 处理程序，获取单个分类
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     // 获取ID参数
-    const id = parseInt(context.params.id);
+    const id = parseInt(params.id);
     
     if (isNaN(id)) {
       return NextResponse.json(
@@ -29,7 +29,7 @@ export async function GET(
     }
 
     const category = await db.query.categories.findFirst({
-      where: eq(schema.categories.id, id),
+      where: eq(schema.categories.id, id)
     });
 
     if (!category) {
@@ -52,11 +52,11 @@ export async function GET(
 // PUT 处理程序，更新分类
 export async function PUT(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     // 获取ID参数
-    const id = parseInt(context.params.id);
+    const id = parseInt(params.id);
     
     if (isNaN(id)) {
       return NextResponse.json(
@@ -67,7 +67,7 @@ export async function PUT(
 
     // 检查分类是否存在
     const existingCategory = await db.query.categories.findFirst({
-      where: eq(schema.categories.id, id),
+      where: eq(schema.categories.id, id)
     });
 
     if (!existingCategory) {
@@ -80,48 +80,41 @@ export async function PUT(
     // 解析请求体
     const body = await request.json();
     
-    // 验证数据
+    // 验证请求数据
     const validationResult = categorySchema.safeParse(body);
+    
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: '无效的分类数据', details: validationResult.error.format() },
+        { error: '无效的分类数据', details: validationResult.error.errors },
         { status: 400 }
       );
     }
 
     const { name, slug, description, parentId } = validationResult.data;
 
-    // 检查slug是否已被其他分类使用
-    const categoryWithSameSlug = await db.query.categories.findFirst({
+    // 检查别名是否已被使用（排除当前分类）
+    const slugExists = await db.query.categories.findFirst({
       where: (categories) => {
         return eq(categories.slug, slug);
-      },
+      }
     });
 
-    if (categoryWithSameSlug && categoryWithSameSlug.id !== id) {
+    if (slugExists && slugExists.id !== id) {
       return NextResponse.json(
         { error: '分类别名已被使用' },
         { status: 400 }
       );
     }
 
-    // 检查父分类是否存在（如果指定了父分类）
+    // 如果设置了父分类，检查父分类是否存在
     if (parentId !== null && parentId !== undefined) {
-      const parentCategory = await db.query.categories.findFirst({
-        where: eq(schema.categories.id, parentId),
+      const parentExists = await db.query.categories.findFirst({
+        where: eq(schema.categories.id, parentId)
       });
 
-      if (!parentCategory) {
+      if (!parentExists) {
         return NextResponse.json(
           { error: '父分类不存在' },
-          { status: 400 }
-        );
-      }
-
-      // 检查是否形成循环引用
-      if (parentId === id) {
-        return NextResponse.json(
-          { error: '分类不能将自己设为父分类' },
           { status: 400 }
         );
       }
@@ -166,14 +159,15 @@ export async function PUT(
       .set({
         name,
         slug,
-        description,
-        parentId,
+        description: description || null,
+        parentId: parentId === undefined ? existingCategory.parentId : parentId,
+        updatedAt: new Date().toISOString()
       })
       .where(eq(schema.categories.id, id));
 
     // 获取更新后的分类
     const updatedCategory = await db.query.categories.findFirst({
-      where: eq(schema.categories.id, id),
+      where: eq(schema.categories.id, id)
     });
 
     return NextResponse.json(updatedCategory);
@@ -189,11 +183,11 @@ export async function PUT(
 // DELETE 处理程序，删除分类
 export async function DELETE(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     // 获取ID参数
-    const id = parseInt(context.params.id);
+    const id = parseInt(params.id);
     
     if (isNaN(id)) {
       return NextResponse.json(
@@ -204,7 +198,7 @@ export async function DELETE(
 
     // 检查分类是否存在
     const existingCategory = await db.query.categories.findFirst({
-      where: eq(schema.categories.id, id),
+      where: eq(schema.categories.id, id)
     });
 
     if (!existingCategory) {
@@ -216,7 +210,7 @@ export async function DELETE(
 
     // 检查是否有子分类
     const childCategories = await db.query.categories.findMany({
-      where: eq(schema.categories.parentId, id),
+      where: eq(schema.categories.parentId, id)
     });
 
     if (childCategories.length > 0) {
@@ -226,14 +220,14 @@ export async function DELETE(
       );
     }
 
-    // 检查是否有文章使用此分类
-    const postCategories = await db.query.postCategories.findMany({
-      where: eq(schema.postCategories.categoryId, id),
+    // 检查是否有关联的文章
+    const relatedPosts = await db.query.postCategories.findMany({
+      where: eq(schema.postCategories.categoryId, id)
     });
 
-    if (postCategories.length > 0) {
+    if (relatedPosts.length > 0) {
       return NextResponse.json(
-        { error: '无法删除被文章使用的分类，请先移除相关文章的分类' },
+        { error: '无法删除有关联文章的分类，请先移除文章关联' },
         { status: 400 }
       );
     }
