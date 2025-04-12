@@ -6,5 +6,8 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "regions": ["hnd1"],
-  "env": {}
+  "env": {
+    "NEXTAUTH_SECRET": "your-nextauth-secret-change-me-in-production",
+    "JWT_SECRET": "your-jwt-secret-change-me-in-production"
+  }
 }
