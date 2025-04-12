@@ -1,4 +1,4 @@
-/** @type {import(\"next\").NextConfig} */
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   // 禁用ESLint检查，解决Vercel部署问题
@@ -31,23 +31,23 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: \"/:path*\",
+        source: '/:path*',
         headers: [
           {
-            key: \"Permissions-Policy\",
-            value: \"camera=(), microphone=(), geolocation=(), interest-cohort=()\"
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
           },
           {
-            key: \"X-Content-Type-Options\",
-            value: \"nosniff\"
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
           },
           {
-            key: \"X-Frame-Options\",
-            value: \"SAMEORIGIN\"
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
           },
           {
-            key: \"X-XSS-Protection\",
-            value: \"1; mode=block\"
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
           }
         ]
       }
