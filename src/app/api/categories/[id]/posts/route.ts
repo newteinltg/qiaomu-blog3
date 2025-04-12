@@ -5,11 +5,11 @@ import { eq, desc, sql, and } from 'drizzle-orm';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     // 从 URL 路径中提取分类ID
-    const { id: idParam } = params;
+    const { id: idParam } = await context.params;
     const id = parseInt(idParam);
 
     if (isNaN(id)) {
