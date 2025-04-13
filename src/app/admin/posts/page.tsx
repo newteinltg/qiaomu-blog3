@@ -54,17 +54,59 @@ export default function PostsPage() {
   const [isPinning, setIsPinning] = useState(false);
   const pageSize = 10; // 减少每页显示数量，使表格更紧凑
 
+  // 获取文章的所有分类
+  const fetchPostCategories = async (postId: number) => {
+    try {
+      const response = await fetch(`/api/posts/${postId}/categories`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch post categories');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching categories for post ${postId}:`, error);
+      return [];
+    }
+  };
+
+  // 获取所有文章的分类
+  const fetchAllPostsCategories = async (postsData: any[]) => {
+    try {
+      const postsWithCategories = await Promise.all(
+        postsData.map(async (post) => {
+          const categories = await fetchPostCategories(post.id);
+          return {
+            ...post,
+            categories: categories.length > 0 ? categories : (post.category ? [post.category] : [])
+          };
+        })
+      );
+      
+      return postsWithCategories;
+    } catch (error) {
+      console.error('Error fetching all posts categories:', error);
+      return postsData;
+    }
+  };
+
   // 获取文章列表
   const fetchPosts = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-
       // 构建查询参数
       const params = new URLSearchParams({
         page: currentPage.toString(),
         pageSize: pageSize.toString(),
         sortBy,
         sortOrder,
+        admin: '1', // 添加管理员标识
         _t: Date.now().toString() // 添加时间戳防止缓存
       });
 
@@ -81,10 +123,16 @@ export default function PostsPage() {
       }
 
       const result = await response.json();
-      console.log("API返回的文章数据:", JSON.stringify(result.data, null, 2));
+      console.log("API返回的文章数据:", JSON.stringify(result, null, 2));
 
+      // 检查数据结构，兼容新旧API格式
+      const postsData = result.posts || result.data || [];
+      
+      // 获取所有文章的完整分类信息
+      const postsWithAllCategories = await fetchAllPostsCategories(postsData);
+      
       // 处理文章数据，确保标题是字符串
-      const processedPosts = result.data.map((post: any) => ({
+      const processedPosts = postsWithAllCategories.map((post: any) => ({
         ...post,
         title: String(post.title).replace(/^0+/, '') // 移除标题前面的所有0
       }));
@@ -108,12 +156,32 @@ export default function PostsPage() {
   // 获取所有分类
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/categories/list');
+      console.log('开始获取分类列表');
+      const response = await fetch('/api/categories/list', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
       if (!response.ok) {
         throw new Error('Failed to fetch categories');
       }
+      
       const data = await response.json();
-      setCategories(data);
+      console.log('获取到的分类数据:', data);
+      
+      if (Array.isArray(data)) {
+        setCategories(data);
+      } else {
+        console.error('分类数据格式不正确:', data);
+        toast({
+          title: "数据格式错误",
+          description: "分类数据格式不正确",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error fetching categories:', error);
       toast({
@@ -127,12 +195,35 @@ export default function PostsPage() {
   // 获取所有标签
   const fetchTags = async () => {
     try {
-      const response = await fetch('/api/tags?pageSize=100'); // 获取前100个标签
+      console.log('开始获取标签列表');
+      const response = await fetch('/api/tags?pageSize=100', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      }); // 获取前100个标签
+      
       if (!response.ok) {
         throw new Error('Failed to fetch tags');
       }
+      
       const result = await response.json();
-      setTags(result.data);
+      console.log('获取到的标签数据:', result);
+      
+      // 兼容新旧API格式
+      const tagsData = result.tags || result.data || [];
+      
+      if (Array.isArray(tagsData)) {
+        setTags(tagsData);
+      } else {
+        console.error('标签数据格式不正确:', result);
+        toast({
+          title: "数据格式错误",
+          description: "标签数据格式不正确",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error fetching tags:', error);
       toast({
@@ -415,7 +506,7 @@ export default function PostsPage() {
 
               {/* 置顶筛选 */}
               <div className="flex items-end">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 mb-1">
                   <input
                     type="checkbox"
                     id="pinned-filter"
@@ -508,8 +599,10 @@ export default function PostsPage() {
                         <TableCell>
                           {post.categories && post.categories.length > 0 ? (
                             <div className="flex flex-wrap gap-1">
-                              {post.categories.map((cat: any) => (
-                                <Badge key={cat.id} variant="outline">{cat.name}</Badge>
+                              {post.categories.map((category: any) => (
+                                <Badge key={category.id} variant="outline">
+                                  {category.name}
+                                </Badge>
                               ))}
                             </div>
                           ) : (

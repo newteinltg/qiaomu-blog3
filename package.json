@@ -6,7 +6,7 @@
     "dev": "next dev",
     "dev:custom": "next dev -p 3001",
     "build": "next build",
-    "start": "next start -p 3009",
+    "start": "next start -p 3099",
     "start:custom": "next start -p 3001",
     "lint": "next lint",
     "migrate": "ts-node src/lib/migrate.ts",

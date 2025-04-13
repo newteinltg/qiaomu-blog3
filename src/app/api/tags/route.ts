@@ -55,8 +55,10 @@ export async function GET(request: Request) {
     // 计算总页数
     const totalPages = Math.ceil(totalCount / pageSize);
     
+    // 返回同时兼容新旧格式的数据
     return NextResponse.json({
-      data: formattedTags,
+      data: formattedTags, // 旧格式使用 data
+      tags: formattedTags,  // 新格式使用 tags
       pagination: {
         page,
         pageSize,

@@ -5,7 +5,7 @@ import "../styles/navigation.css";
 import "../styles/article.css";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import ScriptLoader from "@/components/ScriptLoader";
+import NextScriptLoader from "@/components/NextScriptLoader";
 import { usePathname } from "next/navigation";
 
 const geistSans = Geist({
@@ -68,16 +68,20 @@ export default async function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-tap-highlight" content="no" />
+        {/* 缓存控制，确保页面不被缓存 */}
+        <meta name="cache-control" content="no-cache, no-store, must-revalidate" />
+        <meta name="pragma" content="no-cache" />
+        <meta name="expires" content="0" />
         {/* Umami流量统计脚本 */}
         <script defer src="https://cloud.umami.is/script.js" data-website-id="b1135309-3118-4fac-bcbe-868247a90834"></script>
         {/* 动态加载头部脚本 */}
-        <ScriptLoader position="head" key={`head-${timestamp}`} />
+        <NextScriptLoader position="head" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
       >
         {/* 动态加载正文开始脚本 */}
-        <ScriptLoader position="body_start" key={`body-start-${timestamp}`} />
+        <NextScriptLoader position="body_start" />
 
         <SessionProvider>
           <ThemeProvider>
@@ -86,7 +90,7 @@ export default async function RootLayout({
         </SessionProvider>
 
         {/* 动态加载正文结束脚本 */}
-        <ScriptLoader position="body_end" key={`body-end-${timestamp}`} />
+        <NextScriptLoader position="body_end" />
       </body>
     </html>
   );

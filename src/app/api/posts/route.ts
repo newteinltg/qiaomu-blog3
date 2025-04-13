@@ -10,11 +10,13 @@ export async function GET(request: Request) {
     const search = searchParams.get('search');
     const page = parseInt(searchParams.get('page') || '1');
     const pageSize = parseInt(searchParams.get('pageSize') || '25');
+    const limit = parseInt(searchParams.get('limit') || pageSize.toString());
     const categoryId = searchParams.get('categoryId');
     const tagId = searchParams.get('tagId');
     const sortBy = searchParams.get('sortBy') || 'createdAt'; // 默认按创建时间排序
     const sortOrder = searchParams.get('sortOrder') || 'desc'; // 默认降序
     const pinned = searchParams.get('pinned'); // 是否只显示置顶文章
+    const isAdmin = searchParams.get('admin') === '1'; // 是否是管理后台请求
 
     // 计算偏移量
     const offset = (page - 1) * pageSize;
@@ -33,7 +35,8 @@ export async function GET(request: Request) {
       if (postIdsWithTag.length === 0) {
         // 如果没有找到匹配的文章，返回空结果
         return NextResponse.json({
-          data: [],
+          posts: [],
+          data: [], // 兼容旧版API
           pagination: {
             page,
             pageSize,
@@ -46,6 +49,11 @@ export async function GET(request: Request) {
 
     // 构建 where 条件
     const conditions = [];
+
+    // 非管理后台请求，默认只显示已发布的文章
+    if (!isAdmin) {
+      conditions.push(eq(schema.posts.published, 1));
+    }
 
     if (search) {
       conditions.push(like(schema.posts.title, `%${search}%`));
@@ -82,7 +90,24 @@ export async function GET(request: Request) {
 
     // 构建基本查询
     const baseQuery = db
-      .select()
+      .select({
+        id: schema.posts.id,
+        title: schema.posts.title,
+        slug: schema.posts.slug,
+        excerpt: schema.posts.excerpt,
+        coverImage: schema.posts.coverImage,
+        createdAt: schema.posts.createdAt,
+        updatedAt: schema.posts.updatedAt,
+        published: schema.posts.published,
+        pinned: schema.posts.pinned,
+        authorId: schema.posts.authorId,
+        categoryId: schema.posts.categoryId,
+        category: {
+          id: schema.categories.id,
+          name: schema.categories.name,
+          slug: schema.categories.slug,
+        },
+      })
       .from(schema.posts);
       
     // 应用 where 条件
@@ -99,122 +124,47 @@ export async function GET(request: Request) {
     // 应用排序
     const orderClauses = [];
 
-    // 置顶文章始终排在最前面
-    orderClauses.push(desc(schema.posts.pinned));
-
-    // 添加用户指定的排序
     if (sortBy === 'title') {
       orderClauses.push(sortOrder === 'asc' ? asc(schema.posts.title) : desc(schema.posts.title));
+    } else if (sortBy === 'createdAt') {
+      orderClauses.push(sortOrder === 'asc' ? asc(schema.posts.createdAt) : desc(schema.posts.createdAt));
     } else if (sortBy === 'updatedAt') {
       orderClauses.push(sortOrder === 'asc' ? asc(schema.posts.updatedAt) : desc(schema.posts.updatedAt));
-    } else if (sortBy === 'categoryName') {
-      orderClauses.push(sortOrder === 'asc' ? asc(schema.categories.name) : desc(schema.categories.name));
-    } else {
-      // 默认按创建时间排序
-      orderClauses.push(sortOrder === 'asc' ? asc(schema.posts.createdAt) : desc(schema.posts.createdAt));
+    } else if (sortBy === 'pinned') {
+      orderClauses.push(sortOrder === 'asc' ? asc(schema.posts.pinned) : desc(schema.posts.pinned));
+      // 如果按置顶排序，添加第二排序条件为创建时间
+      orderClauses.push(desc(schema.posts.createdAt));
     }
 
-    // 应用排序和分页
-    const finalQuery = joinedQuery
-      .orderBy(...orderClauses)
-      .limit(pageSize)
-      .offset(offset);
+    // 如果没有指定排序，默认按创建时间降序
+    if (orderClauses.length === 0) {
+      orderClauses.push(desc(schema.posts.createdAt));
+    }
+
+    const orderedQuery = joinedQuery.orderBy(...orderClauses);
+
+    // 应用分页
+    const paginatedQuery = orderedQuery.limit(limit).offset(offset);
 
     // 执行查询
-    const postsData = await finalQuery.execute();
+    const posts = await paginatedQuery.execute();
 
-    // 格式化结果
-    const formattedPosts = postsData.map(row => ({
-      id: row.posts.id,
-      title: String(row.posts.title),
-      slug: row.posts.slug,
-      content: row.posts.content,
-      excerpt: row.posts.excerpt,
-      coverImage: row.posts.coverImage,
-      published: Boolean(row.posts.published),
-      pinned: Boolean(row.posts.pinned),
-      createdAt: row.posts.createdAt,
-      updatedAt: row.posts.updatedAt,
-      authorId: row.posts.authorId,
-      categoryId: row.posts.categoryId,
-      categoryName: row.categories?.name,
-      categories: [] // 将在后面填充所有分类
-    }));
-
-    // 获取每篇文章的标签和分类
-    const postsWithTagsAndCategories = await Promise.all(formattedPosts.map(async (post) => {
-      // 1. 获取文章的标签关联
-      const postTagsRelations = await db
-        .select()
+    // 获取每篇文章的标签
+    const postsWithTags = await Promise.all(posts.map(async (post) => {
+      const tags = await db
+        .select({
+          id: schema.tags.id,
+          name: schema.tags.name,
+          slug: schema.tags.slug,
+        })
         .from(schema.postTags)
+        .leftJoin(schema.tags, eq(schema.postTags.tagId, schema.tags.id))
         .where(eq(schema.postTags.postId, post.id))
         .execute();
-
-      let tags: Array<{ id: number; name: string; slug: string }> = [];
-
-      if (postTagsRelations.length > 0) {
-        const tagIds = postTagsRelations.map(relation => relation.tagId);
-
-        // 获取标签详情
-        const tagsData = await db
-          .select()
-          .from(schema.tags)
-          .where(inArray(schema.tags.id, tagIds))
-          .execute();
-
-        tags = tagsData.map(tag => ({
-          id: tag.id,
-          name: tag.name,
-          slug: tag.slug
-        }));
-      }
-
-      // 2. 获取文章的所有分类
-      const postCategoriesRelations = await db
-        .select()
-        .from(schema.postCategories)
-        .where(eq(schema.postCategories.postId, post.id))
-        .execute();
-
-      let categories: Array<{ id: number; name: string; slug: string }> = [];
-
-      if (postCategoriesRelations.length > 0) {
-        const categoryIds = postCategoriesRelations.map(relation => relation.categoryId);
-
-        // 获取分类详情
-        const categoriesData = await db
-          .select()
-          .from(schema.categories)
-          .where(inArray(schema.categories.id, categoryIds))
-          .execute();
-
-        categories = categoriesData.map(category => ({
-          id: category.id,
-          name: category.name,
-          slug: category.slug
-        }));
-      } else if (post.categoryId) {
-        // 如果没有在关联表中找到分类，但文章有主分类，则使用主分类
-        const mainCategory = await db
-          .select()
-          .from(schema.categories)
-          .where(eq(schema.categories.id, post.categoryId))
-          .limit(1)
-          .execute();
-
-        if (mainCategory.length > 0) {
-          categories = [{
-            id: mainCategory[0].id,
-            name: mainCategory[0].name,
-            slug: mainCategory[0].slug
-          }];
-        }
-      }
 
       return {
         ...post,
         tags,
-        categories
       };
     }));
 
@@ -222,7 +172,8 @@ export async function GET(request: Request) {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return NextResponse.json({
-      data: postsWithTagsAndCategories,
+      posts: postsWithTags, // 新版API使用 posts
+      data: postsWithTags,  // 旧版API使用 data
       pagination: {
         page,
         pageSize,
@@ -231,9 +182,9 @@ export async function GET(request: Request) {
       }
     });
   } catch (error) {
-    console.error('获取文章时出错:', error);
+    console.error('Error fetching posts:', error);
     return NextResponse.json(
-      { error: '获取文章失败' },
+      { error: 'Failed to fetch posts' },
       { status: 500 }
     );
   }
