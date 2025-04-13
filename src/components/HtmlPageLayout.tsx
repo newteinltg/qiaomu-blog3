@@ -10,9 +10,10 @@ interface HtmlPageLayoutProps {
   returnUrl?: string;
   categories?: { id: number; name: string; slug: string }[];
   tags?: { id: number; name: string; slug: string }[];
+  postId?: number;
 }
 
-export default function HtmlPageLayout({ title, content, returnUrl = '/', categories = [], tags = [] }: HtmlPageLayoutProps) {
+export default function HtmlPageLayout({ title, content, returnUrl = '/', categories = [], tags = [], postId }: HtmlPageLayoutProps) {
   const { settings, loading } = useSettings();
   const [siteName, setSiteName] = useState('个人博客');
 
@@ -80,6 +81,7 @@ export default function HtmlPageLayout({ title, content, returnUrl = '/', catego
         returnUrl={returnUrl}
         categories={categories}
         tags={tags}
+        postId={postId}
       />
     </div>
   );

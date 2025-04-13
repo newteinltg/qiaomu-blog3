@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronUp, ChevronDown, Home, ArrowLeft, X } from 'lucide-react';
+import { ChevronUp, ChevronDown, Home, ArrowLeft, X, Edit } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 
 interface FloatingInfoBarProps {
   title: string;
@@ -10,10 +11,12 @@ interface FloatingInfoBarProps {
   returnUrl?: string;
   categories?: { id: number; name: string; slug: string }[];
   tags?: { id: number; name: string; slug: string }[];
+  postId?: number; 
 }
 
-export default function FloatingInfoBar({ title, siteName, returnUrl = '/', categories = [], tags = [] }: FloatingInfoBarProps) {
+export default function FloatingInfoBar({ title, siteName, returnUrl = '/', categories = [], tags = [], postId }: FloatingInfoBarProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const { data: session } = useSession(); 
 
   // 关闭信息栏
   const closeInfoBar = () => {
@@ -31,8 +34,8 @@ export default function FloatingInfoBar({ title, siteName, returnUrl = '/', cate
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out"
       style={{
-        boxShadow: '0 -1px 3px rgba(0, 0, 0, 0.1)', // 增强阴影
-        opacity: 0.75 // 设置透明度75%
+        boxShadow: '0 -1px 3px rgba(0, 0, 0, 0.1)', 
+        opacity: 0.75 
       }}
     >
       {/* 信息栏 - 透明底部悬浮条 */}
@@ -70,6 +73,18 @@ export default function FloatingInfoBar({ title, siteName, returnUrl = '/', cate
         </div>
 
         <div className="flex items-center space-x-2">
+          {/* 管理员编辑按钮 - 仅当用户登录且有postId时显示 */}
+          {session?.user && postId && (
+            <Link
+              href={`/admin/posts/edit/${postId}`}
+              className="inline-flex items-center px-2 py-1 bg-blue-600 hover:bg-blue-500 rounded text-xs text-white transition-colors"
+              title="编辑文章"
+            >
+              <Edit size={12} className="mr-1" />
+              <span>编辑</span>
+            </Link>
+          )}
+
           <Link
             href="/"
             className="inline-flex items-center px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs text-white transition-colors"

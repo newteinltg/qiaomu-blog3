@@ -280,6 +280,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         returnUrl={category ? `/categories/${category.slug}` : '/'}
         categories={postWithRelations.categories || []}
         tags={postWithRelations.tags || []}
+        postId={post.id} // 传递文章ID，用于编辑功能
       />
     );
   }
