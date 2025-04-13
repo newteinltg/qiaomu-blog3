@@ -5,11 +5,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, FolderOpen, Tag, Settings, Menu, Plus, LayoutDashboard, Users } from 'lucide-react';
+import { FileText, FolderOpen, Tag, Settings, Menu, Plus, LayoutDashboard, Users, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from '@/components/ui/use-toast';
 
 export default function AdminDashboard() {
   const { data: session } = useSession();
   const router = useRouter();
+  const [regenerating, setRegenerating] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -25,6 +28,39 @@ export default function AdminDashboard() {
       router.push('/login');
     } catch (error) {
       console.error('Logout error:', error);
+    }
+  };
+
+  const handleRegenerateStaticContent = async () => {
+    setRegenerating(true);
+    try {
+      const response = await fetch('/api/revalidate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ path: '/' }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: "成功",
+          description: data.message || "缓存已刷新，请刷新页面查看最新内容",
+          variant: "default",
+        });
+      } else {
+        throw new Error('操作失败');
+      }
+    } catch (error) {
+      console.error('Error refreshing cache:', error);
+      toast({
+        title: "错误",
+        description: "刷新缓存失败，请稍后重试",
+        variant: "destructive",
+      });
+    } finally {
+      setRegenerating(false);
     }
   };
 
@@ -78,6 +114,14 @@ export default function AdminDashboard() {
       color: 'bg-slate-100 text-slate-700',
       count: '管理网站参数',
     },
+    {
+      title: '重新构建站点',
+      description: '重新构建网站静态内容',
+      icon: RefreshCw,
+      href: '#',
+      color: 'bg-orange-100 text-orange-700',
+      count: '更新网站缓存',
+    },
   ];
 
   return (
@@ -90,6 +134,14 @@ export default function AdminDashboard() {
             新建文章
           </Button>
         </Link>
+        <Button onClick={handleRegenerateStaticContent} disabled={regenerating}>
+          {regenerating ? (
+            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <RefreshCw className="mr-2 h-4 w-4" />
+          )}
+          刷新缓存
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -106,11 +158,22 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-sm text-muted-foreground mb-3">{card.count}</div>
-              <Link href={card.href}>
-                <Button className="w-full">
-                  进入管理
+              {card.href === '#' ? (
+                <Button className="w-full" onClick={handleRegenerateStaticContent} disabled={regenerating}>
+                  {regenerating ? (
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                  )}
+                  刷新缓存
                 </Button>
-              </Link>
+              ) : (
+                <Link href={card.href}>
+                  <Button className="w-full">
+                    进入管理
+                  </Button>
+                </Link>
+              )}
             </CardContent>
           </Card>
         ))}

@@ -4,6 +4,9 @@ import { eq, isNull, asc, count, and } from 'drizzle-orm';
 
 // 获取网站基本设置
 export async function getSiteSettings() {
+  // 添加时间戳参数，确保每次都获取最新数据
+  const timestamp = Date.now();
+  
   const settings = await db
     .select()
     .from(schema.siteSettings);
@@ -19,6 +22,9 @@ export async function getSiteSettings() {
 
 // 获取社交媒体链接
 export async function getSocialLinks() {
+  // 添加时间戳参数，确保每次都获取最新数据
+  const timestamp = Date.now();
+  
   return db
     .select()
     .from(schema.socialLinks)
@@ -28,6 +34,9 @@ export async function getSocialLinks() {
 
 // 获取联系方式
 export async function getContactInfo() {
+  // 添加时间戳参数，确保每次都获取最新数据
+  const timestamp = Date.now();
+  
   return db
     .select()
     .from(schema.contactInfo)
@@ -36,6 +45,9 @@ export async function getContactInfo() {
 
 // 获取打赏信息
 export async function getDonationInfo() {
+  // 添加时间戳参数，确保每次都获取最新数据
+  const timestamp = Date.now();
+  
   return db
     .select()
     .from(schema.donationInfo)
@@ -44,6 +56,9 @@ export async function getDonationInfo() {
 
 // 获取Hero区域设置
 export async function getHeroSettings() {
+  // 添加时间戳参数，确保每次都获取最新数据
+  const timestamp = Date.now();
+  
   const heroSettings = await db
     .select()
     .from(schema.heroSettings)
@@ -196,6 +211,9 @@ export async function getTags() {
 
 // 获取所有设置（综合）
 export async function getAllSettings() {
+  // 添加时间戳参数，确保每次都获取最新数据
+  const timestamp = Date.now();
+  
   return db
     .select()
     .from(schema.siteSettings)

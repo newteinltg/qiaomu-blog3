@@ -5,12 +5,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { formatDate } from '@/lib/utils';
 import { Metadata } from 'next';
+import { unstable_noStore } from 'next/cache';
 import SimpleNavigation from '@/components/SimpleNavigation';
 import SimpleFooter from '@/components/SimpleFooter';
 import FeaturedSlider from '@/components/FeaturedSlider';
 import LatestArticles from '@/components/LatestArticles';
 import Sidebar from '@/components/Sidebar';
-import { getCategories, getTags, getMenus, getAllSettings } from '@/lib/services/settings';
+import { getCategories, getTags, getMenus, getSiteSettings } from '@/lib/services/settings';
 import { Post } from '@/types';
 import { adaptMenus } from '@/lib/utils/menu-adapters';
 
@@ -25,14 +26,16 @@ export default async function Home() {
     getCategories(),
     getTags(),
     getMenus(),
-    getAllSettings()
+    getSiteSettings(),
   ]);
 
   // 获取网站设置
-  const siteSettings = settings.reduce((acc: Record<string, string | null>, setting: { key: string, value: string | null }) => {
-    acc[setting.key] = setting.value;
-    return acc;
-  }, {} as Record<string, string | null>);
+  const siteSettings = Array.isArray(settings) 
+    ? settings.reduce((acc: Record<string, string | null>, setting: { key: string, value: string | null }) => {
+        acc[setting.key] = setting.value;
+        return acc;
+      }, {} as Record<string, string | null>)
+    : settings;
 
   // 获取置顶文章
   const pinnedPostsData = await db
@@ -79,6 +82,9 @@ export default async function Home() {
     }
   }));
 
+  // 添加随机查询参数，确保每次都获取最新数据
+  const randomParam = Date.now();
+
   // 获取最新文章
   const latestPostsData = await db
     .select({
@@ -107,7 +113,7 @@ export default async function Home() {
     .limit(10);
 
   // 为每篇文章获取标签并转换类型
-  const postsWithTags: Post[] = await Promise.all(latestPostsData.map(async (post) => {
+  const postsWithTags: Post[] = await Promise.all(latestPostsData.map(async post => {
     // 获取文章的标签
     const postTags = await db
       .select({
@@ -116,8 +122,8 @@ export default async function Home() {
         slug: schema.tags.slug,
       })
       .from(schema.postTags)
-      .where(eq(schema.postTags.postId, post.id))
-      .leftJoin(schema.tags, eq(schema.postTags.tagId, schema.tags.id));
+      .leftJoin(schema.tags, eq(schema.postTags.tagId, schema.tags.id))
+      .where(eq(schema.postTags.postId, post.id));
 
     return {
       ...post,
@@ -132,9 +138,9 @@ export default async function Home() {
         slug: post.category.slug || null
       },
       tags: postTags.map(tag => ({
-        id: tag.id || 0, // 确保id不为null或undefined
-        name: tag.name || '',
-        slug: tag.slug || ''
+        id: tag.id || 0, // 确保id不为null
+        name: tag.name || '', // 确保name不为null
+        slug: tag.slug || '' // 确保slug不为null
       }))
     };
   }));
@@ -171,7 +177,7 @@ export default async function Home() {
           </div>
 
           {/* 侧边栏 */}
-          <div className="col-span-1">
+          <div className="hidden lg:block lg:col-span-1">
             <Sidebar categories={categories} tags={tags} isHomePage={true} />
           </div>
         </div>

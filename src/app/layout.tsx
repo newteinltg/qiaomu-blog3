@@ -41,35 +41,39 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
+  // 获取当前时间戳，用于强制刷新缓存
+  const timestamp = new Date().getTime();
+  
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
-        <link rel="shortcut icon" href="/icon/web/favicon.ico" />
+        <link rel="shortcut icon" href={`/icon/web/favicon.ico?v=${timestamp}`} />
         <link rel="apple-touch-icon" href="/icon/web/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/icon/web/icon-192.png" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/icon/web/icon-512.png" />
+        <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#ffffff" />
-        <meta name="author" content="向阳乔木" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" />
-        <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-        <script src="/js/slider.js" defer></script>
-        <script src="/js/mobile-menu.js" defer></script>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="向阳乔木的博客" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-TileColor" content="#ffffff" />
+        <meta name="msapplication-tap-highlight" content="no" />
         {/* Umami流量统计脚本 */}
         <script defer src="https://cloud.umami.is/script.js" data-website-id="b1135309-3118-4fac-bcbe-868247a90834"></script>
         {/* 动态加载头部脚本 */}
-        <ScriptLoader position="head" />
+        <ScriptLoader position="head" key={`head-${timestamp}`} />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
       >
         {/* 动态加载正文开始脚本 */}
-        <ScriptLoader position="body_start" />
+        <ScriptLoader position="body_start" key={`body-start-${timestamp}`} />
 
         <SessionProvider>
           <ThemeProvider>
@@ -78,7 +82,7 @@ export default function RootLayout({
         </SessionProvider>
 
         {/* 动态加载正文结束脚本 */}
-        <ScriptLoader position="body_end" />
+        <ScriptLoader position="body_end" key={`body-end-${timestamp}`} />
       </body>
     </html>
   );
