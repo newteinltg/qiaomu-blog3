@@ -96,6 +96,7 @@ export default function EditPostPage() {
           value: tag.name,
           id: tag.id
         }));
+        console.log('获取到文章标签:', formattedTags);
         return JSON.stringify(formattedTags);
       }
       return '';
@@ -266,8 +267,8 @@ export default function EditPostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsSaving(true);
+    setError('');
 
     try {
       // 确保 slug 不为空且格式正确
@@ -287,6 +288,21 @@ export default function EditPostPage() {
         categoryIds,
         published: true
       });
+
+      // 在更新文章前，先获取当前的标签数据，确保不会丢失
+      let currentTags = [];
+      if (tags) {
+        try {
+          if (typeof tags === 'string') {
+            currentTags = JSON.parse(tags);
+          } else {
+            currentTags = tags;
+          }
+          console.log('当前标签数据:', currentTags);
+        } catch (e) {
+          console.error('解析当前标签数据出错:', e);
+        }
+      }
 
       // 更新文章
       const response = await fetch(`/api/posts/${postId}`, {
@@ -331,51 +347,60 @@ export default function EditPostPage() {
         }
       }
 
-      // 处理标签
-      if (tags) {
-        let parsedTags;
+      // 处理标签 - 确保在更新文章后，标签数据不会丢失
+      if (currentTags && currentTags.length > 0) {
         try {
-          // 检查tags是否已经是对象（可能已经被解析过）
-          if (typeof tags === 'string') {
-            parsedTags = JSON.parse(tags);
-          } else {
-            parsedTags = tags;
-          }
-
-          // 确保标签数据格式正确
-          if (Array.isArray(parsedTags)) {
-            console.log('Updating tags:', parsedTags);
-            const tagsResponse = await fetch(`/api/posts/${postId}/tags`, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ tags: parsedTags }),
-            });
-
-            if (!tagsResponse.ok) {
-              const tagsErrorText = await tagsResponse.text();
-              console.error('Tags API Error Text:', tagsErrorText);
-
-              let tagsErrorMessage = '更新标签失败';
-              if (tagsErrorText) {
-                try {
-                  const tagsError = JSON.parse(tagsErrorText);
-                  tagsErrorMessage = tagsError.error || tagsErrorMessage;
-                } catch (e) {
-                  console.error('Failed to parse tags error response:', tagsErrorText);
-                }
-              }
-
-              console.warn('Warning: Failed to update tags:', tagsErrorMessage);
-              // 不抛出错误，允许文章保存成功即使标签更新失败
+          console.log('更新标签数据:', currentTags);
+          
+          // 确保每个标签对象都有正确的格式 (value 和 id)
+          const formattedTags = currentTags.map((tag: { id?: number; name?: string; value?: string; description?: string }) => {
+            // 如果标签已经有正确的格式，直接返回
+            if (tag.value && (tag.id || tag.id === 0)) {
+              return tag;
             }
-          } else {
-            console.warn('标签数据格式不正确:', parsedTags);
+            
+            // 如果标签只有name属性，转换为value
+            if (tag.name && !tag.value) {
+              return {
+                ...tag,
+                value: tag.name
+              };
+            }
+            
+            return tag;
+          });
+          
+          // 提取标签ID列表
+          const tagIds = formattedTags
+            .map((tag: { id?: number }) => tag.id)
+            .filter((id?: number) => id !== undefined && id !== null) as number[];
+          
+          if (tagIds.length === 0) {
+            console.warn('没有有效的标签ID可关联');
+            return;
           }
-        } catch (e) {
-          console.error('处理标签数据时出错:', e, '原始标签值:', tags);
-          // 不抛出错误，允许文章保存成功即使标签处理失败
+          
+          console.log('关联文章标签，文章ID:', postId, '标签IDs:', tagIds);
+          
+          // 发送请求更新文章标签
+          const tagsResponse = await fetch(`/api/posts/${postId}/tags`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              tags: formattedTags
+            }),
+          });
+          
+          if (!tagsResponse.ok) {
+            const errorText = await tagsResponse.text();
+            console.error('Failed to update post tags:', errorText);
+          } else {
+            console.log('成功更新文章标签');
+          }
+        } catch (err) {
+          console.error('Error updating post tags:', err);
         }
       }
 

@@ -130,7 +130,7 @@ export default function TagifyInput({
       maxTags: 10,
       backspace: 'edit',
       placeholder,
-      editTags: true, // 允许编辑标签
+      editTags: 1, // 将editTags设置为数值1而不是布尔值true，这是Tagify推荐的方式
       dropdown: {
         enabled: 0,            // 设置为0，表示在输入框获得焦点时就显示下拉菜单
         maxItems: 20,          // 最多显示20个项目
@@ -154,23 +154,33 @@ export default function TagifyInput({
     };
 
     // 创建 Tagify 实例
-    tagifyRef.current = new Tagify(inputRef.current, settings);
+    try {
+      tagifyRef.current = new Tagify(inputRef.current, settings);
 
-    // 添加事件监听器
-    tagifyRef.current.on('add', handleTagChange);
-    tagifyRef.current.on('remove', handleTagChange);
-    tagifyRef.current.on('input', handleInput);
-    tagifyRef.current.on('focus', handleFocus);
-    tagifyRef.current.on('blur', handleTagChange);
-    tagifyRef.current.on('edit:updated', handleTagChange); // 使用 edit:updated 事件代替 edit 事件
-    tagifyRef.current.on('invalid', handleInvalid);
+      // 添加事件监听器
+      tagifyRef.current.on('add', handleTagChange);
+      tagifyRef.current.on('remove', handleTagChange);
+      tagifyRef.current.on('input', handleInput);
+      tagifyRef.current.on('focus', handleFocus);
+      tagifyRef.current.on('blur', handleTagChange);
+      
+      // 使用edit:updated事件代替edit事件，避免DOM查询问题
+      tagifyRef.current.on('edit:updated', handleTagChange);
+      tagifyRef.current.on('invalid', handleInvalid);
 
-    // 设置初始值
-    setInitialValueSet(false);
+      // 设置初始值
+      setInitialValueSet(false);
+    } catch (error) {
+      console.error('初始化Tagify时出错:', error);
+    }
 
     return () => {
       if (tagifyRef.current) {
-        tagifyRef.current.destroy();
+        try {
+          tagifyRef.current.destroy();
+        } catch (error) {
+          console.error('销毁Tagify实例时出错:', error);
+        }
       }
     };
   }, [formattedWhitelist, placeholder]);

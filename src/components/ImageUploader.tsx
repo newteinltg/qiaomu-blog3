@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect, ChangeEvent } from 'react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Loader2, Upload, X, Clipboard } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
@@ -119,7 +118,17 @@ export default function ImageUploader({
       }
 
       const data = await response.json();
-      onChange(data.file.url);
+      
+      // 确保URL是完整的路径
+      const imageUrl = data.file.url;
+      console.log('上传图片成功，原始URL:', imageUrl);
+      
+      // 确保URL以/开头
+      const normalizedUrl = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+      console.log('标准化后的URL:', normalizedUrl);
+      
+      // 保存标准化后的URL
+      onChange(normalizedUrl);
 
       toast({
         title: "上传成功",
@@ -156,12 +165,21 @@ export default function ImageUploader({
 
       {value ? (
         <div className="relative border rounded-md overflow-hidden">
-          <Image
-            src={value}
+          <img
+            src={value.startsWith('/') ? value : `/${value}`}
             alt="封面图片"
-            width={300}
-            height={200}
             className="w-full object-cover h-[200px]"
+            onError={(e) => {
+              console.log('图片加载失败:', value);
+              // 尝试修复相对路径问题
+              const target = e.target as HTMLImageElement;
+              if (value && !value.startsWith('http') && !value.startsWith('data:')) {
+                // 如果是相对路径，尝试添加域名
+                const fixedUrl = window.location.origin + (value.startsWith('/') ? value : `/${value}`);
+                console.log('尝试使用完整URL加载图片:', fixedUrl);
+                target.src = fixedUrl;
+              }
+            }}
           />
           <button
             onClick={handleClear}

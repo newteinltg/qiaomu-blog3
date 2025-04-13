@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import * as schema from '@/lib/schema';
 import { eq } from 'drizzle-orm';
@@ -14,14 +14,15 @@ const categorySchema = z.object({
 
 // GET 处理程序，获取单个分类
 export async function GET(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 获取ID参数
-    const id = parseInt(context.params.id);
+    const { id } = await params;
+    const numId = parseInt(id);
     
-    if (isNaN(id)) {
+    if (isNaN(numId)) {
       return NextResponse.json(
         { error: '无效的分类ID' },
         { status: 400 }
@@ -29,7 +30,7 @@ export async function GET(
     }
 
     const category = await db.query.categories.findFirst({
-      where: eq(schema.categories.id, id)
+      where: eq(schema.categories.id, numId)
     });
 
     if (!category) {
@@ -51,14 +52,15 @@ export async function GET(
 
 // PUT 处理程序，更新分类
 export async function PUT(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 获取ID参数
-    const id = parseInt(context.params.id);
+    const { id } = await params;
+    const numId = parseInt(id);
     
-    if (isNaN(id)) {
+    if (isNaN(numId)) {
       return NextResponse.json(
         { error: '无效的分类ID' },
         { status: 400 }
@@ -67,7 +69,7 @@ export async function PUT(
 
     // 检查分类是否存在
     const existingCategory = await db.query.categories.findFirst({
-      where: eq(schema.categories.id, id)
+      where: eq(schema.categories.id, numId)
     });
 
     if (!existingCategory) {
@@ -99,7 +101,7 @@ export async function PUT(
       }
     });
 
-    if (slugExists && slugExists.id !== id) {
+    if (slugExists && slugExists.id !== numId) {
       return NextResponse.json(
         { error: '分类别名已被使用' },
         { status: 400 }
@@ -142,7 +144,7 @@ export async function PUT(
           break;
         }
 
-        if (parentCat.id === id) {
+        if (parentCat.id === numId) {
           return NextResponse.json(
             { error: '检测到循环的父子关系' },
             { status: 400 }
@@ -163,11 +165,11 @@ export async function PUT(
         parentId: parentId === undefined ? existingCategory.parentId : parentId,
         updatedAt: new Date().toISOString()
       })
-      .where(eq(schema.categories.id, id));
+      .where(eq(schema.categories.id, numId));
 
     // 获取更新后的分类
     const updatedCategory = await db.query.categories.findFirst({
-      where: eq(schema.categories.id, id)
+      where: eq(schema.categories.id, numId)
     });
 
     return NextResponse.json(updatedCategory);
@@ -182,14 +184,15 @@ export async function PUT(
 
 // DELETE 处理程序，删除分类
 export async function DELETE(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 获取ID参数
-    const id = parseInt(context.params.id);
+    const { id } = await params;
+    const numId = parseInt(id);
     
-    if (isNaN(id)) {
+    if (isNaN(numId)) {
       return NextResponse.json(
         { error: '无效的分类ID' },
         { status: 400 }
@@ -198,7 +201,7 @@ export async function DELETE(
 
     // 检查分类是否存在
     const existingCategory = await db.query.categories.findFirst({
-      where: eq(schema.categories.id, id)
+      where: eq(schema.categories.id, numId)
     });
 
     if (!existingCategory) {
@@ -210,7 +213,7 @@ export async function DELETE(
 
     // 检查是否有子分类
     const childCategories = await db.query.categories.findMany({
-      where: eq(schema.categories.parentId, id)
+      where: eq(schema.categories.parentId, numId)
     });
 
     if (childCategories.length > 0) {
@@ -222,7 +225,7 @@ export async function DELETE(
 
     // 检查是否有关联的文章
     const relatedPosts = await db.query.postCategories.findMany({
-      where: eq(schema.postCategories.categoryId, id)
+      where: eq(schema.postCategories.categoryId, numId)
     });
 
     if (relatedPosts.length > 0) {
@@ -235,7 +238,7 @@ export async function DELETE(
     // 删除分类
     await db
       .delete(schema.categories)
-      .where(eq(schema.categories.id, id));
+      .where(eq(schema.categories.id, numId));
 
     return NextResponse.json({ success: true });
   } catch (error) {

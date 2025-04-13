@@ -105,7 +105,11 @@ export async function POST(request: NextRequest) {
     const fileName = `${uuidv4()}.${fileType.split('/')[1]}`;
     const uploadDir = await ensureUploadDir(subDir);
     const filePath = join(uploadDir, fileName);
-    const publicUrl = subDir ? `/uploads/${subDir}/${fileName}` : `/uploads/${fileName}`;
+    
+    // 确保URL格式一致，始终以/开头
+    const publicUrl = subDir 
+      ? `/uploads/${subDir}/${fileName}` 
+      : `/uploads/${fileName}`;
 
     // 写入文件
     await writeFile(filePath, optimizedBuffer);
@@ -141,11 +145,13 @@ export async function POST(request: NextRequest) {
       height,
     }).returning();
 
+    // 直接使用相对路径，确保跨环境兼容性
+    // 不再使用绝对URL，避免部署问题
     return NextResponse.json({
       success: true,
       file: {
         id: result[0].id,
-        url: publicUrl,
+        url: publicUrl, // 使用相对路径
         name: file.name,
         type: fileType,
         size: optimizedBuffer.length,

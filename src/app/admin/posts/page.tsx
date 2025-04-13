@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -468,7 +467,7 @@ export default function PostsPage() {
                                     <div className="text-orange-500">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <line x1="12" y1="17" x2="12" y2="22"></line>
-                                        <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78-.9A2 2 0 0 0 5 15.24Z"></path>
+                                        <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
                                       </svg>
                                     </div>
                                   </TooltipTrigger>
@@ -485,12 +484,21 @@ export default function PostsPage() {
                         <TableCell>
                           {post.coverImage ? (
                             <div className="relative h-10 w-16 overflow-hidden rounded">
-                              <Image
-                                src={post.coverImage}
+                              <img
+                                src={post.coverImage.startsWith('/') ? post.coverImage : `/${post.coverImage}`}
                                 alt={post.title}
-                                width={64}
-                                height={40}
-                                className="object-cover"
+                                className="object-cover w-full h-full"
+                                onError={(e) => {
+                                  console.log('列表图片加载失败:', post.coverImage);
+                                  // 尝试修复相对路径问题
+                                  const target = e.target as HTMLImageElement;
+                                  if (post.coverImage && !post.coverImage.startsWith('http') && !post.coverImage.startsWith('data:')) {
+                                    // 如果是相对路径，尝试添加域名
+                                    const fixedUrl = window.location.origin + (post.coverImage.startsWith('/') ? post.coverImage : `/${post.coverImage}`);
+                                    console.log('尝试使用完整URL加载图片:', fixedUrl);
+                                    target.src = fixedUrl;
+                                  }
+                                }}
                               />
                             </div>
                           ) : (

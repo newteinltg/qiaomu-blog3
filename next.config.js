@@ -28,6 +28,29 @@ const nextConfig = {
 
     return config;
   },
+  // 确保上传的图片在生产环境中能够正确显示
+  images: {
+    domains: ['localhost'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
+        pathname: '/uploads/**',
+      },
+    ],
+    // 禁用图片优化，直接使用原始图片
+    unoptimized: true
+  },
+  // 确保静态文件正确服务
+  output: 'standalone',
+  // 外部包配置，用于静态资源处理
+  serverExternalPackages: ['sharp'],
   async headers() {
     return [
       {

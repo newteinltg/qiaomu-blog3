@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Post } from '@/types';
 
@@ -46,12 +45,10 @@ const FeaturedSlider = ({ posts }: FeaturedSliderProps) => {
       <Link href={`/posts/${currentPost.slug}`} className="slide w-full h-full relative block">
         {/* 文章封面图 */}
         {currentPost.coverImage && currentPost.coverImage.trim() ? (
-          <Image
+          <img
             src={String(currentPost.coverImage)}
             alt={String(currentPost.title)}
-            fill
-            className="object-cover"
-            priority
+            className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (
           <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">

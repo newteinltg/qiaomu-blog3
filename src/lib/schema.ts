@@ -109,6 +109,18 @@ export const postCategories = sqliteTable('post_categories', {
   pk: primaryKey({ columns: [t.postId, t.categoryId] })
 }));
 
+// 文章分类关系
+export const postCategoriesRelations = relationsImport(postCategories, ({ one }) => ({
+  post: one(posts, {
+    fields: [postCategories.postId],
+    references: [posts.id],
+  }),
+  category: one(categories, {
+    fields: [postCategories.categoryId],
+    references: [categories.id],
+  }),
+}));
+
 // 菜单表
 export const menus = sqliteTable('menus', {
   id: integer('id').primaryKey({ autoIncrement: true }),

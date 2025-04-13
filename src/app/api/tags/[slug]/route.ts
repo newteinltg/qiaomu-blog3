@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import * as schema from '@/lib/schema';
 import { eq, and, or } from 'drizzle-orm';
@@ -6,11 +6,12 @@ import { generateSlug } from '@/lib/utils';
 
 // GET 获取单个标签
 export async function GET(
-  request: Request,
-  context: { params: { slug: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = context.params;
+    // 获取slug参数
+    const { slug } = await params;
     // 检查是否是数字 ID
     const isId = /^\d+$/.test(slug);
 
@@ -46,11 +47,12 @@ export async function GET(
 
 // PATCH 更新标签
 export async function PATCH(
-  request: Request,
-  context: { params: { slug: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = context.params;
+    // 获取slug参数
+    const { slug } = await params;
     const body = await request.json();
     
     // 验证请求体
@@ -131,11 +133,12 @@ export async function PATCH(
 
 // DELETE 删除标签
 export async function DELETE(
-  request: Request,
-  context: { params: { slug: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = context.params;
+    // 获取slug参数
+    const { slug } = await params;
     
     // 查找要删除的标签
     let tag;

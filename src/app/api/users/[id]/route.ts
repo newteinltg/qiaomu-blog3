@@ -1,15 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { db } from '@/lib/db';
-import { sql } from 'drizzle-orm';
+import * as schema from '@/lib/schema';
+import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 
 // 获取单个用户
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = context.params.id;
+    // 获取用户ID
+    const { id } = await params;
+    const numId = parseInt(id);
     
     // 使用sqlite直接查询以确保返回正确的数据格式
     const { sqlite } = await import('@/lib/db');
@@ -17,7 +20,7 @@ export async function GET(
       SELECT id, email, createdAt
       FROM users
       WHERE id = ?
-    `).get(userId);
+    `).get(numId);
     
     if (!user) {
       return NextResponse.json(
@@ -39,10 +42,12 @@ export async function GET(
 // 更新用户
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = context.params.id;
+    // 获取用户ID
+    const { id } = await params;
+    const numId = parseInt(id);
     const { email, password } = await request.json();
     
     // 验证请求数据
@@ -57,7 +62,7 @@ export async function PUT(
     const { sqlite } = await import('@/lib/db');
     const existingUser = sqlite.prepare(`
       SELECT id FROM users WHERE id = ?
-    `).get(userId);
+    `).get(numId);
     
     if (!existingUser) {
       return NextResponse.json(
@@ -69,7 +74,7 @@ export async function PUT(
     // 检查邮箱是否已被其他用户使用
     const emailExists = sqlite.prepare(`
       SELECT id FROM users WHERE email = ? AND id != ?
-    `).get(email, userId);
+    `).get(email, numId);
     
     if (emailExists) {
       return NextResponse.json(
@@ -88,14 +93,14 @@ export async function PUT(
         UPDATE users
         SET email = ?, password = ?
         WHERE id = ?
-      `).run(email, hashedPassword, userId);
+      `).run(email, hashedPassword, numId);
     } else {
       // 否则只更新邮箱
       sqlite.prepare(`
         UPDATE users
         SET email = ?
         WHERE id = ?
-      `).run(email, userId);
+      `).run(email, numId);
     }
     
     // 获取更新后的用户信息
@@ -103,7 +108,7 @@ export async function PUT(
       SELECT id, email, createdAt
       FROM users
       WHERE id = ?
-    `).get(userId);
+    `).get(numId);
     
     return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {
@@ -118,16 +123,18 @@ export async function PUT(
 // 删除用户
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = context.params.id;
+    // 获取用户ID
+    const { id } = await params;
+    const numId = parseInt(id);
     
     // 检查用户是否存在
     const { sqlite } = await import('@/lib/db');
     const existingUser = sqlite.prepare(`
       SELECT id FROM users WHERE id = ?
-    `).get(userId);
+    `).get(numId);
     
     if (!existingUser) {
       return NextResponse.json(
@@ -152,7 +159,7 @@ export async function DELETE(
     // 删除用户
     sqlite.prepare(`
       DELETE FROM users WHERE id = ?
-    `).run(userId);
+    `).run(numId);
     
     return NextResponse.json({ success: true });
   } catch (error) {

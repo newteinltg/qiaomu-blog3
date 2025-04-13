@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { formatDate } from '@/lib/utils';
 import { Post } from '@/types';
 
@@ -51,12 +50,13 @@ export default function LatestArticles({
               {post.coverImage ? (
                 <div className="sm:w-1/5 flex-shrink-0">
                   <div className="relative h-32 sm:h-24 overflow-hidden rounded-md">
-                    <Image
-                      src={post.coverImage || '/images/default-thumbnail.png'}
-                      alt={post.title}
-                      fill
-                      className="object-cover transition-transform group-hover:scale-105"
-                    />
+                    <Link href={`/posts/${post.slug}`}>
+                      <img
+                        src={post.coverImage || '/images/default-thumbnail.png'}
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </Link>
                   </div>
                 </div>
               ) : null}

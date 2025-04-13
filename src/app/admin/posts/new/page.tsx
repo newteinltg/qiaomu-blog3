@@ -94,8 +94,8 @@ export default function NewPostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
+    setError('');
 
     try {
       // 确保 slug 不为空且格式正确
@@ -119,7 +119,7 @@ export default function NewPostPage() {
           slug,
           content,
           categoryIds,
-          coverImage,
+          coverImage, // 直接使用原始URL
           published: true,
           pageType // 添加页面类型字段
         }),
@@ -135,18 +135,34 @@ export default function NewPostPage() {
       // 处理分类关联
       if (result.id && categoryIds.length > 0) {
         try {
+          // 确保分类ID是数值类型
+          const numericCategoryIds = categoryIds.map(id => 
+            typeof id === 'string' ? parseInt(id, 10) : id
+          ).filter(id => !isNaN(id));
+          
+          console.log('关联文章分类，文章ID:', result.id, '分类IDs:', numericCategoryIds);
+          
+          if (numericCategoryIds.length === 0) {
+            console.warn('没有有效的分类ID可关联');
+            return;
+          }
+          
+          // 构建请求数据时确保字段名与API期望的一致
           const categoriesResponse = await fetch(`/api/posts/${result.id}/categories`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              categoryIds
+              categoryIds: numericCategoryIds // 确保字段名与API期望的一致
             }),
           });
 
           if (!categoriesResponse.ok) {
-            console.error('Failed to associate post with categories');
+            const errorText = await categoriesResponse.text();
+            console.error('Failed to associate post with categories:', errorText);
+          } else {
+            console.log('成功关联文章分类');
           }
         } catch (err) {
           console.error('Error associating post with categories:', err);
@@ -154,29 +170,61 @@ export default function NewPostPage() {
       }
 
       // 处理标签
-      let parsedTags: any[] = [];
-      try {
-        // 检查tags是否为空字符串
-        if (tags && tags.trim() !== '') {
-          parsedTags = JSON.parse(tags);
-        }
-      } catch (e) {
-        console.error('Error parsing tags:', e);
-      }
+      if (result.id && tags) {
+        try {
+          let parsedTags;
+          
+          // 检查tags是否为空字符串
+          if (typeof tags === 'string' && tags.trim() !== '') {
+            parsedTags = JSON.parse(tags);
+          } else if (typeof tags === 'object') {
+            parsedTags = tags;
+          } else {
+            parsedTags = [];
+          }
+          
+          // 确保标签数据格式正确
+          if (Array.isArray(parsedTags) && parsedTags.length > 0) {
+            console.log('Adding tags:', parsedTags);
+            
+            // 确保每个标签对象都有正确的格式 (value 和 id)
+            const formattedTags = parsedTags.map(tag => {
+              // 如果标签已经有正确的格式，直接返回
+              if (tag.value && (tag.id || tag.id === 0)) {
+                return tag;
+              }
+              
+              // 如果标签只有name属性，转换为value
+              if (tag.name && !tag.value) {
+                return {
+                  ...tag,
+                  value: tag.name
+                };
+              }
+              
+              return tag;
+            });
+            
+            const tagsResponse = await fetch(`/api/posts/${result.id}/tags`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                tags: formattedTags
+              }),
+            });
 
-      if (parsedTags.length) {
-        const tagsResponse = await fetch(`/api/posts/${result.id}/tags`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            tags: parsedTags
-          }),
-        });
-
-        if (!tagsResponse.ok) {
-          console.error('Failed to add post tags');
+            if (!tagsResponse.ok) {
+              const errorText = await tagsResponse.text();
+              console.error('Failed to add post tags:', errorText);
+            } else {
+              console.log('Tags added successfully');
+            }
+          }
+        } catch (parseError) {
+          console.error('Error processing tags:', parseError, tags);
+          // 不抛出错误，允许文章创建成功即使标签处理失败
         }
       }
 

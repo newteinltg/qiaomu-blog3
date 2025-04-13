@@ -1,18 +1,19 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import * as schema from '@/lib/schema';
 import { eq, and, ne } from 'drizzle-orm';
 
-// GET handler to fetch a single post by ID
+// GET 处理程序 - 获取单个文章
 export async function GET(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 获取ID参数
-    const id = parseInt(context.params.id);
+    // 获取文章ID
+    const { id } = await params;
+    const numId = parseInt(id);
 
-    if (isNaN(id)) {
+    if (isNaN(numId)) {
       return NextResponse.json(
         { error: 'Invalid post ID' },
         { status: 400 }
@@ -20,7 +21,7 @@ export async function GET(
     }
 
     const post = await db.query.posts.findFirst({
-      where: eq(schema.posts.id, id)
+      where: eq(schema.posts.id, numId)
     });
 
     if (!post) {
@@ -40,16 +41,17 @@ export async function GET(
   }
 }
 
-// PATCH handler to update a post
+// PATCH 处理程序 - 更新文章
 export async function PATCH(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 获取ID参数
-    const id = parseInt(context.params.id);
+    // 获取文章ID
+    const { id } = await params;
+    const numId = parseInt(id);
 
-    if (isNaN(id)) {
+    if (isNaN(numId)) {
       return NextResponse.json(
         { error: 'Invalid post ID' },
         { status: 400 }
@@ -81,7 +83,7 @@ export async function PATCH(
       where: (posts) =>
         and(
           eq(posts.slug, slug),
-          ne(posts.id, id)
+          ne(posts.id, numId)
         )
     });
 
@@ -108,17 +110,17 @@ export async function PATCH(
             pageType: pageType || 'markdown', // 添加页面类型字段
             updatedAt: new Date().toISOString()
           })
-          .where(eq(schema.posts.id, id));
+          .where(eq(schema.posts.id, numId));
 
         // 2. 删除原有的文章-分类关联
         await tx
           .delete(schema.postCategories)
-          .where(eq(schema.postCategories.postId, id));
+          .where(eq(schema.postCategories.postId, numId));
 
         // 3. 创建新的文章-分类关联
         if (Array.isArray(categoryIds) && categoryIds.length > 0) {
           const postCategoriesData = categoryIds.map(categoryId => ({
-            postId: id,
+            postId: numId,
             categoryId: Number(categoryId)
           }));
 
@@ -126,7 +128,7 @@ export async function PATCH(
         }
       });
 
-      console.log('Post updated successfully:', id);
+      console.log('Post updated successfully:', numId);
       return NextResponse.json({ success: true });
     } catch (dbError: any) {
       console.error('Database error updating post:', dbError);
@@ -144,16 +146,17 @@ export async function PATCH(
   }
 }
 
-// PUT handler to update a post (identical to PATCH for compatibility)
+// PUT 处理程序 - 替换文章
 export async function PUT(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 获取ID参数
-    const id = parseInt(context.params.id);
+    // 获取文章ID
+    const { id } = await params;
+    const numId = parseInt(id);
 
-    if (isNaN(id)) {
+    if (isNaN(numId)) {
       return NextResponse.json(
         { error: 'Invalid post ID' },
         { status: 400 }
@@ -186,7 +189,7 @@ export async function PUT(
       where: (posts) =>
         and(
           eq(posts.slug, slug),
-          ne(posts.id, id)
+          ne(posts.id, numId)
         )
     });
 
@@ -213,17 +216,17 @@ export async function PUT(
             pageType: pageType || 'markdown', // 添加页面类型字段
             updatedAt: new Date().toISOString()
           })
-          .where(eq(schema.posts.id, id));
+          .where(eq(schema.posts.id, numId));
 
         // 2. 删除原有的文章-分类关联
         await tx
           .delete(schema.postCategories)
-          .where(eq(schema.postCategories.postId, id));
+          .where(eq(schema.postCategories.postId, numId));
 
         // 3. 创建新的文章-分类关联
         if (Array.isArray(categoryIds) && categoryIds.length > 0) {
           const postCategoriesData = categoryIds.map(categoryId => ({
-            postId: id,
+            postId: numId,
             categoryId: Number(categoryId)
           }));
 
@@ -231,7 +234,7 @@ export async function PUT(
         }
       });
 
-      console.log('Post updated successfully (PUT):', id);
+      console.log('Post updated successfully (PUT):', numId);
       return NextResponse.json({ success: true });
     } catch (dbError: any) {
       console.error('Database error updating post:', dbError);
@@ -249,16 +252,17 @@ export async function PUT(
   }
 }
 
-// DELETE handler to delete a post
+// DELETE 处理程序 - 删除文章
 export async function DELETE(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 获取ID参数
-    const id = parseInt(context.params.id);
+    // 获取文章ID
+    const { id } = await params;
+    const numId = parseInt(id);
 
-    if (isNaN(id)) {
+    if (isNaN(numId)) {
       return NextResponse.json(
         { error: 'Invalid post ID' },
         { status: 400 }
@@ -267,7 +271,7 @@ export async function DELETE(
 
     await db
       .delete(schema.posts)
-      .where(eq(schema.posts.id, id));
+      .where(eq(schema.posts.id, numId));
 
     return NextResponse.json({ success: true });
   } catch (error) {
