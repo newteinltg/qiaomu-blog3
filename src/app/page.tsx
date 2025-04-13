@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   description: '分享技术、生活和思考，记录成长的点滴。',
 };
 
+// 强制动态渲染，确保每次访问都获取最新数据
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   // 获取分类、标签和菜单
   const [categories, tags, menus, settings] = await Promise.all([

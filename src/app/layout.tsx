@@ -19,8 +19,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "向阳乔木的个人博客",
-  description: "向阳乔木的个人博客网站 - 分享技术、生活和思考",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://blog.qiaomu.life'),
+  title: {
+    default: '向阳乔木的个人博客',
+    template: '%s | 向阳乔木的个人博客'
+  },
+  description: '分享技术、生活和思考，记录成长的点滴。',
   authors: [{ name: "向阳乔木" }],
   creator: "向阳乔木",
   publisher: "向阳乔木",

@@ -8,9 +8,12 @@ import Sidebar from '@/components/Sidebar';
 import { adaptMenus } from '@/lib/utils/menu-adapters';
 
 export const metadata: Metadata = {
-  title: '所有文章 - 向阳乔木的个人博客',
-  description: '浏览向阳乔木的个人博客上的所有文章',
+  title: '文章列表 - 向阳乔木的个人博客',
+  description: '向阳乔木的个人博客文章列表，分享技术、生活和思考。',
 };
+
+// 强制动态渲染，确保每次访问都获取最新数据
+export const dynamic = 'force-dynamic';
 
 export default async function AllPostsPage({
   searchParams,

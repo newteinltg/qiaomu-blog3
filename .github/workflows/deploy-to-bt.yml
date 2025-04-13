@@ -1,0 +1,58 @@
+name: Deploy to BT Panel
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build project
+        run: npm run build
+        
+      - name: Deploy to BT Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.BT_HOST }}
+          username: ${{ secrets.BT_USERNAME }}
+          key: ${{ secrets.BT_SSH_KEY }}
+          port: ${{ secrets.BT_PORT }}
+          script: |
+            # 进入网站目录
+            cd /www/wwwroot/your-blog-directory
+            
+            # 备份当前版本
+            if [ -d "current" ]; then
+              mv current previous_$(date +%Y%m%d%H%M%S)
+            fi
+            
+            # 创建新目录
+            mkdir -p current
+            
+            # 拉取最新代码
+            git clone --depth=1 https://github.com/joeseesun/qiaomu-blog3.git temp
+            
+            # 移动文件
+            cp -R temp/. current/
+            rm -rf temp
+            
+            # 安装依赖并构建
+            cd current
+            npm ci
+            npm run build
+            
+            # 使用PM2重启应用
+            pm2 delete blog-app || true
+            pm2 start npm --name "blog-app" -- start

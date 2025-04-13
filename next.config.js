@@ -30,7 +30,7 @@ const nextConfig = {
   },
   // 确保上传的图片在生产环境中能够正确显示
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'blog.qiaomu.life'],
     remotePatterns: [
       {
         protocol: 'http',
@@ -51,6 +51,13 @@ const nextConfig = {
   output: 'standalone',
   // 外部包配置，用于静态资源处理
   serverExternalPackages: ['sharp'],
+  // 减少构建输出
+  swcMinify: true,
+  // 实验性功能
+  experimental: {
+    // 优化 CSS 处理
+    optimizeCss: true,
+  },
   async headers() {
     return [
       {

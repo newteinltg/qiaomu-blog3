@@ -10,6 +10,7 @@
 - [配置说明](#配置说明)
 - [常见问题](#常见问题)
 - [更新博客](#更新博客)
+- [通过 GitHub 部署到宝塔服务器](#通过-github-部署到宝塔服务器)
 
 ## 系统要求
 
@@ -216,6 +217,84 @@ pm2 save
 ## 支持与贡献
 
 如果您遇到任何问题或有改进建议，请在GitHub仓库提交Issue或Pull Request。
+
+## 通过 GitHub 部署到宝塔服务器
+
+### 准备工作
+
+1. **宝塔面板环境配置**
+   - 安装 Node.js 环境（推荐 v18 或更高版本）
+   - 安装 PM2：`npm install -g pm2`
+   - 安装 Git：通过宝塔面板软件商店安装
+
+2. **创建网站目录**
+   - 在宝塔面板中创建网站，如 `blog.yourdomain.com`
+   - 记录网站根目录路径，如 `/www/wwwroot/blog.yourdomain.com`
+
+3. **设置 SSH 密钥**
+   ```bash
+   # 在宝塔服务器上生成 SSH 密钥
+   ssh-keygen -t rsa -b 4096
+   
+   # 查看公钥
+   cat ~/.ssh/id_rsa.pub
+   ```
+   - 将公钥添加到 GitHub 仓库的部署密钥中（Settings > Deploy keys）
+
+### 配置 GitHub Actions
+
+1. **添加 GitHub 仓库密钥**
+   - 进入 GitHub 仓库 > Settings > Secrets and variables > Actions
+   - 添加以下密钥：
+     - `BT_HOST`: 宝塔服务器 IP 地址
+     - `BT_USERNAME`: SSH 用户名（通常是 root）
+     - `BT_SSH_KEY`: 私钥内容（`~/.ssh/id_rsa`）
+     - `BT_PORT`: SSH 端口（通常是 22）
+
+2. **修改部署工作流配置**
+   - 编辑 `.github/workflows/deploy-to-bt.yml` 文件
+   - 将 `/www/wwwroot/your-blog-directory` 修改为您的实际网站目录
+
+### 配置宝塔 Nginx
+
+1. **设置 Nginx 配置**
+   - 在宝塔面板中找到您的网站
+   - 点击"设置" > "配置文件"
+   - 添加以下配置到 `server` 块中：
+   
+   ```nginx
+   location / {
+       proxy_pass http://127.0.0.1:3000;
+       proxy_http_version 1.1;
+       proxy_set_header Upgrade $http_upgrade;
+       proxy_set_header Connection 'upgrade';
+       proxy_set_header Host $host;
+       proxy_cache_bypass $http_upgrade;
+   }
+   ```
+
+2. **设置 PM2 启动脚本**
+   - 在网站根目录创建 `start.sh` 文件：
+   
+   ```bash
+   #!/bin/bash
+   cd /www/wwwroot/your-blog-directory/current
+   pm2 delete blog-app || true
+   pm2 start npm --name "blog-app" -- start
+   ```
+   
+   - 赋予执行权限：`chmod +x start.sh`
+
+### 手动触发首次部署
+
+1. 在 GitHub 仓库页面，点击 "Actions" 标签
+2. 选择 "Deploy to BT Panel" 工作流
+3. 点击 "Run workflow" 按钮，选择 "main" 分支
+4. 等待部署完成
+
+### 验证部署
+
+访问您的网站域名，如 `http://blog.yourdomain.com`，验证博客是否成功部署。
 
 ---
 

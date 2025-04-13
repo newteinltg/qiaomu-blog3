@@ -15,24 +15,49 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const { path = '/' } = body;
 
-    // 要刷新的路径列表
+    // 要刷新的路径列表 - 包含所有重要页面
     const pathsToRevalidate = [
       path,
       '/',
       '/posts',
       '/categories',
       '/tags',
-      '/admin'
+      '/admin',
+      '/search'
     ];
 
+    // 添加分类和标签页面
+    try {
+      const categoriesDir = path.join(process.cwd(), 'src', 'app', 'categories');
+      if (fs.existsSync(categoriesDir)) {
+        const categoryDirs = fs.readdirSync(categoriesDir, { withFileTypes: true })
+          .filter(dirent => dirent.isDirectory())
+          .map(dirent => `/categories/${dirent.name}`);
+        pathsToRevalidate.push(...categoryDirs);
+      }
+
+      const tagsDir = path.join(process.cwd(), 'src', 'app', 'tags');
+      if (fs.existsSync(tagsDir)) {
+        const tagDirs = fs.readdirSync(tagsDir, { withFileTypes: true })
+          .filter(dirent => dirent.isDirectory())
+          .map(dirent => `/tags/${dirent.name}`);
+        pathsToRevalidate.push(...tagDirs);
+      }
+    } catch (e) {
+      console.error('获取分类和标签目录时出错:', e);
+    }
+
     // 尝试刷新所有路径
+    const results = [];
     for (const currentPath of pathsToRevalidate) {
       try {
         // 使用Next.js内置方法刷新缓存
         revalidatePath(currentPath);
         console.log(`已刷新路径: ${currentPath}`);
+        results.push({ path: currentPath, success: true });
       } catch (e) {
         console.log(`刷新路径 ${currentPath} 时出错: ${e}`);
+        results.push({ path: currentPath, success: false, error: String(e) });
       }
     }
 
@@ -54,7 +79,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: '缓存已刷新，请刷新页面查看最新内容',
       timestamp: new Date().toISOString(),
-      paths: pathsToRevalidate
+      results
     });
   } catch (error) {
     console.error('处理刷新请求时出错:', error);
