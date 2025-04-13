@@ -55,7 +55,17 @@ const nextConfig = {
   swcMinify: true,
   // 实验性功能
   experimental: {
+    // 减少服务器组件包大小
+    serverComponentsExternalPackages: [],
+    // 优化内存使用
+    memoryBasedWorkersCount: true,
   },
+  // 减少不必要的页面预渲染
+  staticPageGenerationTimeout: 60,
+  // 压缩配置
+  compress: true,
+  // 生产环境禁用源码映射
+  productionBrowserSourceMaps: false,
   async headers() {
     return [
       {
