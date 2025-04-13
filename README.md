@@ -318,7 +318,7 @@ npm run dev
 #### 分类页面和侧边栏显示问题
 
 - **问题**: 侧边栏显示有文章的分类，但点击后分类页面不显示文章
-- **原因**: 多重因素导致该问题：
+- **原因分析**: 多重因素导致该问题：
   1. 查询逻辑问题：分类页面的 API 使用了不正确的表连接顺序
   2. 缓存问题：分类页面的客户端组件使用了缓存，导致即使后端 API 返回了正确的数据，前端也可能显示旧的缓存数据
 - **解决方案**:
@@ -395,7 +395,7 @@ npm run dev
 #### 轮播图与侧边栏顶部对齐问题
 
 - **问题**: 首页轮播图与右侧侧边栏顶部没有对齐，轮播图顶部有额外的空白区域
-- **原因**: 在 `globals.css` 文件中，`.featured-slider` 类使用了 `my-8` 类，这会在轮播图的顶部和底部添加 2rem 的 margin
+- **原因分析**: 在 `globals.css` 文件中，`.featured-slider` 类使用了 `my-8` 类，这会在轮播图的顶部和底部添加 2rem 的 margin
 - **解决方案**:
   - 将 `.featured-slider` 类的 `my-8` 修改为 `mb-8`，只保留底部 margin，移除顶部 margin
   - 修复了 FeaturedSlider 组件的结构和缩进问题，确保没有额外的嵌套 div 导致不必要的空间
@@ -488,7 +488,13 @@ personal-blog/
   - 在图片组件中添加错误处理，自动尝试修复相对路径问题
 
 #### 轮播图与侧边栏顶部对齐问题
-{{ ... }}
+
+- **问题**: 首页轮播图与右侧侧边栏顶部没有对齐，轮播图顶部有额外的空白区域
+- **原因分析**: 在 `globals.css` 文件中，`.featured-slider` 类使用了 `my-8` 类，这会在轮播图的顶部和底部添加 2rem 的 margin
+- **解决方案**:
+  - 将 `.featured-slider` 类的 `my-8` 修改为 `mb-8`，只保留底部 margin，移除顶部 margin
+  - 修复了 FeaturedSlider 组件的结构和缩进问题，确保没有额外的嵌套 div 导致不必要的空间
+  - 这样轮播图和侧边栏的第一个模块（分类）能够在顶部对齐，提供更好的视觉效果
 
 ## 最近实现的功能
 
@@ -535,3 +541,46 @@ personal-blog/
   3. API 请求应考虑缓存问题，必要时添加缓存控制头
   4. 详细的日志输出对于调试复杂问题至关重要
   5. 在生产环境中测试修复，确保问题在实际环境中得到解决
+
+### 移除后台缓存刷新功能
+
+- **优化**: 移除了后台管理控制台中的缓存刷新功能
+- **原因**: 
+  1. 随着首页动态渲染功能的实现（使用 `fetchCache = 'force-no-store'`），缓存刷新功能已不再必要
+  2. 简化用户界面，移除冗余功能，提高用户体验
+  3. 减少不必要的API调用和服务器负载
+
+- **实现细节**:
+  1. 从管理控制台页面移除了"刷新缓存"按钮
+  2. 移除了"重新构建站点"卡片
+  3. 移除了相关的状态管理和API调用代码
+  4. 保留了API端点以备将来可能需要
+
+- **技术实现**:
+  ```typescript
+  // 移除了以下代码
+  const [regenerating, setRegenerating] = useState(false);
+  
+  const handleRegenerateStaticContent = async () => {
+    setRegenerating(true);
+    try {
+      const response = await fetch('/api/revalidate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ path: '/' }),
+      });
+      // ...处理响应...
+    } catch (error) {
+      // ...错误处理...
+    } finally {
+      setRegenerating(false);
+    }
+  };
+  ```
+
+- **优势**:
+  1. 简化了用户界面，减少了不必要的功能干扰
+  2. 减少了API调用和服务器负载
+  3. 与动态渲染策略保持一致，避免混淆用户
