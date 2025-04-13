@@ -161,7 +161,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { title, slug, content, categoryIds, coverImage, published } = body;
+    const { title, slug, content, categoryIds, coverImage, published, pageType } = body;
 
     console.log('Updating post with data (PUT):', {
       id,
@@ -170,7 +170,8 @@ export async function PUT(
       categoryIds: categoryIds || [],
       coverImage: coverImage || null,
       contentLength: content?.length || 0,
-      published
+      published,
+      pageType
     });
 
     if (!title || !slug || !content) {
@@ -208,7 +209,8 @@ export async function PUT(
             content,
             categoryId: Array.isArray(categoryIds) && categoryIds.length > 0 ? categoryIds[0] : null, // 保留主分类
             coverImage: coverImage || null,
-            published: published !== undefined ? (published ? 1 : 0) : 1,
+            published: published ? 1 : 0,
+            pageType: pageType || 'markdown', // 添加页面类型字段
             updatedAt: new Date().toISOString()
           })
           .where(eq(schema.posts.id, id));

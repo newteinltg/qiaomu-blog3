@@ -76,6 +76,16 @@
 
 ### 最近实现的功能
 
+#### 修复HTML全网页发布系统
+
+- **问题修复**：解决了在编辑文章时选择HTML页面类型但设置未能成功保存的问题
+- **原因分析**：PUT API处理程序中缺少对`pageType`字段的处理，导致HTML模式设置未能保存到数据库
+- **技术实现**：
+  - 修复了`src/app/api/posts/[id]/route.ts`中的PUT处理程序，添加了`pageType`字段的解构和处理
+  - 更新了事务处理逻辑，确保`pageType`字段被正确保存
+  - 完善了日志记录，便于调试和问题追踪
+- **功能验证**：现在可以正确设置文章为HTML全页面模式，并使用专用的HTML页面布局渲染
+
 #### 所有文章页面
 
 - **所有文章列表**: 创建了 `/posts` 路径的页面，展示所有已发布的文章
@@ -155,47 +165,7 @@
 
 ## 开始使用
 
-### Vercel一键部署（推荐）
-
-点击下方按钮一键部署到Vercel：
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjoeseesun%2Fqiaomu-blog3&project-name=qiaomu-blog3&repository-name=qiaomu-blog3&demo-title=%E5%90%91%E9%98%B3%E4%B9%94%E6%9C%A8%E5%8D%9A%E5%AE%A2&demo-description=%E4%B8%80%E4%B8%AA%E7%AE%80%E6%B4%81%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%B3%BB%E7%BB%9F)
-
-#### 使用演示数据库（推荐）
-
-项目已经包含了一个演示数据库`demo.db`，无需额外下载或重命名。部署到Vercel时，系统会自动使用这个数据库文件：
-
-1. 直接部署：使用上方的"Deploy with Vercel"按钮一键部署
-2. 部署完成后，系统会自动使用包含在代码库中的`demo.db`数据库文件
-
-演示数据库中包含示例文章、分类和标签，以及一个演示管理员账户：
-
-- **用户名**: admin@example.com
-- **密码**: admin123
-
-#### 环境配置
-
-在Vercel项目设置中，您需要配置以下环境变量：
-- `NEXTAUTH_SECRET`: 用于NextAuth.js的密钥
-- `JWT_SECRET`: 用于JWT认证的密钥
-
-为了安全起见，请在生产环境中使用强密钥。
-
-### 本地快速部署
-
-我们提供了一键部署脚本，只需要几个简单的命令即可完成部署：
-
-```bash
-# 克隆仓库
-git clone https://github.com/joeseesun/qiaomu-blog3.git
-cd qiaomu-blog3
-
-# 使用一键部署脚本
-# Linux/macOS
-bash setup.sh
-```
-
-或者手动执行以下步骤：
+### 本地部署
 
 ```bash
 # 克隆仓库
@@ -206,21 +176,6 @@ cd qiaomu-blog3
 npm install
 
 # 启动开发服务器
-npm run dev
-```
-
-或者使用 Docker 部署：
-
-```bash
-# 使用 Docker Compose 部署
-docker-compose up -d
-```
-
-### 开发模式
-
-运行开发服务器：
-
-```bash
 npm run dev
 ```
 
