@@ -55,8 +55,6 @@ const nextConfig = {
   swcMinify: true,
   // 实验性功能
   experimental: {
-    // 优化 CSS 处理
-    optimizeCss: true,
   },
   async headers() {
     return [
