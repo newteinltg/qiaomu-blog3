@@ -674,3 +674,75 @@
   sm:prose-li:px-0 prose-li:px-0
   sm:prose-blockquote:px-0 prose-blockquote:px-0;
 }
+
+/* Medium-style typography */
+.font-serif {
+  font-family: 'Noto Serif SC', Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+/* 修复Markdown列表样式 */
+.prose ul,
+.prose ol {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+}
+
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.625em;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.625em;
+}
+
+.prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  padding-left: 0.375em;
+}
+
+.prose li::marker {
+  color: #666;
+}
+
+.dark .prose li::marker {
+  color: #aaa;
+}
+
+.prose-custom ul,
+.prose-custom ol,
+.prose-mobile ul,
+.prose-mobile ol {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.prose-custom ul,
+.prose-mobile ul {
+  list-style-type: disc;
+}
+
+.prose-custom ol,
+.prose-mobile ol {
+  list-style-type: decimal;
+}
+
+.prose-custom li,
+.prose-mobile li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  padding-left: 0.375em;
+}
+
+.prose-custom li::marker,
+.prose-mobile li::marker {
+  color: #666;
+}
+
+.dark .prose-custom li::marker,
+.dark .prose-mobile li::marker {
+  color: #aaa;
+}
