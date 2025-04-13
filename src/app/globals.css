@@ -124,7 +124,7 @@
   }
 
   .prose-custom {
-    @apply prose prose-lg dark:prose-invert max-w-none;
+    @apply prose prose-lg dark:prose-invert max-w-none prose-mobile;
   }
 
   .card {
@@ -658,4 +658,19 @@
 /* Mermaid diagram styling */
 .mermaid {
   @apply my-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg overflow-auto;
+}
+
+/* 自定义 Markdown 样式 */
+.prose-custom {
+  @apply prose prose-lg dark:prose-invert max-w-none prose-mobile;
+}
+
+/* 移动端文章样式优化 */
+.prose-mobile {
+  @apply sm:prose-p:px-0 prose-p:px-0
+  sm:prose-headings:px-0 prose-headings:px-0
+  sm:prose-ul:px-0 prose-ul:px-0
+  sm:prose-ol:px-0 prose-ol:px-0
+  sm:prose-li:px-0 prose-li:px-0
+  sm:prose-blockquote:px-0 prose-blockquote:px-0;
 }

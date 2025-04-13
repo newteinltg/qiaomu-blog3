@@ -51,8 +51,6 @@ const nextConfig = {
   output: 'standalone',
   // 外部包配置，用于静态资源处理
   serverExternalPackages: ['sharp'],
-  // 减少构建输出
-  swcMinify: true,
   // 实验性功能
   experimental: {
   },

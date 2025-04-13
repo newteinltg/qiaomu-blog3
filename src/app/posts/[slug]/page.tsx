@@ -290,8 +290,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     <>
       <SimpleNavigation siteTitle={siteSettings.site_name || '向阳乔木的个人博客'} menus={adaptMenus(menus)} />
 
-      <main className="container pt-4 pb-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+      <main className="container px-2 pt-4 pb-8">
+        <div className="max-w-6xl mx-auto px-0 sm:px-4 lg:px-8 mt-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* 左侧内容区 */}
             <div className="col-span-1 lg:col-span-2">
@@ -314,7 +314,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 </div>
 
                 {/* 文章内容 */}
-                <div className="p-6 md:p-8">
+                <div className="p-4 md:p-4">
                   {/* 文章分类 */}
                   <div className="flex flex-wrap gap-2 mb-4">
                     {postWithRelations.categories.map(category => (
@@ -350,7 +350,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                   </div>
 
                   {/* 文章内容 - Markdown渲染 */}
-                  <div className="prose prose-lg dark:prose-invert max-w-none prose-custom">
+                  <div className="prose prose-lg dark:prose-invert max-w-none prose-custom prose-mobile">
                     <Markdown
                       remarkPlugins={[remarkGfm]}
                       rehypePlugins={[rehypeRaw, rehypeSanitize]}
