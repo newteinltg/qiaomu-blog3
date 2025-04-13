@@ -50,13 +50,11 @@ export default function LatestArticles({
               {post.coverImage ? (
                 <div className="sm:w-1/5 flex-shrink-0">
                   <div className="relative h-32 sm:h-24 overflow-hidden rounded-md">
-                    <Link href={`/posts/${post.slug}`}>
-                      <img
-                        src={post.coverImage || '/images/default-thumbnail.png'}
-                        alt={post.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </Link>
+                    <img
+                      src={post.coverImage || '/images/default-thumbnail.png'}
+                      alt={post.title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               ) : null}
