@@ -168,7 +168,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-4 mt-8 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-0 sm:px-4 lg:px-8 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* 左侧内容区 */}
           <div className="col-span-1 lg:col-span-2">
