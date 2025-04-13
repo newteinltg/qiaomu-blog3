@@ -9,7 +9,8 @@ type ScriptLoaderProps = {
 
 /**
  * 简化版ScriptLoader组件
- * 为了避免与动态渲染冲突，暂时禁用脚本加载功能
+ * 使用 fetchCache = 'force-no-store' 配置代替 dynamic = 'force-dynamic'
+ * 这种方法在数据获取层面禁用缓存，而不是渲染层面，因此不会与客户端组件冲突
  */
 export default function ScriptLoader({ position }: ScriptLoaderProps) {
   // 在服务器端渲染时返回null

@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   description: '分享技术、生活和思考，记录成长的点滴。',
 };
 
-// 强制动态渲染，确保每次访问都获取最新数据
-export const dynamic = 'force-dynamic';
+// 使用 fetchCache 配置替代 dynamic，避免与 ScriptLoader 组件冲突
+export const fetchCache = 'force-no-store';
 
 export default async function Home() {
   // 获取分类、标签和菜单
