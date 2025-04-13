@@ -37,15 +37,29 @@ export async function GET(
 
     // 获取标签详情
     const tagIds = postTagsRelations.map(relation => relation.tagId);
-    const tags = await db
-      .select()
-      .from(schema.tags)
-      .where(
-        tagIds.length === 1
-          ? eq(schema.tags.id, tagIds[0])
-          : sql`${schema.tags.id} IN (${tagIds.join(',')})`
-      );
+    
+    console.log('文章标签ID列表:', tagIds);
+    
+    // 修复SQL IN子句的格式
+    let tags: any[] = [];
+    if (tagIds.length === 1) {
+      tags = await db
+        .select()
+        .from(schema.tags)
+        .where(eq(schema.tags.id, tagIds[0]));
+    } else if (tagIds.length > 1) {
+      // 使用单独的SQL查询，确保IN子句格式正确
+      // 构建带有参数的SQL查询
+      const idList = tagIds.join(',');
+      const query = `SELECT * FROM tags WHERE id IN (${idList})`;
+      console.log('SQL查询:', query);
+      
+      // 执行原始SQL查询
+      const result = await db.all(sql.raw(query));
+      tags = result || [];
+    }
 
+    console.log('文章标签查询结果:', tags);
     return NextResponse.json(tags);
   } catch (error) {
     console.error('Error fetching post tags:', error);

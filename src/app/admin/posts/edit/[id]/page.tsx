@@ -15,6 +15,13 @@ import TagifyInput from '@/components/TagifyInput';
 import ImageUploader from '@/components/ImageUploader';
 import IsolatedMarkdownEditor from '@/components/IsolatedMarkdownEditor';
 import * as React from 'react';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
 
 export default function EditPostPage() {
   // 使用 useParams 钩子获取参数
@@ -80,37 +87,17 @@ export default function EditPostPage() {
     }
   };
 
-  // 获取文章标签
-  const fetchPostTags = async (postId: string) => {
-    try {
-      const response = await fetch(`/api/posts/${postId}/tags`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch post tags');
-      }
-
-      const tagsData = await response.json();
-      // 确保返回的是格式化后的JSON字符串，适用于TagifyInput组件
-      if (Array.isArray(tagsData)) {
-        const formattedTags = tagsData.map((tag: any) => ({
-          value: tag.name,
-          id: tag.id
-        }));
-        console.log('获取到文章标签:', formattedTags);
-        return JSON.stringify(formattedTags);
-      }
-      return '';
-    } catch (err) {
-      console.error('Error fetching post tags:', err);
-      return '';
-    }
-  };
-
   // 获取文章数据
   const fetchPost = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/posts/${postId}`);
+      const response = await fetch(`/api/posts/${postId}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -135,7 +122,13 @@ export default function EditPostPage() {
         const mainCategoryId = post.categoryId;
 
         // 获取文章的所有分类
-        const postCategoriesResponse = await fetch(`/api/posts/${postId}/categories`);
+        const postCategoriesResponse = await fetch(`/api/posts/${postId}/categories`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
         if (postCategoriesResponse.ok) {
           const postCategories = await postCategoriesResponse.json();
           console.log('Fetched post categories:', postCategories);
@@ -171,10 +164,38 @@ export default function EditPostPage() {
 
       // 获取文章标签
       try {
-        const tagsString = await fetchPostTags(postId);
-        setTags(tagsString);
+        const tagsResponse = await fetch(`/api/posts/${postId}/tags`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+        
+        if (tagsResponse.ok) {
+          const tagsData = await tagsResponse.json();
+          console.log('文章标签原始数据:', tagsData);
+          
+          if (Array.isArray(tagsData) && tagsData.length > 0) {
+            // 格式化标签数据为TagifyInput组件所需的格式
+            const formattedTags = tagsData.map(tag => ({
+              value: tag.name,
+              id: tag.id
+            }));
+            
+            console.log('格式化后的标签数据:', formattedTags);
+            // 将格式化后的标签数据转换为JSON字符串
+            setTags(JSON.stringify(formattedTags));
+          } else {
+            setTags('');
+          }
+        } else {
+          console.error('获取文章标签失败:', await tagsResponse.text());
+          setTags('');
+        }
       } catch (err) {
         console.error('获取文章标签失败:', err);
+        setTags('');
       }
 
       console.log('文章数据加载成功:', {
@@ -353,7 +374,17 @@ export default function EditPostPage() {
           console.log('更新标签数据:', currentTags);
           
           // 确保每个标签对象都有正确的格式 (value 和 id)
-          const formattedTags = currentTags.map((tag: { id?: number; name?: string; value?: string; description?: string }) => {
+          const formattedTags = currentTags.map((tag: any) => {
+            // 如果是字符串，尝试解析JSON
+            if (typeof tag === 'string') {
+              try {
+                return JSON.parse(tag);
+              } catch (e) {
+                // 如果不是有效的JSON，将其作为标签名称
+                return { value: tag };
+              }
+            }
+            
             // 如果标签已经有正确的格式，直接返回
             if (tag.value && (tag.id || tag.id === 0)) {
               return tag;
@@ -370,17 +401,7 @@ export default function EditPostPage() {
             return tag;
           });
           
-          // 提取标签ID列表
-          const tagIds = formattedTags
-            .map((tag: { id?: number }) => tag.id)
-            .filter((id?: number) => id !== undefined && id !== null) as number[];
-          
-          if (tagIds.length === 0) {
-            console.warn('没有有效的标签ID可关联');
-            return;
-          }
-          
-          console.log('关联文章标签，文章ID:', postId, '标签IDs:', tagIds);
+          console.log('格式化后的标签数据:', formattedTags);
           
           // 发送请求更新文章标签
           const tagsResponse = await fetch(`/api/posts/${postId}/tags`, {
@@ -394,10 +415,9 @@ export default function EditPostPage() {
           });
           
           if (!tagsResponse.ok) {
-            const errorText = await tagsResponse.text();
-            console.error('Failed to update post tags:', errorText);
+            console.error('更新标签失败:', await tagsResponse.text());
           } else {
-            console.log('成功更新文章标签');
+            console.log('标签更新成功');
           }
         } catch (err) {
           console.error('Error updating post tags:', err);
