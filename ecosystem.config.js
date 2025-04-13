@@ -5,11 +5,10 @@ module.exports = {
       script: 'npm',
       args: 'start',
       cwd: './',
-      instances: 'max', 
-      exec_mode: 'cluster', 
+      instances: 1,
       autorestart: true,
       watch: false,
-      max_memory_restart: '300M', 
+      max_memory_restart: '500M',
       env: {
         NODE_ENV: 'production',
         PORT: 3009
@@ -17,11 +16,7 @@ module.exports = {
       merge_logs: true,
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "./logs/error.log",
-      out_file: "./logs/output.log",
-      node_args: "--max-old-space-size=256",
-      wait_ready: true,
-      listen_timeout: 5000,
-      kill_timeout: 3000
+      out_file: "./logs/output.log"
     }
   ]
 };
