@@ -33,7 +33,6 @@ yarn-error.log*
 next-env.d.ts
 
 # database
-*.db
 !demo.db
 *.sqlite
 *.sqlite3
@@ -43,4 +42,4 @@ next-env.d.ts
 .vscode/
 demo.db
 Send2qiaomu/
-Send2qiaomu/
+
