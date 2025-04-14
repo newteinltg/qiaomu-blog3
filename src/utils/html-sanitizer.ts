@@ -1,59 +1,43 @@
 /**
- * 清理HTML内容，移除Markdown代码块标记和说明文字，确保返回有效的HTML
- * @param content 可能包含Markdown标记或说明文字的HTML内容
- * @returns 清理后的纯HTML内容
+ * 清理HTML内容
+ * 
+ * 这个函数处理各种格式的HTML内容，包括：
+ * 1. Markdown代码块
+ * 2. 带前导说明文字的HTML片段
+ * 3. 完整的HTML文档
+ * 4. 非HTML内容
+ * 
+ * @param content 需要清理的HTML内容
+ * @returns 清理后的HTML内容
  */
 export function sanitizeHtml(content: string): string {
   if (!content) return '';
   
-  let cleanedContent = content.trim();
+  // 移除可能的Markdown代码块标记
+  let cleanedContent = content;
   
-  // 1. 处理Markdown代码块
-  const markdownRegex = /```(?:html)?\s*([\s\S]*?)\s*```/;
-  const markdownMatch = cleanedContent.match(markdownRegex);
-  if (markdownMatch) {
-    cleanedContent = markdownMatch[1].trim();
+  // 处理Markdown代码块格式 ```html ... ```
+  const markdownHtmlPattern = /```html\s*([\s\S]*?)\s*```/;
+  const markdownMatch = content.match(markdownHtmlPattern);
+  if (markdownMatch && markdownMatch[1]) {
+    cleanedContent = markdownMatch[1];
   }
   
-  // 2. 处理可能的前导说明文字
-  // 策略：如果内容以非HTML字符开头，查找第一个HTML标签并从那里开始
-  if (!/^\s*</.test(cleanedContent)) {
-    const firstTagMatch = cleanedContent.match(/<[a-z][^>]*>/i);
-    if (firstTagMatch) {
-      const firstTagIndex = cleanedContent.indexOf(firstTagMatch[0]);
-      if (firstTagIndex > 0) {
-        cleanedContent = cleanedContent.substring(firstTagIndex);
-      }
+  // 处理可能的前导说明文字，寻找第一个HTML标签
+  const htmlStartPattern = /<(!DOCTYPE|html|head|body|div|p|span|a|img|script|link|meta)/i;
+  const htmlStartMatch = cleanedContent.match(htmlStartPattern);
+  if (htmlStartMatch) {
+    const startIndex = htmlStartMatch.index;
+    if (startIndex && startIndex > 0) {
+      cleanedContent = cleanedContent.substring(startIndex);
     }
   }
   
-  // 3. 检查是否已经是完整的HTML文档
-  const hasDoctype = /<!DOCTYPE\s+html[^>]*>/i.test(cleanedContent);
-  const hasHtmlTag = /<html[^>]*>/i.test(cleanedContent);
-  
-  if (hasDoctype || hasHtmlTag) {
-    // 已经是完整的HTML文档或接近完整，不需要额外处理
-    return cleanedContent;
+  // 确保内容是有效的HTML
+  if (!cleanedContent.trim().startsWith('<')) {
+    // 如果不是以HTML标签开头，包装为HTML
+    cleanedContent = `<div>${cleanedContent}</div>`;
   }
   
-  // 4. 检查是否包含HTML标签
-  const hasHtmlTags = /<[a-z][^>]*>[\s\S]*?<\/[a-z][^>]*>/i.test(cleanedContent);
-  
-  if (hasHtmlTags || /<[a-z][^>]*>/i.test(cleanedContent)) {
-    // 包含HTML标签，但不是完整文档，将其视为HTML片段
-    return `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HTML Content</title>
-</head>
-<body>
-  ${cleanedContent}
-</body>
-</html>`;
-  }
-  
-  // 5. 内容不像HTML，原样返回
   return cleanedContent;
 }

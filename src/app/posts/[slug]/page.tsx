@@ -274,13 +274,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   // 如果是HTML全页面类型，使用不同的布局
   if (postWithRelations.pageType === 'html') {
     return (
-      <HtmlPageLayout
-        title={postWithRelations.title}
-        content={postWithRelations.content}
-        returnUrl={category ? `/categories/${category.slug}` : '/'}
-        categories={postWithRelations.categories || []}
-        tags={postWithRelations.tags || []}
-        postId={post.id} // 传递文章ID，用于编辑功能
+      <iframe 
+        src={`/api/html-content?id=${post.id}`}
+        style={{ width: '100%', height: '100vh', border: 'none' }}
       />
     );
   }
