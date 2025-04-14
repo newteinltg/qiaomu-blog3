@@ -4,16 +4,17 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Toaster } from '@/components/ui/toaster';
 import { Link } from '@/components/ui/link';
 import { Button } from '@/components/ui/button';
-import { 
-  HomeIcon, 
-  DocumentTextIcon, 
-  TagIcon, 
-  Cog6ToothIcon, 
+import {
+  HomeIcon,
+  DocumentTextIcon,
+  TagIcon,
+  Cog6ToothIcon,
   ArrowTopRightOnSquareIcon,
   ArrowRightOnRectangleIcon,
   FolderIcon,
   Bars3Icon,
-  UserIcon
+  UserIcon,
+  LinkIcon
 } from '@/components/ui/icons';
 
 interface AdminLayoutProps {
@@ -23,25 +24,26 @@ interface AdminLayoutProps {
 export function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
-  
+
   // 获取当前页面标题
   const getPageTitle = () => {
     const path = pathname?.split('/').filter(Boolean);
-    
+
     if (!path || path.length === 1) return '仪表盘';
-    
+
     const pageTitles: Record<string, string> = {
       'posts': '文章管理',
       'categories': '分类管理',
       'tags': '标签管理',
       'users': '用户管理',
       'menus': '菜单管理',
+      'links': '链接管理',
       'settings': '系统设置',
     };
-    
+
     return pageTitles[path[1]] || '仪表盘';
   };
-  
+
   // 处理登出
   const handleLogout = async () => {
     try {
@@ -58,7 +60,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       router.push('/login');
     }
   };
-  
+
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="w-64 bg-gray-900 text-white flex flex-col">
@@ -135,6 +137,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </li>
             <li>
               <Link
+                href="/admin/links"
+                className={`flex items-center px-4 py-2 text-sm rounded-md ${
+                  pathname.startsWith('/admin/links') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <LinkIcon className="mr-3 h-5 w-5" />
+                链接管理
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/admin/settings"
                 className={`flex items-center px-4 py-2 text-sm rounded-md ${
                   pathname === '/admin/settings' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-700'
@@ -146,7 +159,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </li>
           </ul>
         </nav>
-        
+
         {/* 底部操作按钮 */}
         <div className="p-4 border-t border-gray-800">
           <ul className="space-y-2">
@@ -172,7 +185,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </ul>
         </div>
       </aside>
-      
+
       <div className="flex flex-1 flex-col admin-content">
         {/* 移除顶部标题，因为每个模块下面都有标题，提高空间利用率 */}
         <main className="flex-1 p-6">

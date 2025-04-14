@@ -5,8 +5,8 @@ import "../styles/navigation.css";
 import "../styles/article.css";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import NextScriptLoader from "@/components/NextScriptLoader";
-import { usePathname } from "next/navigation";
+import ScriptLoaderWrapper from "@/components/ScriptLoaderWrapper";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,7 +52,7 @@ export default async function RootLayout({
 }) {
   // 获取当前时间戳，用于强制刷新缓存
   const timestamp = new Date().getTime();
-  
+
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
@@ -75,13 +75,13 @@ export default async function RootLayout({
         {/* Umami流量统计脚本 */}
         <script defer src="https://cloud.umami.is/script.js" data-website-id="b1135309-3118-4fac-bcbe-868247a90834"></script>
         {/* 动态加载头部脚本 */}
-        <NextScriptLoader position="head" />
+        <ScriptLoaderWrapper position="head" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
       >
         {/* 动态加载正文开始脚本 */}
-        <NextScriptLoader position="body_start" />
+        <ScriptLoaderWrapper position="body_start" />
 
         <SessionProvider>
           <ThemeProvider>
@@ -90,7 +90,7 @@ export default async function RootLayout({
         </SessionProvider>
 
         {/* 动态加载正文结束脚本 */}
-        <NextScriptLoader position="body_end" />
+        <ScriptLoaderWrapper position="body_end" />
       </body>
     </html>
   );

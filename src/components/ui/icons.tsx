@@ -1,6 +1,6 @@
 'use client';
 
-import { 
+import {
   HomeIcon as HeroHomeIcon,
   DocumentTextIcon as HeroDocumentTextIcon,
   TagIcon as HeroTagIcon,
@@ -9,7 +9,8 @@ import {
   ArrowTopRightOnSquareIcon as HeroArrowTopRightOnSquareIcon,
   ArrowRightOnRectangleIcon as HeroArrowRightOnRectangleIcon,
   FolderIcon as HeroFolderIcon,
-  UserIcon as HeroUserIcon
+  UserIcon as HeroUserIcon,
+  LinkIcon as HeroLinkIcon
 } from '@heroicons/react/24/outline';
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -50,4 +51,8 @@ export function FolderIcon(props: IconProps) {
 
 export function UserIcon(props: IconProps) {
   return <HeroUserIcon {...props} />;
+}
+
+export function LinkIcon(props: IconProps) {
+  return <HeroLinkIcon {...props} />;
 }

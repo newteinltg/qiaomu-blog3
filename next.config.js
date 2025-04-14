@@ -53,6 +53,8 @@ const nextConfig = {
   serverExternalPackages: ['sharp'],
   // 实验性功能
   experimental: {
+    // 禁用 App Router 参数类型检查，解决 Next.js 15 中的类型问题
+    typedRoutes: false
   },
   async headers() {
     return [

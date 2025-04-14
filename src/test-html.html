@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dish Decode - 跨文化菜单翻译助手</title>
+    
+    <!-- 主要样式库 -->
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css';">
+    
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';">
+    
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 基础样式 */
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4ECDC4;
+            --accent-color: #FFE66D;
+            --dark-color: #292F36;
+            --light-color: #F7FFF7;
+            --success-color: #6BFF9E;
+            --warning-color: #FFD166;
+            --error-color: #EF476F;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif;
+            color: var(--dark-color);
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+        
+        /* 自定义组件样式 */
+        .app-container {
+            max-width: 414px;
+            height: 100vh;
+            margin: 0 auto;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            background-color: white;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+        
+        .screen.active {
+            display: flex;
+            z-index: 10;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(255, 107, 107, 0.2);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(78, 205, 196, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(78, 205, 196, 0.3);
+        }
+        
+        .btn-outline {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background-color: transparent;
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .icon-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .icon-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .animate-slide-up {
+            animation: slideUp 0.5s ease forwards;
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        /* 菜单翻译页样式 */
+        .menu-item {
+            position: relative;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .menu-item:hover {
+            background-color: rgba(255, 107, 107, 0.05);
+        }
+        
+        .info-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .info-icon:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+        
+        .tag-flavor {
+            background-color: rgba(255, 107, 107, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .tag-type {
+            background-color: rgba(78, 205, 196, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .tag-allergen {
+            background-color: rgba(239, 71, 111, 0.1);
+            color: var(--error-color);
+        }
+        
+        .tag-diet {
+            background-color: rgba(107, 255, 158, 0.1);
+            color: #2a9d8f;
+        }
+        
+        /* 加载动画 */
+        .loading-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255,255,255,0.9);
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-container.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 107, 107, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 设计系统展示部分样式 */
+        .design-section {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .color-swatch {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        
+        /* 提示标注 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 0.9;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 640px) {
+            .app-container {
+                width: 100%;
+                height: 100vh;
+                max-width: none;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- 应用原型展示部分 -->
+    <div class="app-container">
+        <!-- 屏幕1: 欢迎页 -->
+        <div id="welcome-screen" class="screen active">
+            <div class="flex flex-col items-center justify-center h-full p-6 text-center">
+                <div class="mb-8 animate-fade-in" style="animation-delay: 0.2s;">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-pink-500 to-red-500 flex items-center justify-center">
+                        <i class="fas fa-utensils text-white text-4xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold mb-2">Dish Decode</h1>
+                    <p class="text-gray-600">Understand any menu, anywhere</p>
+                </div>
+                
+                <div class="w-full max-w-xs space-y-4 animate-slide-up" style="animation-delay: 0.4s;">
+                    <button id="camera-btn" class="btn-primary w-full flex items-center justify-center">
+                        <i class="fas fa-camera mr-2"></i>
+                        Take a Photo
+                    </button>
+                    
+                    <button id="gallery-btn" class="btn-outline w-full flex items-center justify-center">
+                        <i class="fas fa-images mr-2"></i>
+                        Choose from Gallery
+                    </button>
+                </div>
+                
+                <div class="mt-12 text-sm text-gray-500 animate-fade-in" style="animation-delay: 0.6s;">
+                    <p>Simply take a photo of any menu<br>and get instant translations with dish details</p>
+                </div>
+                
+                <div class="tooltip mt-6 animate-fade-in" style="animation-delay: 0.8s;">
+                    <div class="flex items-center text-xs text-gray-400">
+                        <i class="fas fa-lightbulb mr-1 text-yellow-400"></i>
+                        <span>Pro tip: Hold your phone steady for best results</span>
+                    </div>
+                    <span class="tooltip-text">Keeping your phone parallel to the menu helps our AI recognize text more accurately!</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 屏幕2: 照片选择页 -->
+        <div id="gallery-screen" class="screen">
+            <div class="flex flex-col h-full">
+                <div class="p-4 border-b border-gray-200 flex items-center">
+                    <button id="back-to-welcome" class="icon-button mr-4">
+                        <i class="fas fa-arrow-left text-gray-600"></i>
+                    </button>
+                    <h2 class="text-xl font-semibold">Select a Menu Photo</h2>
+                </div>
+                
+                <div class="flex-1 p-4 overflow-y-auto">
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- 模拟照片库 -->
+                        <div class="aspect-w-1 aspect-h-1 rounded-lg overflow-hidden bg-gray-100 cursor-pointer gallery-image">
+                            <img src="https://images.unsplash.com/photo-1541379889336-70f26e4c4617?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Chinese menu" class="object-cover w-full h-full">
+                        </div>
+                        <div class="aspect-w-1 aspect-h-1 rounded-lg overflow-hidden bg-gray-100 cursor-pointer gallery-image">
+                            <img src="https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Japanese menu" class="object-cover w-full h-full">
+                        </div>
+                        <div class="aspect-w-1 aspect-h-1 rounded-lg overflow-hidden bg-gray-100 cursor-pointer gallery-image">
+                            <img src="https://images.unsplash.com/photo-1559304822-9eb2813c9844?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Thai menu" class="object-cover w-full h-full">
+                        </div>
+                        <div class="aspect-w-1 aspect-h-1 rounded-lg overflow-hidden bg-gray-100 cursor-pointer gallery-image">
+                            <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Korean menu" class="object-cover w-full h-full">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <p class="text-sm text-gray-500 mb-3">Recent Photos</p>
+                        <div class="grid grid-cols-4 gap-2">
+                            <div class="aspect-w-1 aspect-h-1 rounded-md overflow-hidden bg-gray-100 cursor-pointer gallery-image">
+                                <img src="https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Recent menu 1" class="object-cover w-full h-full">
+                            </div>
+                            <div class="aspect-w-1 aspect-h-1 rounded-md overflow-hidden bg-gray-100 cursor-pointer gallery-image">
+                                <img src="https://images.unsplash.com/photo-1572715376701-98568319fd0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Recent menu 2" class="object-cover w-full h-full">
+                            </div>
+                            <div class="aspect-w-1 aspect-h-1 rounded-md overflow-hidden bg-gray-100 cursor-pointer gallery-image">
+                                <img src="https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Recent menu 3" class="object-cover w-full h-full">
+                            </div>
+                            <div class="aspect-w-1 aspect-h-1 rounded-md overflow-hidden bg-gray-100 cursor-pointer gallery-image">
+                                <img src="https://images.unsplash.com/photo-1539136788836-5699e78bfc75?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Recent menu 4" class="object-cover w-full h-full">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 屏幕3: 菜单翻译页 -->
+        <div id="translation-screen" class="screen">
+            <div class="flex flex-col h-full">
+                <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+                    <button id="back-from-translation" class="icon-button">
+                        <i class="fas fa-arrow-left text-gray-600"></i>
+                    </button>
+                    <h2 class="text-xl font-semibold">Translated Menu</h2>
+                    <div class="flex items-center">
+                        <button class="icon-button mr-2">
+                            <i class="fas fa-share-alt text-gray-600"></i>
+                        </button>
+                        <button class="icon-button">
+                            <i class="fas fa-bookmark text-gray-600"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-4">
+                    <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-lg font-bold">Golden Dragon Restaurant</h3>
+                            <span class="text-sm text-gray-500">Detected: Chinese</span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="text-sm text-gray-500 mb-1">Original menu image:</div>
+                            <img id="menu-image" src="https://images.unsplash.com/photo-1541379889336-70f26e4c4617?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Menu" class="w-full h-auto rounded-lg">
+                        </div>
+                        
+                        <div class="tooltip text-xs text-gray-400 flex items-center mb-4">
+                            <i class="fas fa-info-circle mr-1 text-blue-400"></i>
+                            <span>Tap on info icons for detailed dish information</span>
+                            <span class="tooltip-text">Each dish has an info button that reveals ingredients, allergens, and more!</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+                        <h4 class="text-base font-semibold mb-3 text-gray-700">Appetizers</h4>
+                        
+                        <div class="menu-item" data-dish-id="1">
+                            <div class="flex justify-between">
+                                <div>
+                                    <p class="font-medium">Spring Rolls</p>
+                                    <p class="text-sm text-gray-500">Crispy rolls with vegetables</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700 mr-2">¥28</span>
+                                    <div class="info-icon">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" data-dish-id="2">
+                            <div class="flex justify-between">
+                                <div>
+                                    <p class="font-medium">Wonton Soup</p>
+                                    <p class="text-sm text-gray-500">Dumplings in clear broth</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700 mr-2">¥32</span>
+                                    <div class="info-icon">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" data-dish-id="3">
+                            <div class="flex justify-between">
+                                <div>
+                                    <p class="font-medium">Steamed Dumplings</p>
+                                    <p class="text-sm text-gray-500">Pork and vegetable filling</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700 mr-2">¥38</span>
+                                    <div class="info-icon">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+                        <h4 class="text-base font-semibold mb-3 text-gray-700">Main Dishes</h4>
+                        
+                        <div class="menu-item" data-dish-id="4">
+                            <div class="flex justify-between">
+                                <div>
+                                    <p class="font-medium">Kung Pao Chicken</p>
+                                    <p class="text-sm text-gray-500">Spicy chicken with peanuts</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700 mr-2">¥68</span>
+                                    <div class="info-icon">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" data-dish-id="5">
+                            <div class="flex justify-between">
+                                <div>
+                                    <p class="font-medium">Mapo Tofu</p>
+                                    <p class="text-sm text-gray-500">Spicy tofu with minced pork</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700 mr-2">¥58</span>
+                                    <div class="info-icon">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" data-dish-id="6">
+                            <div class="flex justify-between">
+                                <div>
+                                    <p class="font-medium">Sweet and Sour Fish</p>
+                                    <p class="text-sm text-gray-500">Crispy fish with tangy sauce</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700 mr-2">¥88</span>
+                                    <div class="info-icon">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" data-dish-id="7">
+                            <div class="flex justify-between">
+                                <div>
+                                    <p class="font-medium">Beef with Broccoli</p>
+                                    <p class="text-sm text-gray-500">Tender beef with vegetables</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700 mr-2">¥78</span>
+                                    <div class="info-icon">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+                        <h4 class="text-base font-semibold mb-3 text-gray-700">Rice & Noodles</h4>
+                        
+                        <div class="menu-item" data-dish-id="8">
+                            <div class="flex justify-between">
+                                <div>
+                                    <p class="font-medium">Fried Rice</p>
+                                    <p class="text-sm text-gray-500">Rice with eggs and vegetables</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700 mr-2">¥42</span>
+                                    <div class="info-icon">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" data-dish-id="9">
+                            <div class="flex justify-between">
+                                <div>
+                                    <p class="font-medium">Dan Dan Noodles</p>
+                                    <p class="text-sm text-gray-500">Spicy Sichuan noodles</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700 mr-2">¥48</span>
+                                    <div class="info-icon">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+                        <h4 class="text-base font-semibold mb-3 text-gray-700">Desserts</h4>
+                        
+                        <div class="menu-item" data-dish-id="10">
+                            <div class="flex justify-between">
+                                <div>
+                                    <p class="font-medium">Mango Pudding</p>
+                                    <p class="text-sm text-gray-500">Creamy mango dessert</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700 mr-2">¥28</span>
+                                    <div class="info-icon">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" data-dish-id="11">
+                            <div class="flex justify-between">
+                                <div>
+                                    <p class="font-medium">Sesame Balls</p>
+                                    <p class="text-sm text-gray-500">Sweet rice balls with filling</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700 mr-2">¥32</span>
+                                    <div class="info-icon">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 加载动画 -->
+        <div id="loading-container" class="loading-container">
+            <div class="text-center">
+                <div class="loading-spinner mb-4 mx-auto"></div>
+                <p class="text-gray-700 font-medium" id="loading-text">Analyzing menu...</p>
+                <p class="text-sm text-gray-500 mt-2" id="loading-subtext">Detecting language and menu items</p>
+            </div>
+        </div>
+        
+        <!-- 菜品详情模态框 -->
+        <div id="dish-modal" class="modal">
+            <div class="modal-content">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold" id="modal-dish-name">Dish Name</h3>
+                    <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-4">
+                    <img id="modal-dish-image" src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Dish" class="w-full h-48 object-cover rounded-lg">
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="text-sm uppercase text-gray-500 mb-2">Flavor Profile</h4>
+                    <div id="modal-flavors" class="flex flex-wrap">
+                        <span class="tag tag-flavor">Spicy</span>
+                        <span class="tag tag-flavor">Savory</span>
+                        <span class="tag tag-flavor">Nutty</span>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="text-sm uppercase text-gray-500 mb-2">Dish Type</h4>
+                    <div id="modal-type" class="flex flex-wrap">
+                        <span class="tag tag-type">Main Course</span>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="text-sm uppercase text-gray-500 mb-2">Description</h4>
+                    <p id="modal-description" class="text-gray-700">A classic Sichuan dish featuring diced chicken, peanuts, and vegetables in a spicy sauce with Sichuan peppercorns that create a unique numbing sensation.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="text-sm uppercase text-gray-500 mb-2">Potential Allergens</h4>
+                    <div id="modal-allergens" class="flex flex-wrap">
+                        <span class="tag tag-allergen">Peanuts</span>
+                        <span class="tag tag-allergen">Soy</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-sm uppercase text-gray-500 mb-2">Dietary Information</h4>
+                    <div id="modal-diet" class="flex flex-wrap">
+                        <span class="tag tag-diet">Not Vegetarian</span>
+                        <span class="tag tag-diet">Gluten Free Option Available</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 设计理念阐述部分 -->
+    <div class="design-section mt-12 mb-16">
+        <h2 class="text-3xl font-bold mb-8 text-center">Dish Decode: Design Story</h2>
+        
+        <div class="bg-white rounded-xl shadow-md p-8 mb-12">
+            <h3 class="text-2xl font-bold mb-4">1. 需求洞察与痛点分析</h3>
+            
+            <div class="mb-8">
+                <h4 class="text-xl font-semibold mb-3">目标用户画像</h4>
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex-1 bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-user text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-medium">旅行者 Sarah</h5>
+                                <p class="text-sm text-gray-600">28岁，英语母语者</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 text-sm">热爱旅行的美国人，经常独自或与朋友探索亚洲国家。对尝试地道美食充满热情，但语言障碍常让她感到困扰。</p>
+                    </div>
+                    
+                    <div class="flex-1 bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-briefcase text-green-500"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-medium">商务人士 Michael</h5>
+                                <p class="text-sm text-gray-600">42岁，英语母语者</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 text-sm">经常出差到亚洲国家的销售经理。需要与客户共进晚餐，但担心因菜单理解不足而出现尴尬情况。</p>
+                    </div>
+                    
+                    <div class="flex-1 bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-graduation-cap text-purple-500"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-medium">留学生 Emma</h5>
+                                <p class="text-sm text-gray-600">22岁，英语母语者</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 text-sm">在亚洲国家学习的留学生。想要融入当地文化，但对菜单上的食物成分和烹饪方式缺乏了解。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h4 class="text-xl font-semibold mb-3">核心用户痛点</h4>
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg mb-4">
+                    <h5 class="font-medium text-red-700 mb-1">痛点1：语言障碍导致的菜单理解困难</h5>
+                    <p class="text-gray-700">用户面对非英语菜单时，不仅无法理解菜名，更无法获知菜品的具体成分、烹饪方式和口味特点，导致点菜时的不确定感和焦虑。</p>
+                </div>
+                
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg mb-4">
+                    <h5 class="font-medium text-red-700 mb-1">痛点2：缺乏文化背景知识导致的选择困难</h5>
+                    <p class="text-gray-700">即使菜名被翻译成英文，用户也常常不理解菜品的文化背景、传统吃法和搭配方式，难以做出符合个人口味和饮食习惯的选择。</p>
+                </div>
+                
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+                    <h5 class="font-medium text-red-700 mb-1">痛点3：饮食限制和过敏源信息缺失</h5>
+                    <p class="text-gray-700">对于有特殊饮食需求（如素食主义者）或食物过敏的用户来说，无法确认菜品是否含有特定成分，增加了健康风险和用餐焦虑。</p>
+                </div>
+            </div>
+            
+            <div>
+                <h4 class="text-xl font-semibold mb-3">用户旅程图</h4>
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <div class="mermaid">
+                        graph TD
+                            A[进入餐厅] -->|拿到菜单| B(面对非英文菜单)
+                            B -->|感到困惑| C{尝试理解菜单}
+                            C -->|使用Dish Decode| D[拍照/上传菜单]
+                            D --> E[获取翻译和详细信息]
+                            E --> F[查看菜品详情]
+                            F --> G[做出明智的点餐决定]
+                            C -->|不使用工具| H[随机点菜]
+                            H -->|可能不符合期望| I[用餐体验受影响]
+                            style D fill:#FF6B6B,stroke:#FF6B6B,color:white
+                            style E fill:#FF6B6B,stroke:#FF6B6B,color:white
+                            style F fill:#FF6B6B,stroke:#FF6B6B,color:white
+                            style G fill:#4ECDC4,stroke:#4ECDC4,color:white
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-md p-8 mb-12">
+            <h3 class="text-2xl font-bold mb-4">2. 设计系统与风格定义</h3>
+            
+            <div class="mb-8">
+                <h4 class="text-xl font-semibold mb-3">设计风格选择</h4>
+                <p class="text-gray-700 mb-4">Dish Decode采用了现代简约风格，融合了温暖友好的元素，旨在创造一个既专业可靠又亲切易用的体验。设计风格的选择基于以下考虑：</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h5 class="font-medium mb-2">简约清晰的界面</h5>
+                        <p class="text-sm text-gray-700">在陌生环境中使用App时，用户往往处于轻度压力状态。简约的界面设计减少了认知负担，让用户能够快速理解功能并获取所需信息。</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h5 class="font-medium mb-2">温暖友好的色彩系统</h5>
+                        <p class="text-sm text-gray-700">主色调选择温暖的珊瑚红，辅以清新的薄荷绿，创造愉悦且与食物相关的视觉体验，同时传达信任感和专业性。</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h5 class="font-medium mb-2">直观的信息层级</h5>
+                        <p class="text-sm text-gray-700">通过卡片式设计和清晰的视觉层级，帮助用户快速区分菜单类别、菜品名称和详细信息，模拟实体菜单的浏览体验。</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h5 class="font-medium mb-2">文化敏感的视觉语言</h5>
+                        <p class="text-sm text-gray-700">设计元素避免文化刻板印象，采用中性且现代的视觉语言，尊重多元文化背景，同时保持界面的一致性和专业性。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h4 class="text-xl font-semibold mb-3">色彩系统</h4>
+                <div class="flex flex-wrap gap-4 mb-4">
+                    <div class="text-center">
+                        <div class="color-swatch" style="background-color: #FF6B6B;"></div>
+                        <p class="text-sm mt-1">主色调</p>
+                        <p class="text-xs text-gray-500">#FF6B6B</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="color-swatch" style="background-color: #4ECDC4;"></div>
+                        <p class="text-sm mt-1">辅助色</p>
+                        <p class="text-xs text-gray-500">#4ECDC4</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="color-swatch" style="background-color: #FFE66D;"></div>
+                        <p class="text-sm mt-1">强调色</p>
+                        <p class="text-xs text-gray-500">#FFE66D</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="color-swatch" style="background-color: #292F36;"></div>
+                        <p class="text-sm mt-1">文本色</p>
+                        <p class="text-xs text-gray-500">#292F36</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="color-swatch" style="background-color: #F7FFF7;"></div>
+                        <p class="text-sm mt-1">背景色</p>
+                        <p class="text-xs text-gray-500">#F7FFF7</p>
+                    </div>
+                </div>
+                
+                <p class="text-sm text-gray-700">色彩选择考虑了以下因素：</p>
+                <ul class="list-disc list-inside text-sm text-gray-700 mt-2">
+                    <li>珊瑚红（#FF6B6B）作为主色调，传达温暖、热情和食物相关的联想</li>
+                    <li>薄荷绿（#4ECDC4）作为辅助色，带来清新感和平衡感</li>
+                    <li>柔和的黄色（#FFE66D）用于强调重要信息和引导用户注意</li>
+                    <li>深色文本确保良好的可读性，浅色背景提供舒适的阅读环境</li>
+                    <li>功能性色彩（如警告、成功等）保持一致的语义关联</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4 class="text-xl font-semibold mb-3">组件系统</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h5 class="font-medium mb-2">按钮系统</h5>
+                        <div class="flex flex-col gap-3 mt-3">
+                            <button class="btn-primary">主要按钮</button>
+                            <button class="btn-secondary">次要按钮</button>
+                            <button class="btn-outline">轮廓按钮</button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h5 class="font-medium mb-2">卡片与容器</h5>
+                        <div class="card mt-3">
+                            <p class="font-medium">信息卡片</p>
+                            <p class="text-sm text-gray-500 mt-1">用于组织和展示相关内容</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h5 class="font-medium mb-2">标签系统</h5>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="tag tag-flavor">口味标签</span>
+                            <span class="tag tag-type">类型标签</span>
+                            <span class="tag tag-allergen">过敏源</span>
+                            <span class="tag tag-diet">饮食限制</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-md p-8 mb-12">
+            <h3 class="text-2xl font-bold mb-4">3. 痛点驱动的设计解决方案</h3>
+            
+            <div class="mb-8">
+                <h4 class="text-xl font-semibold mb-3">痛点1解决方案：智能菜单翻译与信息增强</h4>
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg mb-4">
+                    <h5 class="font-medium text-green-700 mb-2">设计响应</h5>
+                    <ul class="list-disc list-inside text-gray-700">
+                        <li class="mb-2">简化的拍照/上传流程，仅需一步即可获取翻译结果</li>
+                        <li class="mb-2">保留原始菜单的视觉布局，同时提供清晰的英文翻译，帮助用户建立视觉关联</li>
+                        <li class="mb-2">为每道菜添加简短描述，提供即时的基本理解</li>
+                        <li>通过信息图标指示可获取更多详情，不占用主界面空间但保持信息可访问性</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h5 class="font-medium text-blue-700 mb-2">关键设计元素</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm font-medium mb-1">原始菜单图片展示</p>
+                            <p class="text-xs text-gray-600">保留原菜单视觉参考，帮助用户在实体菜单上定位菜品</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">分类清晰的菜单结构</p>
+                            <p class="text-xs text-gray-600">保持与原菜单相同的分类，便于理解菜品在餐食中的定位</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">简洁的菜品描述</p>
+                            <p class="text-xs text-gray-600">每道菜配有简短描述，提供即时理解而不需深入阅读</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">信息图标指示</p>
+                            <p class="text-xs text-gray-600">清晰标识可获取更多信息的入口，不干扰主界面浏览</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h4 class="text-xl font-semibold mb-3">痛点2解决方案：文化背景与口味解析</h4>
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg mb-4">
+                    <h5 class="font-medium text-green-700 mb-2">设计响应</h5>
+                    <ul class="list-disc list-inside text-gray-700">
+                        <li class="mb-2">详情弹窗中提供符合西方理解方式的口味描述，使用熟悉的形容词（如"savory"、"tangy"）</li>
+                        <li class="mb-2">通过视觉化的标签系统，快速传达菜品的关键特性</li>
+                        <li class="mb-2">提供菜品类型信息（主食、配菜等），帮助用户理解如何组合点餐</li>
+                        <li>详细描述使用西方饮食文化中的类比，帮助用户建立认知连接</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h5 class="font-medium text-blue-700 mb-2">关键设计元素</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm font-medium mb-1">口味标签系统</p>
+                            <p class="text-xs text-gray-600">使用简洁直观的标签，快速传达菜品的口味特点</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">菜品类型指示</p>
+                            <p class="text-xs text-gray-600">明确标示菜品在餐食中的定位，帮助合理搭配点餐</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">详细且易理解的描述</p>
+                            <p class="text-xs text-gray-600">使用西方文化视角描述菜品，增强理解和共鸣</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">菜品图片展示</p>
+                            <p class="text-xs text-gray-600">提供视觉参考，减少想象障碍，增强决策信心</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h4 class="text-xl font-semibold mb-3">痛点3解决方案：饮食限制与过敏源信息</h4>
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg mb-4">
+                    <h5 class="font-medium text-green-700 mb-2">设计响应</h5>
+                    <ul class="list-disc list-inside text-gray-700">
+                        <li class="mb-2">在详情弹窗中突出显示潜在过敏源信息，使用醒目的标签设计</li>
+                        <li class="mb-2">提供明确的饮食限制信息（素食、无麸质等），帮助特殊饮食需求的用户</li>
+                        <li class="mb-2">将过敏源和饮食信息放在详情页底部，确保用户在做决定前能看到这些关键信息</li>
+                        <li>使用颜色编码区分不同类型的标签，增强信息的视觉识别度</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h5 class="font-medium text-blue-700 mb-2">关键设计元素</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm font-medium mb-1">过敏源标签</p>
+                            <p class="text-xs text-gray-600">使用警示色系的标签，突出显示潜在过敏源</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">饮食限制标签</p>
+                            <p class="text-xs text-gray-600">清晰标示菜品是否适合特定饮食习惯（素食、无麸质等）</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">信息分区布局</p>
+                            <p class="text-xs text-gray-600">将健康相关信息放在详情页底部，确保用户不会忽略</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">颜色编码系统</p>
+                            <p class="text-xs text-gray-600">不同类型信息使用不同颜色，提高扫描效率</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-md p-8">
+            <h3 class="text-2xl font-bold mb-4">4. 设计亮点与创新点</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-bolt text-yellow-500"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold">无缝拍照体验</h4>
+                    </div>
+                    <p class="text-gray-700">简化的拍照流程，无需多步操作，直接从主屏幕进入拍照或选择照片，减少用户在餐厅环境中的操作时间和注意力分散。</p>
+                </div>
+                
+                <div>
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-magic text-purple-500"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold">保留原始菜单布局</h4>
+                    </div>
+                    <p class="text-gray-700">翻译结果保持原始菜单的视觉结构，帮助用户在实体菜单和App之间建立关联，减少认知负担，增强使用信心。</p>
+                </div>
+                
+                <div>
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-tags text-blue-500"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold">多维度标签系统</h4>
+                    </div>
+                    <p class="text-gray-700">创新的多维度标签系统，通过颜色和形状编码，在紧凑空间内传达丰富信息，使用户能快速识别菜品特性、过敏源和饮食限制。</p>
+                </div>
+                
+                <div>
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-leaf text-green-500"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold">文化敏感的信息呈现</h4>
+                    </div>
+                    <p class="text-gray-700">菜品描述采用西方文化视角，但尊重原始菜品的文化背景，避免过度简化或曲解，在跨文化理解和保持真实性之间取得平衡。</p>
+                </div>
+                
+                <div>
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-heart text-red-500"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold">情感化的用户引导</h4>
+                    </div>
+                    <p class="text-gray-700">通过温暖的色彩、友好的提示文案和适度的动效，减轻用户在陌生环境中的焦虑感，创造愉悦的使用体验，增强用户信心。</p>
+                </div>
+                
+                <div>
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-layer-group text-indigo-500"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold">分层信息架构</h4>
+                    </div>
+                    <p class="text-gray-700">采用"需要时才显示"的信息设计原则，主界面保持简洁，详细信息通过弹窗呈现，平衡了信息丰富度和界面清爽度，适应不同深度的用户需求。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mermaid JS 用于流程图 -->
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/mermaid/8.14.0/mermaid.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mermaid@8.14.0/dist/mermaid.min.js'"></script>
+    
+    <script>
+        // 初始化Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            securityLevel: 'loose',
+        });
+        
+        // 等待DOM加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const galleryScreen = document.getElementById('gallery-screen');
+            const translationScreen = document.getElementById('translation-screen');
+            const loadingContainer = document.getElementById('loading-container');
+            const dishModal = document.getElementById('dish-modal');
+            
+            // 按钮元素
+            const cameraBtn = document.getElementById('camera-btn');
+            const galleryBtn = document.getElementById('gallery-btn');
+            const backToWelcome = document.getElementById('back-to-welcome');
+            const backFromTranslation = document.getElementById('back-from-translation');
+            const closeModal = document.getElementById('close-modal');
+            
+            // 菜单项和图片
+            const galleryImages = document.querySelectorAll('.gallery-image');
+            const menuItems = document.querySelectorAll('.menu-item');
+            const infoIcons = document.querySelectorAll('.info-icon');
+            
+            // 模拟拍照功能
+            cameraBtn.addEventListener('click', function() {
+                showLoading('Taking photo...', 'Please hold your phone steady');
+                
+                // 模拟拍照延迟
+                setTimeout(function() {
+                    loadingContainer.querySelector('#loading-text').textContent = 'Processing image...';
+                    loadingContainer.querySelector('#loading-subtext').textContent = 'Detecting text and layout';
+                    
+                    // 模拟处理延迟
+                    setTimeout(function() {
+                        loadingContainer.querySelector('#loading-text').textContent = 'Translating menu...';
+                        loadingContainer.querySelector('#loading-subtext').textContent = 'Analyzing dishes and ingredients';
+                        
+                        // 最终跳转到翻译页
+                        setTimeout(function() {
+                            hideLoading();
+                            showScreen(translationScreen);
+                        }, 1500);
+                    }, 1500);
+                }, 1500);
+            });
+            
+            // 打开照片库
+            galleryBtn.addEventListener('click', function() {
+                showScreen(galleryScreen);
+            });
+            
+            // 从照片库返回
+            backToWelcome.addEventListener('click', function() {
+                showScreen(welcomeScreen);
+            });
+            
+            // 从翻译页返回
+            backFromTranslation.addEventListener('click', function() {
+                showScreen(welcomeScreen);
+            });
+            
+            // 从照片库选择图片
+            galleryImages.forEach(function(image) {
+                image.addEventListener('click', function() {
+                    // 更新菜单图片
+                    const imgSrc = this.querySelector('img').src;
+                    document.getElementById('menu-image').src = imgSrc;
+                    
+                    showLoading('Processing image...', 'Detecting text and layout');
+                    
+                    // 模拟处理延迟
+                    setTimeout(function() {
+                        loadingContainer.querySelector('#loading-text').textContent = 'Translating menu...';
+                        loadingContainer.querySelector('#loading-subtext').textContent = 'Analyzing dishes and ingredients';
+                        
+                        // 最终跳转到翻译页
+                        setTimeout(function() {
+                            hideLoading();
+                            showScreen(translationScreen);
+                        }, 1500);
+                    }, 1500);
+                });
+            });
+            
+            // 菜品详情模态框
+            const dishData = {
+                1: {
+                    name: "Spring Rolls",
+                    image: "https://images.unsplash.com/photo-1565059922421-5d3635f05e7b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                    flavors: ["Crispy", "Fresh", "Light"],
+                    type: ["Appetizer"],
+                    description: "Thin pastry wrappers filled with a mixture of vegetables (typically cabbage, carrots, and bean sprouts), then deep-fried until golden and crispy. Served with a sweet dipping sauce.",
+                    allergens: ["Wheat", "Soy"],
+                    diet: ["Vegetarian", "Not Vegan", "Contains Gluten"]
+                },
+                2: {
+                    name: "Wonton Soup",
+                    image: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                    flavors: ["Savory", "Light", "Aromatic"],
+                    type: ["Soup", "Appetizer"],
+                    description: "A clear, flavorful broth with delicate dumplings filled with seasoned minced pork and shrimp. Often garnished with green onions and sometimes thin slices of char siu (barbecued pork).",
+                    allergens: ["Wheat", "Shellfish", "Soy"],
+                    diet: ["Not Vegetarian", "Contains Gluten"]
+                },
+                3: {
+                    name: "Steamed Dumplings",
+                    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                    flavors: ["Savory", "Juicy", "Mild"],
+                    type: ["Appetizer", "Dim Sum"],
+                    description: "Delicate dough wrappers filled with a mixture of ground pork, chopped vegetables, and seasonings, then steamed until tender. Often served with a dipping sauce of soy sauce, vinegar, and chili oil.",
+                    allergens: ["Wheat", "Soy"],
+                    diet: ["Not Vegetarian", "Contains Gluten"]
+                },
+                4: {
+                    name: "Kung Pao Chicken",
+                    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                    flavors: ["Spicy", "Savory", "Nutty"],
+                    type: ["Main Course"],
+                    description: "A classic Sichuan dish featuring diced chicken, peanuts, and vegetables in a spicy sauce with Sichuan peppercorns that create a unique numbing sensation.",
+                    allergens: ["Peanuts", "Soy"],
+                    diet: ["Not Vegetarian", "Gluten Free Option Available"]
+                },
+                5: {
+                    name: "Mapo Tofu",
+                    image: "https://images.unsplash.com/photo-1582452997568-cbb7a80e2347?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                    flavors: ["Spicy", "Numbing", "Savory"],
+                    type: ["Main Course"],
+                    description: "Soft tofu cubes in a spicy, aromatic sauce made with fermented bean paste, minced pork, Sichuan peppercorns, and chili oil. The dish offers a balance of 'ma' (numbing) and 'la' (spicy) flavors.",
+                    allergens: ["Soy"],
+                    diet: ["Not Vegetarian", "Gluten Free Option Available"]
+                },
+                6: {
+                    name: "Sweet and Sour Fish",
+                    image: "https://images.unsplash.com/photo-1556269923-e4ef51d69638?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                    flavors: ["Sweet", "Tangy", "Crispy"],
+                    type: ["Main Course"],
+                    description: "Lightly battered and fried fish fillets coated in a vibrant sweet and sour sauce made from sugar, vinegar, ketchup, and soy sauce. Often includes bell peppers, pineapple, and onions for added texture and flavor.",
+                    allergens: ["Fish", "Wheat"],
+                    diet: ["Not Vegetarian", "Contains Gluten"]
+                },
+                7: {
+                    name: "Beef with Broccoli",
+                    image: "https://images.unsplash.com/photo-1617622141573-2e00b5cbe7c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                    flavors: ["Savory", "Mild", "Umami"],
+                    type: ["Main Course"],
+                    description: "Tender slices of beef stir-fried with broccoli florets in a savory brown sauce made from soy sauce, oyster sauce, and garlic. A popular Chinese-American dish that balances protein and vegetables.",
+                    allergens: ["Soy", "Shellfish (in oyster sauce)"],
+                    diet: ["Not Vegetarian", "Gluten Free Option Available"]
+                },
+                8: {
+                    name: "Fried Rice",
+                    image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                    flavors: ["Savory", "Aromatic", "Versatile"],
+                    type: ["Rice", "Main Course", "Side Dish"],
+                    description: "Cooked rice stir-fried with eggs, vegetables (typically peas, carrots, and onions), and sometimes meat or seafood. Seasoned with soy sauce and often garnished with green onions.",
+                    allergens: ["Eggs", "Soy"],
+                    diet: ["Vegetarian Option Available", "Contains Gluten"]
+                },
+                9: {
+                    name: "Dan Dan Noodles",
+                    image: "https://images.unsplash.com/photo-1619380061814-58f03707f082?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                    flavors: ["Spicy", "Nutty", "Savory"],
+                    type: ["Noodles", "Main Course"],
+                    description: "A Sichuan specialty featuring wheat noodles topped with a spicy sauce made from chili oil, Sichuan peppercorns, and preserved vegetables, along with minced pork. The dish offers complex flavors including spicy, numbing, savory, and slightly sweet notes.",
+                    allergens: ["Wheat", "Peanuts", "Soy"],
+                    diet: ["Not Vegetarian", "Contains Gluten"]
+                },
+                10: {
+                    name: "Mango Pudding",
+                    image: "https://images.unsplash.com/photo-1511018625956-29dc53927620?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                    flavors: ["Sweet", "Fruity", "Creamy"],
+                    type: ["Dessert"],
+                    description: "A smooth, creamy dessert made with fresh mangoes, milk, and gelatin. It has a silky texture and intense mango flavor, often served chilled and garnished with fresh fruit or a drizzle of evaporated milk.",
+                    allergens: ["Milk"],
+                    diet: ["Vegetarian", "Contains Gelatin", "Gluten Free"]
+                },
+                11: {
+                    name: "Sesame Balls",
+                    image: "https://images.unsplash.com/photo-1515669097368-22e68427d265?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                    flavors: ["Sweet", "Nutty", "Chewy"],
+                    type: ["Dessert", "Dim Sum"],
+                    description: "Chewy rice flour balls filled with sweet red bean paste, coated with sesame seeds and deep-fried until golden. The exterior is crispy while the interior remains soft and chewy, creating a pleasing textural contrast.",
+                    allergens: ["Sesame"],
+                    diet: ["Vegetarian", "Vegan", "Gluten Free"]
+                }
+            };
+            
+            // 打开菜品详情
+            infoIcons.forEach(function(icon) {
+                icon.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const menuItem = this.closest('.menu-item');
+                    const dishId = menuItem.dataset.dishId;
+                    const dish = dishData[dishId];
+                    
+                    if (dish) {
+                        // 填充模态框内容
+                        document.getElementById('modal-dish-name').textContent = dish.name;
+                        document.getElementById('modal-dish-image').src = dish.image;
+                        document.getElementById('modal-description').textContent = dish.description;
+                        
+                        // 清空并填充标签
+                        const flavorsContainer = document.getElementById('modal-flavors');
+                        const typeContainer = document.getElementById('modal-type');
+                        const allergensContainer = document.getElementById('modal-allergens');
+                        const dietContainer = document.getElementById('modal-diet');
+                        
+                        flavorsContainer.innerHTML = '';
+                        typeContainer.innerHTML = '';
+                        allergensContainer.innerHTML = '';
+                        dietContainer.innerHTML = '';
+                        
+                        // 添加口味标签
+                        dish.flavors.forEach(function(flavor) {
+                            const tag = document.createElement('span');
+                            tag.className = 'tag tag-flavor';
+                            tag.textContent = flavor;
+                            flavorsContainer.appendChild(tag);
+                        });
+                        
+                        // 添加类型标签
+                        dish.type.forEach(function(type) {
+                            const tag = document.createElement('span');
+                            tag.className = 'tag tag-type';
+                            tag.textContent = type;
+                            typeContainer.appendChild(tag);
+                        });
+                        
+                        // 添加过敏源标签
+                        dish.allergens.forEach(function(allergen) {
+                            const tag = document.createElement('span');
+                            tag.className = 'tag tag-allergen';
+                            tag.textContent = allergen;
+                            allergensContainer.appendChild(tag);
+                        });
+                        
+                        // 添加饮食限制标签
+                        dish.diet.forEach(function(diet) {
+                            const tag = document.createElement('span');
+                            tag.className = 'tag tag-diet';
+                            tag.textContent = diet;
+                            dietContainer.appendChild(tag);
+                        });
+                        
+                        // 显示模态框
+                        dishModal.classList.add('active');
+                    }
+                });
+            });
+            
+            // 关闭模态框
+            closeModal.addEventListener('click', function() {
+                dishModal.classList.remove('active');
+            });
+            
+            // 点击模态框外部关闭
+            dishModal.addEventListener('click', function(e) {
+                if (e.target === dishModal) {
+                    dishModal.classList.remove('active');
+                }
+            });
+            
+            // 辅助函数：显示屏幕
+            function showScreen(screen) {
+                // 隐藏所有屏幕
+                document.querySelectorAll('.screen').forEach(function(s) {
+                    s.classList.remove('active');
+                });
+                
+                // 显示目标屏幕
+                screen.classList.add('active');
+            }
+            
+            // 辅助函数：显示加载动画
+            function showLoading(text, subtext) {
+                loadingContainer.querySelector('#loading-text').textContent = text;
+                loadingContainer.querySelector('#loading-subtext').textContent = subtext;
+                loadingContainer.classList.add('active');
+            }
+            
+            // 辅助函数：隐藏加载动画
+            function hideLoading() {
+                loadingContainer.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

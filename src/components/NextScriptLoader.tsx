@@ -36,14 +36,19 @@ export default function NextScriptLoader({ position }: NextScriptLoaderProps) {
 
   return (
     <>
-      {scripts.map((script) => (
-        <Script
-          key={`script-${script.id}`}
-          id={`script-${script.id}`}
-          dangerouslySetInnerHTML={{ __html: script.content }}
-          strategy="afterInteractive"
-        />
-      ))}
+      {scripts.map((script) => {
+        // Make sure script content is a string
+        const scriptContent = typeof script.content === 'string' ? script.content : '';
+
+        return (
+          <Script
+            key={`script-${script.id}`}
+            id={`script-${script.id}`}
+            dangerouslySetInnerHTML={{ __html: scriptContent }}
+            strategy="afterInteractive"
+          />
+        );
+      })}
     </>
   );
 }

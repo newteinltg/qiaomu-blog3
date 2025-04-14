@@ -8,6 +8,11 @@ import {
   type HeroSetting, type NewHeroSetting
 } from './schema/settings';
 
+import {
+  links, webhooks,
+  type Link, type NewLink, type Webhook, type NewWebhook
+} from './schema/links';
+
 // 用户表
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -173,4 +178,10 @@ export {
   type SiteSetting, type NewSiteSetting, type SocialLink, type NewSocialLink,
   type ContactInfo, type NewContactInfo, type DonationInfo, type NewDonationInfo,
   type HeroSetting, type NewHeroSetting
+};
+
+// 导出链接相关的表和类型
+export {
+  links, webhooks,
+  type Link, type NewLink, type Webhook, type NewWebhook
 };
