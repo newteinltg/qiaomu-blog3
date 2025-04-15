@@ -100,7 +100,7 @@ export default async function Sidebar({
       {/* 分类 */}
       {showCategories && categories.length > 0 && categories.some(category => category.postCount && category.postCount > 0) && (
         <div className="sidebar-section bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-          <h3 className="sidebar-title text-lg font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">分类</h3>
+          <h3 className="sidebar-title text-lg font-bold text-gray-900 dark:text-white mb-4">分类</h3>
           <div className="category-list">
             {categories.filter(category => category.postCount && category.postCount > 0).map(category => (
               <a
@@ -121,7 +121,18 @@ export default async function Sidebar({
       {/* 最近文章 - 在首页不显示 */}
       {((showRecentPosts && !isHomePage) || showLatestPosts) && recentPosts.length > 0 && (
         <div className="sidebar-section bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-          <h3 className="sidebar-title text-lg font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">最新文章</h3>
+          <div className="relative mb-4 h-8">
+            <h3 className="sidebar-title text-lg font-bold text-gray-900 dark:text-white">最新文章</h3>
+            <Link 
+              href="/posts" 
+              className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors absolute"
+              style={{ top: '4px', right: '0' }}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </Link>
+          </div>
 
           <div className="space-y-4">
             {recentPosts.map(post => (
@@ -143,20 +154,13 @@ export default async function Sidebar({
             ))}
           </div>
 
-          <div className="mt-4 text-right">
-            <Link href="/posts" className="more-link inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium">
-              更多文章
-              <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </Link>
-          </div>
+
         </div>
       )}
 
       {/* 公众号 */}
       <div className="sidebar-section bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-        <h3 className="sidebar-title text-lg font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">公众号</h3>
+        <h3 className="sidebar-title text-lg font-bold text-gray-900 dark:text-white mb-4">公众号</h3>
         <div className="flex flex-col items-center">
           <Image
             src={officialAccount?.qrCodeUrl || "/images/default-qrcode.png"}
@@ -172,8 +176,19 @@ export default async function Sidebar({
       {/* 热门标签 */}
       {showPopularTags && popularTags.length > 0 && (
         <div className="sidebar-section bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-          <h3 className="sidebar-title text-lg font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">热门标签</h3>
-          <div className="tag-list flex flex-wrap gap-2">
+          <div className="relative mb-4 h-8">
+            <h3 className="sidebar-title text-lg font-bold text-gray-900 dark:text-white">热门标签</h3>
+            <Link 
+              href="/tags" 
+              className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors absolute"
+              style={{ top: '4px', right: '0' }}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </Link>
+          </div>
+          <div className="tag-list flex flex-wrap gap-2 max-h-[210px] overflow-hidden">
             {popularTags.map(tag => (
               <a
                 key={tag.id}
@@ -184,6 +199,7 @@ export default async function Sidebar({
               </a>
             ))}
           </div>
+
         </div>
       )}
     </aside>

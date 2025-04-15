@@ -8,5 +8,7 @@ type ScriptLoaderWrapperProps = {
 };
 
 export default function ScriptLoaderWrapper({ position }: ScriptLoaderWrapperProps) {
-  return <NextScriptLoader position={position} />;
+  // Temporarily disabled to troubleshoot navigation menu issues
+  console.log(`ScriptLoader for ${position} temporarily disabled`);
+  return null;
 }

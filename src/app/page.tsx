@@ -7,8 +7,8 @@ import { adaptMenus } from '@/lib/utils/menu-adapters';
 import FeaturedSliderClient from '@/components/FeaturedSliderClient';
 import LatestArticlesClient from '@/components/LatestArticlesClient';
 
-// 使用 fetchCache = 'force-no-store' 确保每次访问都获取最新数据
-export const fetchCache = 'force-no-store';
+// 使用 segmentCache 配置，这是Next.js 15.2.4中推荐的缓存控制方法
+export const segmentCache = { revalidate: 0 };
 
 export const metadata: Metadata = {
   title: '向阳乔木的个人博客',
@@ -23,6 +23,9 @@ export default async function Home() {
     getMenus(),
     getSiteSettings(),
   ]);
+
+  // 调试输出菜单数据
+  console.log('首页获取到的菜单数据:', JSON.stringify(menus, null, 2));
 
   // 获取网站设置
   const siteSettings = Array.isArray(settings) 

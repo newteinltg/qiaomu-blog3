@@ -10,16 +10,20 @@ import { headScripts } from '@/lib/schema/settings';
  * @returns 响应对象
  */
 export async function GET(request: NextRequest) {
+  console.log('[API /api/settings/scripts/position] Received request');
   try {
     // 获取查询参数
     const { searchParams } = new URL(request.url);
     const position = searchParams.get('position');
+    console.log(`[API /api/settings/scripts/position] Position requested: ${position}`);
 
     if (!position) {
+      console.warn('[API /api/settings/scripts/position] Position parameter missing');
       return NextResponse.json({ success: false, message: '缺少位置参数' }, { status: 400 });
     }
 
     // 获取指定位置的脚本
+    console.log(`[API /api/settings/scripts/position] Querying database for position: ${position}`);
     const scripts = await db
       .select({
         id: headScripts.id,
@@ -34,14 +38,21 @@ export async function GET(request: NextRequest) {
         )
       );
 
+    console.log(`[API /api/settings/scripts/position] Database query returned ${scripts.length} scripts for position: ${position}`);
+    // console.log('[API /api/settings/scripts/position] Scripts data:', JSON.stringify(scripts)); // Optional: Uncomment for detailed data
+
     return NextResponse.json({
       success: true,
       scripts,
     });
   } catch (error) {
-    console.error('获取脚本失败:', error);
+    console.error(`[API /api/settings/scripts/position] Error fetching scripts:`, error);
     return NextResponse.json(
-      { success: false, message: '获取脚本失败', error: String(error) },
+      {
+        success: false,
+        message: '获取脚本失败',
+        error: String(error)
+      },
       { status: 500 }
     );
   }

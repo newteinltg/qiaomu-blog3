@@ -44,9 +44,10 @@ export default function NextScriptLoader({ position }: NextScriptLoaderProps) {
           <Script
             key={`script-${script.id}`}
             id={`script-${script.id}`}
-            dangerouslySetInnerHTML={{ __html: scriptContent }}
             strategy="afterInteractive"
-          />
+          >
+            {scriptContent}
+          </Script>
         );
       })}
     </>

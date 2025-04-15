@@ -85,7 +85,7 @@ export default function AllPostsClient({
         if (categoryId) params.set('category', categoryId);
         if (tagId) params.set('tag', tagId);
         params.set('page', page.toString());
-        params.set('pageSize', '25');
+        params.set('pageSize', '20');
         params.set('_t', Date.now().toString()); // 防止缓存
 
         const response = await fetch(`/api/posts/all?${params.toString()}`, {

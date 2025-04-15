@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const categoryId = searchParams.get('category');
     const tagId = searchParams.get('tag');
     const page = parseInt(searchParams.get('page') || '1', 10);
-    const pageSize = parseInt(searchParams.get('pageSize') || '25', 10);
+    const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
     const offset = (page - 1) * pageSize;
 
     console.log('所有文章列表参数:', { query, categoryId, tagId, page, pageSize });

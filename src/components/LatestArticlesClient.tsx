@@ -17,7 +17,7 @@ export default function LatestArticlesClient() {
       try {
         // 添加时间戳参数，确保每次都获取最新数据
         const timestamp = Date.now();
-        const response = await fetch(`/api/posts?limit=10&_t=${timestamp}`, {
+        const response = await fetch(`/api/posts?limit=12&_t=${timestamp}`, {
           // 禁用缓存，确保获取最新数据
           cache: 'no-store',
           headers: {

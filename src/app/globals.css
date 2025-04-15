@@ -412,8 +412,10 @@
 
   .nav-link {
     @apply relative px-2 py-1 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors;
+    background-color: transparent !important;
   }
 
+  /* 暂时禁用导航链接的下划线效果
   .nav-link::after {
     content: '';
     @apply absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary-600 dark:bg-primary-400 transition-all duration-300;
@@ -422,6 +424,7 @@
   .nav-link:hover::after {
     @apply w-full left-0;
   }
+  */
 
   /* Dropdown Menus */
   .dropdown {
@@ -429,7 +432,7 @@
   }
 
   .dropdown-menu {
-    @apply absolute top-full left-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-100 dark:border-gray-700 z-50 opacity-0 invisible transform translate-y-2 transition-all duration-300;
+    @apply absolute top-full left-0 mt-0 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 opacity-0 invisible transform translate-y-2 transition-all duration-300;
   }
 
   .dropdown:hover .dropdown-menu {
@@ -437,7 +440,7 @@
   }
 
   .dropdown-item {
-    @apply block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors;
+    @apply block px-4 py-1 text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors;
   }
 
   .sub-dropdown {
@@ -445,7 +448,11 @@
   }
 
   .sub-dropdown-menu {
-    @apply absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-100 dark:border-gray-700 z-50;
+    @apply absolute left-full top-0 ml-0 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 opacity-0 invisible transform -translate-x-2 transition-all duration-300;
+  }
+
+  .sub-dropdown:hover .sub-dropdown-menu {
+    @apply opacity-100 visible translate-x-0;
   }
 
   /* Mobile Menu */

@@ -45,6 +45,8 @@ const SimpleNavigation = ({ siteTitle, menus = [] }: SimpleNavigationProps) => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeMenus, setActiveMenus] = useState<Record<string, boolean>>({});
+  const [openMobileSubmenus, setOpenMobileSubmenus] = useState<number[]>([]);
+  const [openMobileThirdLevelMenus, setOpenMobileThirdLevelMenus] = useState<number[]>([]);
 
   // 切换子菜单的显示状态
   const toggleSubmenu = useCallback((menuId: string) => {
@@ -61,16 +63,42 @@ const SimpleNavigation = ({ siteTitle, menus = [] }: SimpleNavigationProps) => {
     }
   }, [mobileMenuOpen]);
 
+  const toggleMobileSubmenu = useCallback((menuId: number) => {
+    if (openMobileSubmenus.includes(menuId)) {
+      setOpenMobileSubmenus(prev => prev.filter(id => id !== menuId));
+    } else {
+      setOpenMobileSubmenus(prev => [...prev, menuId]);
+    }
+  }, []);
+
+  const toggleMobileThirdLevelMenu = useCallback((menuId: number) => {
+    if (openMobileThirdLevelMenus.includes(menuId)) {
+      setOpenMobileThirdLevelMenus(prev => prev.filter(id => id !== menuId));
+    } else {
+      setOpenMobileThirdLevelMenus(prev => [...prev, menuId]);
+    }
+  }, []);
+
+  useEffect(() => {
+    // 关闭移动菜单
+    if (!mobileMenuOpen) {
+      setOpenMobileSubmenus([]);
+      setOpenMobileThirdLevelMenus([]);
+    }
+  }, [mobileMenuOpen]);
+
   return (
     <div>
-      <header className="header">
-        <div className="container-wide max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="site-logo text-2xl">{siteName}</Link>
+            {/* Logo - Left aligned */}
+            <div className="flex-shrink-0">
+              <Link href="/" className="site-logo text-2xl font-bold">{siteName}</Link>
+            </div>
 
-            {/* 桌面端导航 */}
-            <nav className="desktop-menu hidden md:flex items-center space-x-4">
+            {/* Desktop menu - Right aligned */}
+            <div className="hidden md:flex md:items-center md:justify-end md:flex-1 md:space-x-4">
               <Link href="/" className="nav-link">首页</Link>
 
               {/* 菜单项 */}
@@ -81,26 +109,18 @@ const SimpleNavigation = ({ siteTitle, menus = [] }: SimpleNavigationProps) => {
                 if (subMenus.length > 0) {
                   return (
                     <div key={menu.id} className="dropdown">
-                      {menu.isExternal ? (
-                        <a
-                          href={menu.url}
-                          className="nav-link flex items-center"
-                          target="_blank"
-                          rel="noopener noreferrer"
+                      <button className="nav-link">
+                        {menu.name}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4 ml-1"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                         >
-                          {menu.name}
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </a>
-                      ) : (
-                        <Link href={menu.url} className="nav-link flex items-center">
-                          {menu.name}
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </Link>
-                      )}
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
 
                       <div className="dropdown-menu">
                         {subMenus.map(subMenu => {
@@ -109,14 +129,20 @@ const SimpleNavigation = ({ siteTitle, menus = [] }: SimpleNavigationProps) => {
 
                           if (thirdLevelMenus.length > 0) {
                             return (
-                              <div key={subMenu.id} className="dropdown-submenu">
-                                <div className="dropdown-submenu-trigger">
+                              <div key={subMenu.id} className="sub-dropdown">
+                                <button className="dropdown-item flex items-center justify-between">
                                   {subMenu.name}
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4 ml-1"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                   </svg>
-                                </div>
-                                <div className="dropdown-submenu-menu">
+                                </button>
+                                <div className="sub-dropdown-menu">
                                   {thirdLevelMenus.map(thirdMenu => (
                                     thirdMenu.isExternal ? (
                                       <a
@@ -142,26 +168,24 @@ const SimpleNavigation = ({ siteTitle, menus = [] }: SimpleNavigationProps) => {
                               </div>
                             );
                           } else {
-                            return (
-                              subMenu.isExternal ? (
-                                <a
-                                  key={subMenu.id}
-                                  href={subMenu.url}
-                                  className="dropdown-item"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  {subMenu.name}
-                                </a>
-                              ) : (
-                                <Link
-                                  key={subMenu.id}
-                                  href={subMenu.url}
-                                  className="dropdown-item"
-                                >
-                                  {subMenu.name}
-                                </Link>
-                              )
+                            return subMenu.isExternal ? (
+                              <a
+                                key={subMenu.id}
+                                href={subMenu.url}
+                                className="dropdown-item"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {subMenu.name}
+                              </a>
+                            ) : (
+                              <Link
+                                key={subMenu.id}
+                                href={subMenu.url}
+                                className="dropdown-item"
+                              >
+                                {subMenu.name}
+                              </Link>
                             );
                           }
                         })}
@@ -169,22 +193,24 @@ const SimpleNavigation = ({ siteTitle, menus = [] }: SimpleNavigationProps) => {
                     </div>
                   );
                 } else {
-                  return (
-                    menu.isExternal ? (
-                      <a
-                        key={menu.id}
-                        href={menu.url}
-                        className="nav-link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {menu.name}
-                      </a>
-                    ) : (
-                      <Link key={menu.id} href={menu.url} className="nav-link">
-                        {menu.name}
-                      </Link>
-                    )
+                  return menu.isExternal ? (
+                    <a
+                      key={menu.id}
+                      href={menu.url}
+                      className="nav-link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {menu.name}
+                    </a>
+                  ) : (
+                    <Link
+                      key={menu.id}
+                      href={menu.url}
+                      className="nav-link"
+                    >
+                      {menu.name}
+                    </Link>
                   );
                 }
               })}
@@ -197,7 +223,7 @@ const SimpleNavigation = ({ siteTitle, menus = [] }: SimpleNavigationProps) => {
 
               {/* 主题切换按钮 */}
               <ThemeToggle />
-            </nav>
+            </div>
 
             {/* 移动端菜单按钮 */}
             <div className="md:hidden flex items-center">
@@ -290,123 +316,104 @@ const SimpleNavigation = ({ siteTitle, menus = [] }: SimpleNavigationProps) => {
                 const subMenus = menus.filter(subMenu => subMenu.parentId === menu.id);
 
                 if (subMenus.length > 0) {
-                  const menuId = `mobile-menu-${menu.id}`;
                   return (
-                    <div key={menu.id} className="space-y-1">
+                    <div key={menu.id} className="mobile-dropdown">
                       <button
-                        onClick={() => toggleSubmenu(menuId)}
-                        className="w-full flex items-center justify-between px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                        className="flex items-center justify-between w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                        onClick={() => toggleMobileSubmenu(menu.id)}
                       >
-                        <span>{menu.name}</span>
+                        {menu.name}
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className={`h-4 w-4 transition-transform ${
-                            activeMenus[menuId] ? 'transform rotate-180' : ''
-                          }`}
+                          className={`h-4 w-4 ml-1 transform transition-transform ${openMobileSubmenus.includes(menu.id) ? 'rotate-180' : ''}`}
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                         </svg>
                       </button>
-                      <div
-                        className={`pl-4 ml-2 border-l-2 border-gray-200 dark:border-gray-700 space-y-1 overflow-hidden transition-all duration-300 ${
-                          activeMenus[menuId] ? 'max-h-[1000px] py-1' : 'max-h-0'
-                        }`}
-                      >
-                        {subMenus.map(subMenu => {
-                          // 查找三级菜单
-                          const thirdLevelMenus = menus.filter(thirdMenu => thirdMenu.parentId === subMenu.id);
-                          const subMenuId = `mobile-submenu-${subMenu.id}`;
+                      {openMobileSubmenus.includes(menu.id) && (
+                        <div className="pl-4 mt-1 space-y-1">
+                          {subMenus.map(subMenu => {
+                            // 查找三级菜单
+                            const thirdLevelMenus = menus.filter(thirdMenu => thirdMenu.parentId === subMenu.id);
 
-                          if (thirdLevelMenus.length > 0) {
-                            return (
-                              <div key={subMenu.id} className="space-y-1">
-                                <button
-                                  onClick={() => toggleSubmenu(subMenuId)}
-                                  className="w-full flex items-center justify-between px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                                >
-                                  <span>{subMenu.name}</span>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className={`h-4 w-4 transition-transform ${
-                                      activeMenus[subMenuId] ? 'transform rotate-180' : ''
-                                    }`}
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
+                            if (thirdLevelMenus.length > 0) {
+                              return (
+                                <div key={subMenu.id} className="mobile-dropdown">
+                                  <button
+                                    className="flex items-center justify-between w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                    onClick={() => toggleMobileThirdLevelMenu(subMenu.id)}
                                   >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M19 9l-7 7-7-7"
-                                    />
-                                  </svg>
-                                </button>
-                                <div
-                                  id={subMenuId}
-                                  className={`pl-4 ml-2 border-l-2 border-gray-200 dark:border-gray-700 space-y-1 overflow-hidden transition-all duration-300 ${activeMenus[subMenuId] ? 'max-h-[1000px] py-1' : 'max-h-0'}`}
-                                >
-                                  {thirdLevelMenus.map(thirdMenu => (
-                                    thirdMenu.isExternal ? (
-                                      <a
-                                        key={thirdMenu.id}
-                                        href={thirdMenu.url}
-                                        className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                      >
-                                        {thirdMenu.name}
-                                      </a>
-                                    ) : (
-                                      <Link
-                                        key={thirdMenu.id}
-                                        href={thirdMenu.url}
-                                        className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                      >
-                                        {thirdMenu.name}
-                                      </Link>
-                                    )
-                                  ))}
+                                    {subMenu.name}
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className={`h-4 w-4 ml-1 transform transition-transform ${openMobileThirdLevelMenus.includes(subMenu.id) ? 'rotate-180' : ''}`}
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                  </button>
+                                  {openMobileThirdLevelMenus.includes(subMenu.id) && (
+                                    <div className="pl-4 mt-1 space-y-1">
+                                      {thirdLevelMenus.map(thirdMenu => (
+                                        thirdMenu.isExternal ? (
+                                          <a
+                                            key={thirdMenu.id}
+                                            href={thirdMenu.url}
+                                            className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                          >
+                                            {thirdMenu.name}
+                                          </a>
+                                        ) : (
+                                          <Link
+                                            key={thirdMenu.id}
+                                            href={thirdMenu.url}
+                                            className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                          >
+                                            {thirdMenu.name}
+                                          </Link>
+                                        )
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
-                              </div>
-                            );
-                          } else {
-                            return (
-                              subMenu.isExternal ? (
-                                <a
-                                  key={subMenu.id}
-                                  href={subMenu.url}
-                                  className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                                  onClick={() => setMobileMenuOpen(false)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  {subMenu.name}
-                                </a>
-                              ) : (
-                                <Link
-                                  key={subMenu.id}
-                                  href={subMenu.url}
-                                  className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                                  onClick={() => setMobileMenuOpen(false)}
-                                >
-                                  {subMenu.name}
-                                </Link>
-                              )
-                            );
-                          }
-                        })}
-                      </div>
+                              );
+                            } else {
+                              return (
+                                subMenu.isExternal ? (
+                                  <a
+                                    key={subMenu.id}
+                                    href={subMenu.url}
+                                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {subMenu.name}
+                                  </a>
+                                ) : (
+                                  <Link
+                                    key={subMenu.id}
+                                    href={subMenu.url}
+                                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                  >
+                                    {subMenu.name}
+                                  </Link>
+                                )
+                              );
+                            }
+                          })}
+                        </div>
+                      )}
                     </div>
                   );
                 } else {
