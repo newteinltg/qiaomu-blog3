@@ -48,7 +48,7 @@ const nextConfig = {
     unoptimized: true
   },
   // 确保静态文件正确服务
-  // output: 'standalone', // 临时注释掉，方便本地测试
+  output: 'standalone', // 启用独立输出模式，便于跨平台部署
   // 外部包配置，用于静态资源处理
   serverExternalPackages: ['sharp'],
   // 实验性功能
