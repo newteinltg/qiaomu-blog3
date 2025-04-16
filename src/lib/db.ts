@@ -72,6 +72,7 @@ const createTables = () => {
         excerpt TEXT,
         coverImage TEXT,                              -- 根据之前的错误添加
         published INTEGER DEFAULT 0,
+        pinned INTEGER DEFAULT 0,
         createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,     -- 注意：可能需要触发器来自动更新
         authorId INTEGER REFERENCES users(id),
