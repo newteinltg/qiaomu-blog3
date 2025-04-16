@@ -151,7 +151,7 @@ const createTables = () => {
         url TEXT NOT NULL,
         icon TEXT,
         display_name TEXT,
-        order INTEGER DEFAULT 0 NOT NULL,
+        "order" INTEGER DEFAULT 0 NOT NULL,
         is_active INTEGER DEFAULT 1 NOT NULL,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
         updated_at TEXT
@@ -286,7 +286,7 @@ try {
     if (socialCount.count === 0) {
       console.log('添加默认社交媒体链接数据...');
       sqlite.exec(`
-        INSERT INTO social_links (platform, url, icon, display_name, order) VALUES
+        INSERT INTO social_links (platform, url, icon, display_name, "order") VALUES
         ('github', 'https://github.com', 'github', 'GitHub', 0),
         ('twitter', 'https://twitter.com', 'twitter', 'Twitter', 1),
         ('weibo', 'https://weibo.com', 'weibo', '微博', 2);
