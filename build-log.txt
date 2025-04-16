@@ -1,0 +1,749 @@
+npm verbose cli /Users/joe/.nvm/versions/node/v23.8.0/bin/node /Users/joe/.nvm/versions/node/v23.8.0/bin/npm
+npm info using npm@10.9.2
+npm info using node@v23.8.0
+npm verbose title npm run build
+npm verbose argv "run" "build" "--loglevel" "verbose"
+npm verbose logfile logs-max:10 dir:/Users/joe/.npm/_logs/2025-04-15T16_46_29_752Z-
+npm verbose logfile /Users/joe/.npm/_logs/2025-04-15T16_46_29_752Z-debug-0.log
+
+> personal-blog@0.1.0 build
+> next build
+
+   ▲ Next.js 15.2.4
+   - Environments: .env
+
+   Creating an optimized production build ...
+Client network socket disconnected before secure TLS connection was established
+
+Retrying 1/3...
+ ✓ Compiled successfully
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+Drizzle ORM 初始化完成
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+Drizzle ORM 初始化完成
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+数据库模块初始化开始
+Drizzle ORM 初始化完成
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+SELECT COUNT(*) as count FROM tags
+数据库文件是否存在: true
+是否在Vercel环境: false
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+Drizzle ORM 初始化完成
+Drizzle ORM 初始化完成
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+数据库模块初始化开始
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+Drizzle ORM 初始化完成
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+数据库文件是否存在: true
+是否在Vercel环境: false
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+Drizzle ORM 初始化完成
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+Drizzle ORM 初始化完成
+Drizzle ORM 初始化完成
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+Drizzle ORM 初始化完成
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+Drizzle ORM 初始化完成
+   Generating static pages (0/63) ...
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+Drizzle ORM 初始化完成
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+   Generating static pages (15/63) 
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+Drizzle ORM 初始化完成
+   Generating static pages (31/63) 
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+数据库模块初始化开始
+数据库文件路径: /Users/joe/Dropbox/code/my_projects/blognew/demo.db
+数据库文件是否存在: true
+是否在Vercel环境: false
+SQLite 数据库连接成功
+数据库已存在，跳过表创建
+SELECT COUNT(*) as count FROM tags
+SELECT COUNT(*) as count FROM posts
+SELECT COUNT(*) as count FROM menus
+SELECT COUNT(*) as count FROM categories
+SELECT COUNT(*) as count FROM site_settings
+SELECT COUNT(*) as count FROM social_links
+SELECT COUNT(*) as count FROM contact_info
+SELECT COUNT(*) as count FROM hero_settings
+数据库初始化完成
+Drizzle ORM 初始化完成
+select "id", "name", "description", "url", "is_external", "parent_id", "sort_order", "is_active", "created_at", "updated_at" from "menus" where ("menus"."is_active" = 1.0 and "menus"."parent_id" is null) order by "menus"."sort_order" asc
+select "id", "name", "slug", "description", "parent_id", "order" from "categories" order by "categories"."order" asc
+select "tags"."id", "tags"."name", "tags"."slug", "tags"."description", "tags"."created_at", count("post_tags"."post_id") from "tags" left join "post_tags" on "tags"."id" = "post_tags"."tag_id" left join "posts" on "post_tags"."post_id" = "posts"."id" where "posts"."published" = 1.0 group by "tags"."id" order by "tags"."name"
+select "id", "key", "value", "group", "created_at", "updated_at" from "site_settings"
+select "post_categories"."categoryId", count("post_categories"."postId") from "post_categories" inner join "posts" on "post_categories"."postId" = "posts"."id" where "posts"."published" = 1.0 group by "post_categories"."categoryId"
+select "id", "title", "slug", "createdAt", "coverImage" from "posts" where "posts"."published" = 1.0 order by "posts"."createdAt" desc limit 5.0
+select "id", "type", "value", "qr_code_url", "display_name", "is_active", "created_at", "updated_at" from "contact_info" where "contact_info"."is_active" = 1.0
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+SimpleNavigation 接收到的菜单数据: [
+  {
+    "id": 1,
+    "name": "文章分类",
+    "description": "网站的一些文章分类",
+    "url": "/",
+    "isExternal": 0,
+    "parentId": null,
+    "order": 1,
+    "isActive": 1,
+    "createdAt": "2025-04-09 05:23:13",
+    "updatedAt": "2025-04-12T17:19:49.291Z"
+  },
+  {
+    "id": 19,
+    "name": "社交媒体",
+    "description": "我的社交媒体账号",
+    "url": "/",
+    "isExternal": 0,
+    "parentId": null,
+    "order": 9,
+    "isActive": 1,
+    "createdAt": "2025-04-12T08:56:59.003Z",
+    "updatedAt": "2025-04-12T08:56:59.003Z"
+  }
+]
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+select "id", "name", "slug", "description", "parent_id", "order" from "categories" order by "categories"."order" asc
+select "tags"."id", "tags"."name", "tags"."slug", "tags"."description", "tags"."created_at", count("post_tags"."post_id") from "tags" left join "post_tags" on "tags"."id" = "post_tags"."tag_id" left join "posts" on "post_tags"."post_id" = "posts"."id" where "posts"."published" = 1.0 group by "tags"."id" order by "tags"."name"
+select "id", "name", "description", "url", "is_external", "parent_id", "sort_order", "is_active", "created_at", "updated_at" from "menus" where "menus"."is_active" = 1.0 order by "menus"."parent_id" asc, "menus"."sort_order" asc
+select "post_categories"."categoryId", count("post_categories"."postId") from "post_categories" inner join "posts" on "post_categories"."postId" = "posts"."id" where "posts"."published" = 1.0 group by "post_categories"."categoryId"
+select "id", "key", "value", "group", "created_at", "updated_at" from "site_settings"
+首页获取到的菜单数据: [
+  {
+    "id": 1,
+    "name": "文章分类",
+    "description": "网站的一些文章分类",
+    "url": "/",
+    "isExternal": 0,
+    "parentId": null,
+    "order": 1,
+    "isActive": 1,
+    "createdAt": "2025-04-09 05:23:13",
+    "updatedAt": "2025-04-12T17:19:49.291Z"
+  },
+  {
+    "id": 19,
+    "name": "社交媒体",
+    "description": "我的社交媒体账号",
+    "url": "/",
+    "isExternal": 0,
+    "parentId": null,
+    "order": 9,
+    "isActive": 1,
+    "createdAt": "2025-04-12T08:56:59.003Z",
+    "updatedAt": "2025-04-12T08:56:59.003Z"
+  },
+  {
+    "id": 10,
+    "name": "AI工具",
+    "description": "AI工具",
+    "url": "/categories/ai-tools/",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 3,
+    "isActive": 1,
+    "createdAt": "2025-04-09 05:23:13",
+    "updatedAt": "2025-04-12T03:05:58.933Z"
+  },
+  {
+    "id": 3,
+    "name": "AI教程",
+    "description": "AI教程分类",
+    "url": "/categories/tutorial",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 14,
+    "isActive": 1,
+    "createdAt": "2025-04-09 05:23:13",
+    "updatedAt": "2025-04-12T03:08:30.461Z"
+  },
+  {
+    "id": 5,
+    "name": "Prompt分享",
+    "description": "Prompt分享分类",
+    "url": "/categories/prompt",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 24,
+    "isActive": 1,
+    "createdAt": "2025-04-09 05:23:13",
+    "updatedAt": "2025-04-12T03:08:05.004Z"
+  },
+  {
+    "id": 18,
+    "name": "AI总结",
+    "description": "一些通过AI总结的优质内容",
+    "url": "/categories/ai-sum",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 25,
+    "isActive": 1,
+    "createdAt": "2025-04-12T03:12:26.065Z",
+    "updatedAt": "2025-04-12T03:12:37.695Z"
+  },
+  {
+    "id": 15,
+    "name": "实战经验",
+    "description": "一些AI使用实战经验",
+    "url": "categories/practical",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 26,
+    "isActive": 1,
+    "createdAt": "2025-04-09 05:23:13",
+    "updatedAt": "2025-04-12T03:12:37.698Z"
+  },
+  {
+    "id": 16,
+    "name": "阅读思考",
+    "description": "一些阅读思考",
+    "url": "/categories/read",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 37,
+    "isActive": 1,
+    "createdAt": "2025-04-12T03:09:04.538Z",
+    "updatedAt": "2025-04-12T03:12:37.698Z"
+  },
+  {
+    "id": 17,
+    "name": "工具推荐",
+    "description": "一些工具评测推荐，不局限于AI",
+    "url": "/categories/tool-reviews",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 47,
+    "isActive": 1,
+    "createdAt": "2025-04-12T03:11:45.921Z",
+    "updatedAt": "2025-04-12T03:12:37.698Z"
+  },
+  {
+    "id": 20,
+    "name": "X",
+    "description": "我的 X 账号",
+    "url": "https://x.com/vista8",
+    "isExternal": 1,
+    "parentId": 19,
+    "order": 10,
+    "isActive": 1,
+    "createdAt": "2025-04-12T08:57:46.436Z",
+    "updatedAt": "2025-04-12T08:57:46.436Z"
+  },
+  {
+    "id": 21,
+    "name": "Github",
+    "description": "我的Github",
+    "url": "https://github.com/joeseesun",
+    "isExternal": 1,
+    "parentId": 19,
+    "order": 21,
+    "isActive": 1,
+    "createdAt": "2025-04-12T09:00:23.173Z",
+    "updatedAt": "2025-04-12T09:00:27.643Z"
+  }
+]
+select "id", "title", "slug", "createdAt", "coverImage" from "posts" where "posts"."published" = 1.0 order by "posts"."createdAt" desc limit 5.0
+select "id", "type", "value", "qr_code_url", "display_name", "is_active", "created_at", "updated_at" from "contact_info" where "contact_info"."is_active" = 1.0
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+SimpleNavigation 接收到的菜单数据: [
+  {
+    "id": 1,
+    "name": "文章分类",
+    "description": "网站的一些文章分类",
+    "url": "/",
+    "isExternal": 0,
+    "parentId": null,
+    "order": 1,
+    "isActive": 1,
+    "createdAt": "2025-04-09 05:23:13",
+    "updatedAt": "2025-04-12T17:19:49.291Z"
+  },
+  {
+    "id": 19,
+    "name": "社交媒体",
+    "description": "我的社交媒体账号",
+    "url": "/",
+    "isExternal": 0,
+    "parentId": null,
+    "order": 9,
+    "isActive": 1,
+    "createdAt": "2025-04-12T08:56:59.003Z",
+    "updatedAt": "2025-04-12T08:56:59.003Z"
+  },
+  {
+    "id": 10,
+    "name": "AI工具",
+    "description": "AI工具",
+    "url": "/categories/ai-tools/",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 3,
+    "isActive": 1,
+    "createdAt": "2025-04-09 05:23:13",
+    "updatedAt": "2025-04-12T03:05:58.933Z"
+  },
+  {
+    "id": 3,
+    "name": "AI教程",
+    "description": "AI教程分类",
+    "url": "/categories/tutorial",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 14,
+    "isActive": 1,
+    "createdAt": "2025-04-09 05:23:13",
+    "updatedAt": "2025-04-12T03:08:30.461Z"
+  },
+  {
+    "id": 5,
+    "name": "Prompt分享",
+    "description": "Prompt分享分类",
+    "url": "/categories/prompt",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 24,
+    "isActive": 1,
+    "createdAt": "2025-04-09 05:23:13",
+    "updatedAt": "2025-04-12T03:08:05.004Z"
+  },
+  {
+    "id": 18,
+    "name": "AI总结",
+    "description": "一些通过AI总结的优质内容",
+    "url": "/categories/ai-sum",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 25,
+    "isActive": 1,
+    "createdAt": "2025-04-12T03:12:26.065Z",
+    "updatedAt": "2025-04-12T03:12:37.695Z"
+  },
+  {
+    "id": 15,
+    "name": "实战经验",
+    "description": "一些AI使用实战经验",
+    "url": "categories/practical",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 26,
+    "isActive": 1,
+    "createdAt": "2025-04-09 05:23:13",
+    "updatedAt": "2025-04-12T03:12:37.698Z"
+  },
+  {
+    "id": 16,
+    "name": "阅读思考",
+    "description": "一些阅读思考",
+    "url": "/categories/read",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 37,
+    "isActive": 1,
+    "createdAt": "2025-04-12T03:09:04.538Z",
+    "updatedAt": "2025-04-12T03:12:37.698Z"
+  },
+  {
+    "id": 17,
+    "name": "工具推荐",
+    "description": "一些工具评测推荐，不局限于AI",
+    "url": "/categories/tool-reviews",
+    "isExternal": 0,
+    "parentId": 1,
+    "order": 47,
+    "isActive": 1,
+    "createdAt": "2025-04-12T03:11:45.921Z",
+    "updatedAt": "2025-04-12T03:12:37.698Z"
+  },
+  {
+    "id": 20,
+    "name": "X",
+    "description": "我的 X 账号",
+    "url": "https://x.com/vista8",
+    "isExternal": 1,
+    "parentId": 19,
+    "order": 10,
+    "isActive": 1,
+    "createdAt": "2025-04-12T08:57:46.436Z",
+    "updatedAt": "2025-04-12T08:57:46.436Z"
+  },
+  {
+    "id": 21,
+    "name": "Github",
+    "description": "我的Github",
+    "url": "https://github.com/joeseesun",
+    "isExternal": 1,
+    "parentId": 19,
+    "order": 21,
+    "isActive": 1,
+    "createdAt": "2025-04-12T09:00:23.173Z",
+    "updatedAt": "2025-04-12T09:00:27.643Z"
+  }
+]
+   Generating static pages (47/63) 
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ ✓ Generating static pages (63/63)
+ScriptLoader for body_start temporarily disabled
+Modal 未显示
+Modal 未显示
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+select "id", "name", "slug", "description", "parent_id", "order" from "categories" order by "categories"."order" asc
+select "post_categories"."categoryId", count("post_categories"."postId") from "post_categories" inner join "posts" on "post_categories"."postId" = "posts"."id" where "posts"."published" = 1.0 group by "post_categories"."categoryId"
+select "tags"."id", "tags"."name", "tags"."slug", "tags"."description", "tags"."created_at", count("post_tags"."post_id") from "tags" left join "post_tags" on "tags"."id" = "post_tags"."tag_id" left join "posts" on "post_tags"."post_id" = "posts"."id" where "posts"."published" = 1.0 group by "tags"."id" order by "tags"."name"
+select "posts"."id", "posts"."title", "posts"."slug", "posts"."excerpt", "posts"."coverImage", "posts"."createdAt", "posts"."pinned", "users"."email", "categories"."id", "categories"."name", "categories"."slug", "users"."id", "users"."email" from "posts" left join "users" on "posts"."authorId" = "users"."id" left join "categories" on "posts"."categoryId" = "categories"."id" where "posts"."published" = 1.0 order by "posts"."pinned" desc, "posts"."createdAt" desc limit 6.0
+select "posts"."id", "posts"."title", "posts"."slug", "posts"."excerpt", "posts"."coverImage", "posts"."createdAt", "users"."email", "categories"."name" from "posts" left join "users" on "posts"."authorId" = "users"."id" left join "categories" on "posts"."categoryId" = "categories"."id" where "posts"."pinned" = 1.0 order by "posts"."createdAt" desc limit 5.0
+select "id", "title", "slug", "createdAt", "coverImage" from "posts" where "posts"."published" = 1.0 order by "posts"."createdAt" desc limit 5.0
+select "id", "type", "value", "qr_code_url", "display_name", "is_active", "created_at", "updated_at" from "contact_info" where "contact_info"."is_active" = 1.0
+ScriptLoader for body_start temporarily disabled
+ScriptLoader for body_end temporarily disabled
+ScriptLoader for head temporarily disabled
+SimpleNavigation 接收到的菜单数据: []
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    3.51 kB        2.14 MB
+├ ○ /_not-found                            990 B         103 kB
+├ ○ /admin                               4.27 kB        2.13 MB
+├ ○ /admin/categories                    7.87 kB        2.15 MB
+├ ○ /admin/dashboard                     5.31 kB        2.12 MB
+├ ○ /admin/links                         7.18 kB        2.16 MB
+├ ○ /admin/links/webhooks                7.62 kB        2.13 MB
+├ ○ /admin/menus                          9.7 kB        2.15 MB
+├ ○ /admin/posts                         11.6 kB        2.16 MB
+├ ƒ /admin/posts/edit/[id]               6.24 kB        2.16 MB
+├ ○ /admin/posts/new                     5.45 kB        2.16 MB
+├ ○ /admin/settings                      3.32 kB         110 kB
+├ ○ /admin/settings/general              3.08 kB        2.12 MB
+├ ○ /admin/settings/scripts              17.2 kB        2.15 MB
+├ ○ /admin/tags                          8.12 kB        2.13 MB
+├ ○ /admin/users                         6.21 kB        2.13 MB
+├ ƒ /api/admin-bypass                      274 B         102 kB
+├ ƒ /api/admin/create-admin                274 B         102 kB
+├ ƒ /api/admin/init-db                     274 B         102 kB
+├ ƒ /api/admin/posts                       274 B         102 kB
+├ ƒ /api/admin/stats                       274 B         102 kB
+├ ƒ /api/auth/[...nextauth]                274 B         102 kB
+├ ƒ /api/categories                        274 B         102 kB
+├ ƒ /api/categories/[id]                   274 B         102 kB
+├ ƒ /api/categories/[id]/posts             274 B         102 kB
+├ ƒ /api/categories/list                   274 B         102 kB
+├ ƒ /api/categories/reorder                274 B         102 kB
+├ ƒ /api/categories/reset                  274 B         102 kB
+├ ƒ /api/create-user                       274 B         102 kB
+├ ƒ /api/debug-auth                        274 B         102 kB
+├ ƒ /api/html-content                      274 B         102 kB
+├ ƒ /api/links                             274 B         102 kB
+├ ƒ /api/links/[id]                        274 B         102 kB
+├ ƒ /api/links/webhook                     274 B         102 kB
+├ ƒ /api/login                             274 B         102 kB
+├ ƒ /api/logout                            274 B         102 kB
+├ ƒ /api/menus                             274 B         102 kB
+├ ƒ /api/menus/[id]                        274 B         102 kB
+├ ƒ /api/menus/reorder                     274 B         102 kB
+├ ƒ /api/post-by-slug/[slug]               274 B         102 kB
+├ ƒ /api/posts                             274 B         102 kB
+├ ƒ /api/posts/[id]                        274 B         102 kB
+├ ƒ /api/posts/[id]/categories             274 B         102 kB
+├ ƒ /api/posts/[id]/tags                   274 B         102 kB
+├ ƒ /api/posts/all                         274 B         102 kB
+├ ƒ /api/posts/navigation                  274 B         102 kB
+├ ƒ /api/register                          274 B         102 kB
+├ ƒ /api/revalidate                        274 B         102 kB
+├ ƒ /api/search                            274 B         102 kB
+├ ƒ /api/settings                          274 B         102 kB
+├ ƒ /api/settings/contact                  274 B         102 kB
+├ ƒ /api/settings/contact/[id]             274 B         102 kB
+├ ƒ /api/settings/donation                 274 B         102 kB
+├ ƒ /api/settings/donation/[id]            274 B         102 kB
+├ ƒ /api/settings/general                  274 B         102 kB
+├ ƒ /api/settings/scripts                  274 B         102 kB
+├ ƒ /api/settings/scripts/[id]             274 B         102 kB
+├ ƒ /api/settings/scripts/position         274 B         102 kB
+├ ƒ /api/tags                              274 B         102 kB
+├ ƒ /api/tags/[slug]                       274 B         102 kB
+├ ƒ /api/tags/[slug]/posts                 274 B         102 kB
+├ ƒ /api/tags/all                          274 B         102 kB
+├ ƒ /api/upload                            274 B         102 kB
+├ ƒ /api/users                             274 B         102 kB
+├ ƒ /api/users/[id]                        274 B         102 kB
+├ ƒ /api/webhooks                          274 B         102 kB
+├ ƒ /api/webhooks/[id]                     274 B         102 kB
+├ ƒ /categories/[slug]                   2.71 kB        2.14 MB
+├ ○ /direct-login                          943 B         112 kB
+├ ○ /links                               6.03 kB        2.18 MB
+├ ƒ /links/[id]                            215 B         126 kB
+├ ○ /login                                1.2 kB         112 kB
+├ ○ /login-debug                         1.23 kB         103 kB
+├ ○ /menu-test                           1.53 kB         119 kB
+├ ○ /new                                  1.6 kB         124 kB
+├ ƒ /posts                               3.34 kB        2.14 MB
+├ ƒ /posts/[slug]                          457 B         126 kB
+├ ○ /preview-login                       1.56 kB         103 kB
+├ ○ /register                              997 B         103 kB
+├ ƒ /search                              3.22 kB        2.14 MB
+├ ○ /simple                                274 B         102 kB
+├ ƒ /tags                                1.76 kB         127 kB
+├ ƒ /tags/[slug]                         2.48 kB        2.14 MB
+└ ƒ /uploads/[...path]                     274 B         102 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/1684-730c2df702b8fa04.js      45.8 kB
+  ├ chunks/4bd1b696-5a7cbe7c487620d9.js  53.3 kB
+  └ other shared chunks (total)          2.48 kB
+
+
+ƒ Middleware                             53.6 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+npm verbose cwd /Users/joe/Dropbox/code/my_projects/blognew
+npm verbose os Darwin 24.3.0
+npm verbose node v23.8.0
+npm verbose npm  v10.9.2
+npm verbose exit 0
+npm info ok

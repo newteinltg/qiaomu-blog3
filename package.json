@@ -17,7 +17,9 @@
     "init-links-db": "node scripts/init-links-db.js",
     "create-admin": "node scripts/create-admin.js",
     "reset-admin": "node scripts/reset-admin.js",
-    "setup": "npm install && npm run init-db && npm run init-links-db && npm run create-admin && npm run build"
+    "setup": "npm install && npm run init-db && npm run init-links-db && npm run create-admin && npm run build",
+    "copy-static": "mkdir -p .next/standalone/.next/static && cp -R .next/static .next/standalone/.next/ && cp -R public .next/standalone/",
+    "build:deploy": "npm run build && npm run copy-static"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
