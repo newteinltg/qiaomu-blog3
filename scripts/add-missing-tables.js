@@ -16,7 +16,7 @@ try {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       key TEXT UNIQUE NOT NULL,
       value TEXT,
-      "group" TEXT NOT NULL DEFAULT 'general',
+      "setting_group" TEXT NOT NULL DEFAULT 'general',
       created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
       updated_at TEXT
     );
