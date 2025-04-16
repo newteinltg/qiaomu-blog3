@@ -6,7 +6,7 @@ export const siteSettings = sqliteTable('site_settings', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   key: text('key').notNull().unique(),
   value: text('value'),
-  group: text('group').notNull().default('general'),
+  setting_group: text('setting_group').notNull().default('general'),
   createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at'),
 });
