@@ -59,7 +59,7 @@ export async function POST(request: Request) {
         await db.insert(siteSettings).values({
           key,
           value: value as string,
-          group: 'general',
+          setting_group: 'general',
         });
       }
     }
